@@ -97,7 +97,7 @@ public class Ssound extends AppCompatActivity implements View.OnClickListener{
                 setSyNull();
                 lin_ding.setBackgroundResource(R.drawable.roundgrayb);
                 img_ding.setVisibility(View.VISIBLE);
-                setSound("one_voice");
+                setSound("five_voice");
                 break;
             case R.id.lin_da:
                 setSyNull();

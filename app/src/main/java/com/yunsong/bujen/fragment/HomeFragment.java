@@ -250,7 +250,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
 
     private void incrementScore() {
 
-            gdd_cont++;
+//            gdd_cont++;
             txt_gdd.setText(gdd_cont+"");
             createBubbleTextView();
     }
