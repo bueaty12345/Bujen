@@ -1,0 +1,67 @@
+<resources>
+    <string name="app_name">Bujen</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
+    <!-- Preference Titles -->
+    <string name="messages_header">Messages</string>
+    <string name="sync_header">Sync</string>
+
+    <!-- Messages Preferences -->
+    <string name="signature_title">Your signature</string>
+    <string name="reply_title">Default reply action</string>
+
+    <!-- Sync Preferences -->
+    <string name="sync_title">Sync email periodically</string>
+    <string name="attachment_title">Download incoming attachments</string>
+    <string name="attachment_summary_on">Automatically download attachments for incoming emails
+    </string>
+    <string name="attachment_summary_off">Only download attachments when manually requested</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="zenbeat">zenbeat</string>
+    <string name="login_btn1">Login/Register with Local Number</string>
+    <string name="login_btn2">Login with Another Phone Number</string>
+    <string name="login_text1">Other Login Methods</string>
+    <string name="login_text2">Provide Authentication Services</string>
+    <string name="get_success">Successfully Retrieved</string>
+    <string name="login_text3">Unable to Retrieve Phone Number</string>
+    <string name="login_text4">Permission Not Granted, Cannot Retrieve Phone Number</string>
+    <!-- Login Page -->
+    <string name="edit_phone">Please enter your phone number</string>
+    <string name="edit_password">Please enter your password</string>
+    <string name="edit_code">Please enter the verification code</string>
+    <string name="hq_code">Get code</string>
+    <string name="code_success">Verification code retrieved successfully</string>
+    <string name="wj_password">Forgot password</string>
+    <string name="login_password">Login with password</string>
+    <string name="login">Login now</string>
+    <string name="login2_text1">Unregistered phone number will complete registration after verification</string>
+    <string name="login_success">Login successful</string>
+    <string name="login_reg">Registering for you</string>
+
+    <!-- Registration -->
+    <string name="sz_password">Set your password</string>
+    <string name="reg_text1">Enter 8-16 characters, at least containing numbers and both uppercase and lowercase letters</string>
+    <string name="finish">Finish</string>
+    <string name="no_password">Password is not compliant</string>
+    <string name="reg_succes">Registration successful</string>
+
+    <string name="home">Home</string>
+    <string name="mall">Mall</string>
+    <string name="mine">Mine</string>
+    <string name="sound_effects">Music</string>
+    <string name="tutorial">Tutorial</string>
+    <string name="pray">Pray</string>
+    <string name="consumables">Material</string>
+    <string name="recommend">recommend</string>
+    <string-array name="your_country">
+        <item>中国</item>
+        <item>美国</item>
+        <item>日本</item>
+        <item>其他</item>
+    </string-array>
+
+
+</resources>

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?><resources>
+    <string name="app_name">Bujen</string>
+    <string name="title_activity_main">メインアクティビティ</string>
+    <string name="title_home">ホーム</string>
+    <string name="title_dashboard">ダッシュボード</string>
+    <string name="title_notifications">通知</string>
+
+    <!-- Preference Titles -->
+    <string name="messages_header">メッセージ</string>
+    <string name="sync_header">同期</string>
+
+    <!-- Messages Preferences -->
+    <string name="signature_title">あなたの署名</string>
+    <string name="reply_title">デフォルト返信アクション</string>
+
+    <!-- Sync Preferences -->
+    <string name="sync_title">メールを定期的に同期</string>
+    <string name="attachment_title">添付ファイルをダウンロード</string>
+    <string name="attachment_summary_on">新しいメールの添付ファイルを自動的にダウンロード</string>
+    <string name="attachment_summary_off">手動でリクエストした場合にのみ添付ファイルをダウンロード</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">こんにちは、空白のフラグメント</string>
+    <string name="zenbeat">電子木魚</string>
+    <string name="login_btn1">ローカル番号でログイン/登録</string>
+    <string name="login_btn2">他の電話番号でログイン</string>
+    <string name="login_text1">他のログイン方法</string>
+    <string name="login_text2">認証サービスを提供</string>
+    <string name="get_success">取得成功</string>
+    <string name="login_text3">電話番号を取得できません</string>
+    <string name="login_text4">権限が付与されていないため、電話番号を取得できません</string>
+    <!-- ログインページ -->
+    <string name="edit_phone">電話番号を入力してください</string>
+    <string name="edit_password">パスワードを入力してください</string>
+    <string name="edit_code">認証コードを入力してください</string>
+    <string name="hq_code">認証コードを取得</string>
+    <string name="code_success">認証コードの取得に成功しました</string>
+    <string name="wj_password">パスワードを忘れた</string>
+    <string name="login_password">パスワードでログイン</string>
+    <string name="login">今すぐログイン</string>
+    <string name="login2_text1">未登録の電話番号は、認証後に登録が完了します</string>
+    <string name="login_success">ログイン成功</string>
+    <string name="login_reg">登録中です</string>
+
+    <!-- 登録 -->
+    <string name="sz_password">パスワードを設定</string>
+    <string name="reg_text1">8-16文字を入力してください。数字と大小文字アルファベットの両方を含む必要があります</string>
+    <string name="finish">完了</string>
+    <string name="no_password">パスワードが規定に合っていません</string>
+    <string name="reg_succes">登録成功</string>
+
+    <string name="home">ホーム</string>
+    <string name="mall">ショッピングモール</string>
+    <string name="mine">マイページ</string>
+    <string name="sound_effects">音響効果</string>
+    <string name="tutorial">チュートリアル</string>
+    <string name="pray">祈り</string>
+    <string name="consumables">材料</string>
+    <string name="recommend">選択と推奨</string>
+</resources>

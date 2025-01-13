@@ -1,0 +1,337 @@
+package com.yunsong.bujen;
+
+
+import static com.yunsong.bujen.fragment.HomeFragment.gdd_cont;
+
+import android.content.SharedPreferences;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
+
+import com.yunsong.bujen.fragment.CenterFragment;
+import com.yunsong.bujen.fragment.HFragment;
+import com.yunsong.bujen.fragment.HomeFragment;
+import com.yunsong.bujen.fragment.SettingsFragment;
+import com.thingclips.smart.home.sdk.ThingHomeSdk;
+import com.thingclips.smart.home.sdk.bean.HomeBean;
+import com.thingclips.smart.home.sdk.callback.IThingGetHomeListCallback;
+import com.thingclips.smart.home.sdk.callback.IThingHomeResultCallback;
+import com.thingclips.smart.sdk.api.IDevListener;
+import com.thingclips.smart.sdk.api.IThingDevice;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.List;
+
+public class Homepage extends AppCompatActivity implements View.OnClickListener {
+    private final String USER_INFO_URL = BuildConfig.API_SERVER+"/dev-api/getAppInfo"; //获取信息接口URL
+    public static boolean isPaused = false;
+    public static TextView txt_gdd;
+    TextView txt_home,txt_center,txt_setting;
+    FrameLayout ly_content;
+    LinearLayout ly_center;
+    public static RelativeLayout rl_bg;
+    public static LinearLayout ly_tab;
+    private FragmentManager fManager;
+    public static long homeId;
+    public static IThingDevice mDevice=null;
+    public static String homeColor="#ECE0D2";
+    public static int homebg=R.drawable.home_bg2;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        EdgeToEdge.enable(this);
+        setContentView(R.layout.activity_homepage);
+        init();
+        //获取家庭信息
+        getHomeMassage();
+        txt_home.setOnClickListener(this);
+        txt_center.setOnClickListener(this);
+        txt_setting.setOnClickListener(this);
+
+
+    }
+
+    private void getDeviceMassage() {
+        ThingHomeSdk.newHomeInstance(homeId).getHomeDetail(new IThingHomeResultCallback() {
+            @Override
+            public void onSuccess(HomeBean homeBean) {
+                if(homeBean.getDeviceList().size()>0){
+                    Toast.makeText(Homepage.this, "设备获取成功", Toast.LENGTH_SHORT).show();
+
+                    //设置默认Fragment
+//                    txt_home.setSelected(true);
+//                    HomeFragment homeFragment=new HomeFragment();
+//                    fManager.beginTransaction()
+//                            .replace(R.id.ly_content, homeFragment)
+//                            .commit();
+                    mDevice = ThingHomeSdk.newDeviceInstance(homeBean.getDeviceList().get(0).getDevId());
+                    mDevice.registerDevListener(new IDevListener() {
+                        /**
+                         * DP 数据更新
+                         * devId 设备 ID
+                         * dpStr 设备发生变动的功能点，为 JSON 字符串，数据格式：{"101": true}
+                         */
+                        @Override
+                        public void onDpUpdate(String devId, String dpStr){
+                            Toast.makeText(Homepage.this, "00"+dpStr, Toast.LENGTH_SHORT).show();
+                            JSONObject jsonObject = null;
+                            try {
+                                jsonObject = new JSONObject(dpStr);
+                            } catch (JSONException e) {
+                                throw new RuntimeException(e);
+                            }
+
+                            // 提取值
+                            boolean value101;
+                            try {
+                                value101 = jsonObject.getBoolean("101");
+                            } catch (JSONException e) {
+                                throw new RuntimeException(e);
+                            }
+                            if (value101){
+                                gdd_cont++;
+                            }
+//                            txt_gdd.setText(gdd_cont+"");
+                        };
+
+                        /**
+                         * 设备移除回调
+                         * devId 设备 ID
+                         */
+                        @Override
+                        public void onRemoved(String devId){
+
+                        };
+
+                        /**
+                         * 设备上下线回调。如果设备断电或断网，服务端将会在3分钟后回调到此方法。
+                         * devId  设备 ID
+                         * online 是否在线，在线为 true
+                         */
+                        @Override
+                        public void onStatusChanged(String devId, boolean online){
+                            Toast.makeText(Homepage.this, "11"+online, Toast.LENGTH_SHORT).show();
+                        };
+
+                        /**
+                         * 网络状态发生变动时的回调
+                         *  devId  设备 ID
+                         *  status 网络状态是否可用，可用为 true
+                         */
+                        @Override
+                        public void onNetworkStatusChanged(String devId, boolean status){
+
+                        };
+
+                        /**
+                         * 设备信息更新回调
+                         * devId  设备 ID
+                         */
+                        @Override
+                        public void onDevInfoUpdate(String devId){
+                        }
+                    });
+                }else {
+                    Toast.makeText(Homepage.this, "没有绑定设备", Toast.LENGTH_SHORT).show();
+                    //设置默认Fragment
+//                    txt_home.setSelected(true);
+//                    ConnectFragment connectFragment=new ConnectFragment();
+//                    fManager.beginTransaction()
+//                            .replace(R.id.ly_content, connectFragment)
+//                            .commit();
+                }
+            }
+
+            @Override
+            public void onError(String errorCode, String errorMsg) {
+                Toast.makeText(Homepage.this, "初始化设备失败"+errorMsg, Toast.LENGTH_SHORT).show();
+            }
+        });
+
+    }
+
+    private void getHomeMassage() {
+        ThingHomeSdk.getHomeManagerInstance().queryHomeList(new IThingGetHomeListCallback() {
+        @Override
+        public void onSuccess(List<HomeBean> homeBeans) {
+            // do something
+            homeId=homeBeans.get(0).getHomeId();
+            //初始化家庭设备
+            getDeviceMassage();
+        }
+        @Override
+        public void onError(String errorCode, String error) {
+            // do something
+        }
+    });
+
+
+    }
+
+    private void init(){
+        txt_home=findViewById(R.id.txt_home);
+        txt_center=findViewById(R.id.txt_centre);
+        txt_setting=findViewById(R.id.txt_setting);
+        txt_gdd=findViewById(R.id.txt_home_gdd);
+        ly_content = findViewById(R.id.ly_content);
+        ly_center=findViewById(R.id.ly_center);
+        ly_tab=findViewById(R.id.ly_tab_bar);
+        rl_bg=findViewById(R.id.rl_bg);
+        fManager = getSupportFragmentManager();
+        //设置默认Fragment
+        txt_home.setSelected(true);
+        HFragment homeFragment=new HFragment();
+        fManager.beginTransaction()
+                .replace(R.id.ly_content, homeFragment)
+                .commit();
+//        ly_tab.setBackgroundColor(Color.parseColor(homeColor));
+        ly_center.setOnClickListener(this);
+        SharedPreferences sharedPreferences = getSharedPreferences("AppPrefs", MODE_PRIVATE);
+        String token = sharedPreferences.getString("user_token", null);  // 从 SharedPreferences 获取 token
+        new GetUserInfoTask().execute(token);
+    }
+    //重置所有文本的选中状态
+    private void setSelected(){
+        txt_home.setSelected(false);
+        txt_center.setSelected(false);
+        txt_setting.setSelected(false);
+        rl_bg.setBackgroundResource(R.drawable.home_bg2);
+
+    }
+
+    @Override
+    public void onClick(View view) {
+        setSelected();
+        switch (view.getId()){
+            case R.id.txt_home:
+                txt_home.setSelected(true);
+//                if(mDevice==null){
+//                    ConnectFragment connectFragment=new ConnectFragment();
+//                    fManager.beginTransaction()
+//                            .replace(R.id.ly_content, connectFragment)
+//                            .commit();
+//                }else {
+//                    HomeFragment homeFragment=new HomeFragment();
+//                    fManager.beginTransaction()
+//                            .replace(R.id.ly_content, homeFragment)
+//                            .commit();
+                    HFragment homeFragment=new HFragment();
+                    fManager.beginTransaction()
+                            .replace(R.id.ly_content, homeFragment)
+                            .commit();
+//                ly_tab.setBackgroundColor(Color.parseColor(homeColor));
+                rl_bg.setBackgroundResource(homebg);
+//                }
+                break;
+            case R.id.txt_centre:
+                txt_center.setSelected(true);
+                CenterFragment centerFragment=new CenterFragment();
+                fManager.beginTransaction()
+                        .replace(R.id.ly_content, centerFragment)
+                        .commit();
+//                ly_tab.setBackgroundColor(Color.parseColor("#ECE0D2"));
+
+
+
+                break;
+            case R.id.txt_setting:
+                txt_setting.setSelected(true);
+                SettingsFragment settingsFragment=new SettingsFragment();
+                fManager.beginTransaction()
+                        .replace(R.id.ly_content, settingsFragment)
+                        .commit();
+//                ly_tab.setBackgroundColor(Color.parseColor("#ECE0D2"));
+                break;
+            case R.id.ly_center:
+                txt_center.setSelected(true);
+                CenterFragment center=new CenterFragment();
+                fManager.beginTransaction()
+                        .replace(R.id.ly_content, center)
+                        .commit();
+                break;
+        }
+    }
+    private class GetUserInfoTask extends AsyncTask<String, Void, String> {
+
+        @Override
+        protected String doInBackground(String... params) {
+            String token = params[0];
+
+            try {
+                URL url = new URL(USER_INFO_URL);  // 获取用户信息的 URL
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestMethod("GET");
+                connection.setRequestProperty("Authorization", "Bearer " + token);  // 将 token 放在 Authorization 头部
+
+                int responseCode = connection.getResponseCode();
+                if (responseCode == HttpURLConnection.HTTP_OK) {
+                    BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                    String inputLine;
+                    StringBuilder response = new StringBuilder();
+                    while ((inputLine = in.readLine()) != null) {
+                        response.append(inputLine);
+                    }
+                    in.close();
+                    return response.toString(); // 返回响应内容
+                } else {
+                    return "Request failed with response code: " + responseCode;
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                return "Error: " + e.getMessage();
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+
+            if (result.startsWith("Error:")) {
+                Toast.makeText(getApplicationContext(), result, Toast.LENGTH_SHORT).show();
+            } else {
+                try {
+                    JSONObject jsonResponse = new JSONObject(result);
+                    String nickname = jsonResponse.getString("nickname");
+                    String phone = jsonResponse.getString("phone");
+                    // 你可以根据接口返回的字段设置用户的其他信息
+
+                    // 保存用户信息到 SharedPreferences
+                    SharedPreferences sharedPreferences = getSharedPreferences("AppPrefs", MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putString("user_nickname", nickname);
+                    editor.putString("user_phone", phone);
+                    editor.apply();  // 使用 apply() 异步保存
+
+                    // 在 UI 上显示用户信息
+                    updateUIWithUserInfo(nickname, phone);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            Log.d("RegisterTask", "Response: " + result);
+        }
+
+        private void updateUIWithUserInfo(String nickname, String phone) {
+            // 更新 UI 显示用户信息
+
+        }
+    }
+
+}

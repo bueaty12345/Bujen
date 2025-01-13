@@ -1,0 +1,140 @@
+plugins {
+    alias(libs.plugins.android.application)
+}
+
+android {
+    namespace 'com.yunsong.bujen'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "com.yunsong.bujen"
+        minSdk 26
+        targetSdk 34
+        versionCode 4
+        versionName "1.1.1"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        ndk {
+            abiFilters "armeabi-v7a", "arm64-v8a"
+        }
+    }
+    packagingOptions {
+        pickFirst 'lib/*/libc++_shared.so' // 多个 AAR（Android Library）文件中存在此 .so 文件，请选择第一个
+        pickFirst 'lib/*/liblog.so'
+        pickFirst 'lib/*/libc++_shared.so'
+        pickFirst 'lib/*/libyuv.so'
+        pickFirst 'lib/*/libopenh264.so'
+        pickFirst 'lib/*/libv8wrapper.so'
+        pickFirst 'lib/*/libv8android.so'
+    }
+    lintOptions {
+        abortOnError false
+    }
+    signingConfigs {
+        debug {
+            storeFile file('D:\\keystore\\bujen.jks')
+            storePassword '736488349'
+            keyAlias 'key0'
+            keyPassword '736488349'
+        }
+        release {
+            storeFile file("D:\\keystore\\bujen.jks")  // keystore 文件的路径
+            storePassword "736488349"  // keystore 密码
+            keyAlias "key0"  // 密钥别名
+            keyPassword "736488349"  // 密钥密码
+        }
+    }
+    buildFeatures {
+        buildConfig true
+    }
+
+    buildTypes {
+        debug {
+            buildConfigField "String", "API_SERVER", "\"http://192.168.0.177:80\""
+        }
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+//            signingConfig signingConfigs.release  // 使用 release 签名配置
+            buildConfigField "String", "API_SERVER", "\"https://prod.example.com\""
+        }
+
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility 1.8
+        targetCompatibility 1.8
+    }
+    buildFeatures {
+        viewBinding true
+    }
+}
+configurations.all {
+    exclude group: "com.thingclips.smart" ,module: 'thingsmart-modularCampAnno'
+    exclude group: "com.thingclips.smart", module: "thingsmart-geofence-huawei"
+    exclude group:"com.thingclips.smart",module:"thingplugin-annotation"
+    exclude group:"com.thingclips.android.module",module:"thingmodule-annotation"
+    exclude group: "com.thingclips.smart" ,module: 'thingsmart-modularCampAnno'
+    exclude group: 'commons-io', module: 'commons-io'
+    resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+
+}
+
+dependencies {
+    implementation libs.appcompat
+    implementation libs.material
+    implementation libs.activity
+    implementation libs.constraintlayout
+    implementation libs.lifecycle.livedata.ktx
+    implementation libs.lifecycle.viewmodel.ktx
+    implementation libs.navigation.fragment
+    implementation libs.navigation.ui
+    implementation libs.preference
+    implementation files('libs\\androidannotations-api-3.2.jar')
+    testImplementation libs.junit
+    androidTestImplementation libs.ext.junit
+    androidTestImplementation libs.espresso.core
+
+    implementation fileTree(dir: 'libs', include: ['*.aar'])
+    implementation 'com.alibaba:fastjson:1.1.67.android'
+    implementation 'com.squareup.okhttp3:okhttp-urlconnection:3.14.9'
+
+    // App SDK 最新稳定安卓版：
+    implementation 'com.facebook.soloader:soloader:0.10.4+'
+    implementation 'com.thingclips.smart:thingsmart:5.17.0'
+    //加载动画
+    implementation 'com.github.zzz40500:android-shapeLoadingView:1.0.3.2'
+    //gif
+    implementation 'com.github.bumptech.glide:glide:4.15.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.15.0'
+    //拓展业务包
+    implementation "com.thingclips.smart:thingsmart-expansion-sdk:5.17.0"
+
+    //banner
+    implementation 'com.youth.banner:banner:2.1.0'
+    //lottie 动画
+    implementation 'com.airbnb.android:lottie:3.7.0'
+    //ui业务包
+////    api enforcedPlatform("com.thingclips.smart:thingsmart-BizBundlesBom:5.17.0")
+//    implementation 'com.thingclips.smart:thingsmart-bizbundle-share'
+//    implementation "com.tencent.mm.opensdk:wechat-sdk-android-without-mta:6.7.0"
+//
+//    // The latest stable App SDK for Android.
+//    implementation 'com.thingclips.smart:thingsmart:5.17.0'
+//
+//    api enforcedPlatform("com.thingclips.smart:thingsmart-BizBundlesBom:5.17.0")
+//    implementation 'com.thingclips.smart:thingsmart-bizbundle-ota'
+
+    //viewpager
+    implementation 'androidx.viewpager2:viewpager2:1.0.0'
+
+//    // Retrofit 依赖
+//    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+//    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
+
+    //json解析依赖
+    implementation 'com.alibaba:fastjson:2.0.28'
+
+
+}

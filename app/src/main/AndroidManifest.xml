@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" /> <!-- 访问WiFi状态的权限 -->
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" /> <!-- 访问手机号码权限 -->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.READ_PHONE_NUMBERS" /> <!-- // Android 11 及以下版本 -->
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+
+    <application
+        android:usesCleartextTraffic="true"
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.AppCompat.Light.NoActionBar"
+        tools:replace="android:allowBackup, android:supportsRtl"
+        tools:targetApi="31">
+        <activity
+            android:name=".Tutorial_detail"
+            android:exported="false" />
+        <activity
+            android:name=".DragonBonesActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Detail2"
+            android:exported="false" />
+        <activity
+            android:name=".fragment.Music"
+            android:exported="false" />
+        <activity
+            android:name=".device.Upgrade"
+            android:exported="false" />
+        <activity
+            android:name=".device.Device"
+            android:exported="false" />
+        <activity
+            android:name=".device.DMessage"
+            android:exported="false" />
+        <activity
+            android:name=".device.Devices"
+            android:exported="false" />
+        <activity
+            android:name=".GetWifi"
+            android:exported="false" />
+        <activity
+            android:name=".init.PassLogin"
+            android:exported="false" />
+        <activity
+            android:name=".init.CaptchaLogin"
+            android:exported="false" />
+
+        <service
+            android:name=".fragment.MusicService"
+            android:enabled="true"
+            android:exported="true" />
+
+        <activity
+            android:name=".ZenbeatSetting"
+            android:exported="false" />
+        <activity
+            android:name=".Local"
+            android:exported="false" />
+        <activity
+            android:name=".init.SLighting"
+            android:exported="false" />
+        <activity
+            android:name=".init.Ssound"
+            android:exported="false" />
+        <activity
+            android:name=".init.Connect"
+            android:exported="false" />
+        <activity
+            android:name=".Supplies"
+            android:exported="false" />
+        <activity
+            android:name=".Prays"
+            android:exported="false" />
+        <activity
+            android:name=".Tutorial"
+            android:exported="false" />
+        <activity
+            android:name=".Detail"
+            android:exported="false" />
+        <activity
+            android:name=".Lighting"
+            android:exported="false" />
+        <activity
+            android:name=".init.Register"
+            android:exported="true">
+
+        </activity>
+
+        <activity
+            android:name=".init.Login"
+            android:exported="false" />
+        <activity
+            android:name=".Homepage"
+            android:exported="true" />
+
+        <meta-data
+            android:name="THING_SMART_APPKEY"
+            android:value="ehvf3dgynae88dgje5kq" />
+        <meta-data
+            android:name="THING_SMART_SECRET"
+            android:value="f8vvfg5kk3dwuu5xwjutas4c9r3a585j" />
+
+        <activity
+            android:name=".init.Welcome"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>

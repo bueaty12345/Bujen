@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+    <!-- 主形状层，向下和向右移动 -->
+    <item android:left="13dp" android:top="53dp" android:right="3.5dp" android:bottom="3.5dp">
+        <shape android:shape="rectangle">
+            <corners android:radius="15dp"/>
+            <solid android:color="#F4F0E4"/>
+        </shape>
+    </item>
+
+</layer-list>

@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/xlcd"
+    android:orientation="vertical"
+    android:paddingLeft="22.5dp"
+    android:paddingTop="20dp"
+    android:paddingRight="22.5dp"
+    android:paddingBottom="200dp">
+
+    <ImageView
+        android:id="@+id/imageView21"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="20dp"
+        app:srcCompat="@drawable/tx_wifi" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="50dp"
+        android:alpha="0.9"
+        android:background="@drawable/round"
+        android:backgroundTint="#99DED1C1"
+        android:orientation="horizontal"
+        android:padding="12dp">
+
+        <ImageView
+            android:id="@+id/imageView25"
+            android:layout_width="50dp"
+            android:layout_height="25dp"
+
+            app:srcCompat="@drawable/icon_wifi" />
+
+        <EditText
+            android:id="@+id/edit_wifiname"
+            android:layout_width="wrap_content"
+            android:layout_height="30sp"
+            android:layout_weight="1"
+            android:background="@android:color/transparent"
+            android:ems="10"
+            android:hint="输入wifi名称"
+            android:inputType="text"
+            android:paddingStart="10dp"
+            android:textSize="15sp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="20dp"
+        android:alpha="0.9"
+        android:background="@drawable/round"
+        android:backgroundTint="#99DED1C1"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:padding="12dp">
+
+
+        <ImageView
+            android:id="@+id/imageView20"
+            android:layout_width="50dp"
+            android:layout_height="25dp"
+
+            app:srcCompat="@drawable/icon_key" />
+
+        <EditText
+            android:id="@+id/edit_wifipassword"
+            android:layout_width="wrap_content"
+            android:layout_height="30sp"
+            android:layout_weight="1"
+            android:background="@android:color/transparent"
+            android:ems="10"
+            android:hint="输入wifi密码"
+            android:inputType="textPassword"
+            android:paddingStart="10dp"
+            android:textSize="15sp" />
+
+        <ImageView
+            android:id="@+id/img_eye"
+            android:layout_width="25dp"
+            android:layout_height="20dp"
+            app:srcCompat="@drawable/icon_eye_slash" />
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btn_add"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="60dp"
+        android:background="@drawable/round"
+        android:text="连接"
+        android:textColor="#FFFFFF"
+        android:textSize="16sp"
+        android:textStyle="bold" />
+
+</LinearLayout>
+

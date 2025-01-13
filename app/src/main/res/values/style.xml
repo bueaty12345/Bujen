@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="BottomDialog" parent="@android:style/Theme.Dialog">
+
+        <!-- 背景透明 -->
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <!-- 浮于Activity之上 -->
+        <item name="android:windowIsFloating">true</item>
+        <!-- 边框 -->
+        <item name="android:windowFrame">@null</item>
+        <!-- Dialog以外的区域模糊效果 -->
+        <item name="android:backgroundDimEnabled">true</item>
+        <!-- 无标题 -->
+        <item name="android:windowNoTitle">true</item>
+        <!-- 半透明 -->
+        <item name="android:windowIsTranslucent">true</item>
+        <!-- Dialog进入及退出动画 -->
+        <item name="android:windowAnimationStyle">@style/DialogAnimation</item>
+    </style>
+    <!-- ActionSheet进出动画 -->
+    <style name="DialogAnimation" parent="@android:style/Animation.Dialog">
+        <item name="android:windowEnterAnimation">@anim/dialog_in</item>
+        <item name="android:windowExitAnimation">@anim/dialog_iout</item>
+    </style>
+
+
+<!--    &lt;!&ndash; Base application theme. &ndash;&gt;-->
+<!--    <style name="Base_BizBundle_Theme" parent="AppTheme">-->
+<!--        <item name="status_font_color">@color/status_font_color</item>-->
+<!--        <item name="status_bg_color">@color/status_bg_color</item>-->
+<!--        <item name="navbar_font_color">@color/navbar_font_color</item>-->
+<!--        <item name="navbar_bg_color">@color/navbar_bg_color</item>-->
+<!--        <item name="app_bg_color">@color/app_bg_color</item>-->
+<!--        <item name="fragment_bg_color">@color/app_bg_color</item>-->
+<!--        <item name="list_primary_color">@color/list_primary_color</item>-->
+<!--        <item name="list_sub_color">@color/list_sub_color</item>-->
+<!--        <item name="list_secondary_color">@color/list_secondary_color</item>-->
+<!--        <item name="list_line_color">@color/list_line_color</item>-->
+<!--        <item name="list_bg_color">@color/list_bg_color</item>-->
+<!--        <item name="primary_button_font_color">@color/primary_button_font_color</item>-->
+<!--        <item name="primary_button_bg_color">@color/primary_button_bg_color</item>-->
+<!--        <item name="secondary_button_font_color">@color/secondary_button_font_color</item>-->
+<!--        <item name="secondary_button_bg_color">@color/secondary_button_bg_color</item>-->
+<!--        <item name="notice_font_color">@color/notice_font_color</item>-->
+<!--        <item name="notice_bg_color">@color/notice_bg_color</item>-->
+<!--        <item name="app_name">@string/app_name</item>-->
+<!--        <item name="is_splash_used">false</item>-->
+<!--        <item name="ap_default_ssid">@string/ap_mode_ssid</item>-->
+<!--        <item name="is_scan_support">@bool/is_scan_support</item>-->
+<!--        <item name="is_need_blemesh_support">@bool/is_need_blemesh_support</item>-->
+<!--        <item name="status_bg_color_75">@color/status_bg_color_75</item>-->
+<!--        <item name="status_bg_color_90">@color/status_bg_color_90</item>-->
+<!--    </style>-->
+
+    <style name="AppTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:textColorPrimary">@color/textColorPrimary</item>
+        <item name="android:colorForeground">@color/thing_theme_color_m1</item>
+        <item name="android:windowBackground">@color/white</item>
+    </style>
+
+    <style name="Dialog" parent="android:style/Theme.Dialog">
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowNoTitle">true</item>
+    </style>
+</resources>

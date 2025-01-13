@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?><resources>
+    <string name="app_name">Bujen</string>
+    <string name="title_activity_main">主活动</string>
+    <string name="title_home">首页</string>
+    <string name="title_dashboard">仪表板</string>
+    <string name="title_notifications">通知</string>
+
+    <!-- Preference Titles -->
+    <string name="messages_header">消息</string>
+    <string name="sync_header">同步</string>
+
+    <!-- Messages Preferences -->
+    <string name="signature_title">您的签名</string>
+    <string name="reply_title">默认回复操作</string>
+
+    <!-- Sync Preferences -->
+    <string name="sync_title">定期同步邮件</string>
+    <string name="attachment_title">下载附件</string>
+    <string name="attachment_summary_on">自动下载所有邮件附件</string>
+    <string name="attachment_summary_off">仅在手动请求时下载附件</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">你好，空白片段</string>
+    <string name="zenbeat">电子木鱼</string>
+    <!--    登录主页-->
+    <string name="login_btn1">本机号码登录/注册</string>
+    <string name="login_btn2">其他手机号登录</string>
+    <string name="login_text1">其他登录方式</string>
+    <string name="login_text2">提供认证服务</string>
+    <string name="get_success">获取成功</string>
+    <string name="login_text3">无法获取手机号码</string>
+    <string name="login_text4">未给与权限，不能获取手机号码</string>
+    <!--    登录内页-->
+    <string name="edit_phone">请输入手机号</string>
+    <string name="edit_password">请输入密码</string>
+    <string name="edit_code">请输入验证码</string>
+    <string name="hq_code">获取验证码</string>
+    <string name="code_success">获取验证码成功</string>
+    <string name="wj_password">忘记密码</string>
+    <string name="login_password">密码登录</string>
+    <string name="login">立即登录</string>
+    <string name="login2_text1">未注册的手机号验证后即可完成注册</string>
+    <string name="login_success">登录成功</string>
+    <string name="login_reg">正在为您注册</string>
+    <!--    注册-->
+    <string name="sz_password">设置密码</string>
+    <string name="reg_text1">请输入8-16位，至少包含数字、大小写字母的两种</string>
+    <string name="finish">完成</string>
+    <string name="no_password">密码不合规</string>
+    <string name="reg_succes">注册成功</string>
+    <!--    主页-->
+    <string name="home">首页</string>
+    <string name="mall">商城</string>
+    <string name="mine">我的</string>
+    <string name="sound_effects">音效</string>
+    <string name="tutorial">教程</string>
+    <string name="pray">祈祷</string>
+    <string name="consumables">耗材</string>
+    <string name="recommend">甄选推荐</string>
+
+</resources>
