@@ -13,7 +13,6 @@
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
 
     <application
-        android:usesCleartextTraffic="true"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -22,8 +21,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar"
+        android:usesCleartextTraffic="true"
         tools:replace="android:allowBackup, android:supportsRtl"
         tools:targetApi="31">
+        <activity
+            android:name=".pary.ParyWrite"
+            android:exported="false" />
         <activity
             android:name=".Tutorial_detail"
             android:exported="false" />
@@ -95,10 +98,7 @@
             android:exported="false" />
         <activity
             android:name=".init.Register"
-            android:exported="true">
-
-        </activity>
-
+            android:exported="true"></activity>
         <activity
             android:name=".init.Login"
             android:exported="false" />
