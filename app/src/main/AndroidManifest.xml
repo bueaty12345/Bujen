@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools" >
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" /> <!-- 访问WiFi状态的权限 -->
@@ -23,7 +23,10 @@
         android:theme="@style/Theme.AppCompat.Light.NoActionBar"
         android:usesCleartextTraffic="true"
         tools:replace="android:allowBackup, android:supportsRtl"
-        tools:targetApi="31">
+        tools:targetApi="31" >
+        <activity
+            android:name=".pary.Owned"
+            android:exported="false" />
         <activity
             android:name=".pary.ParyWrite"
             android:exported="false" />
@@ -98,7 +101,7 @@
             android:exported="false" />
         <activity
             android:name=".init.Register"
-            android:exported="true"></activity>
+            android:exported="true" />
         <activity
             android:name=".init.Login"
             android:exported="false" />
@@ -115,7 +118,7 @@
 
         <activity
             android:name=".init.Welcome"
-            android:exported="true">
+            android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
