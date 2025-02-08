@@ -12,7 +12,7 @@ import androidx.core.view.WindowInsetsCompat;
 import com.yunsong.bujen.R;
 
 public class Owned extends AppCompatActivity {
-    Button btn_write;
+    Button btn_write,btn_write2,btn_write3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,9 +29,20 @@ public class Owned extends AppCompatActivity {
 
     private void intiView() {
         btn_write = findViewById(R.id.btn_write);
+        btn_write2 = findViewById(R.id.btn_write2);
+        btn_write3 = findViewById(R.id.btn_write3);
+        Intent intent = new Intent(Owned.this, ParyWrite.class);
         btn_write.setOnClickListener(v -> {
-            startActivity(new Intent(Owned.this, ParyWrite.class));
+            intent.putExtra("type","纯文");
+            startActivity(intent);
         });
-
+        btn_write2.setOnClickListener(v -> {
+            intent.putExtra("type","图文");
+            startActivity(intent);
+        });
+        btn_write3.setOnClickListener(v -> {
+            intent.putExtra("type","语音");
+            startActivity(intent);
+        });
     }
 }

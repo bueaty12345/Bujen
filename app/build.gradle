@@ -115,23 +115,9 @@ dependencies {
     implementation 'com.youth.banner:banner:2.1.0'
     //lottie 动画
     implementation 'com.airbnb.android:lottie:3.7.0'
-    //ui业务包
-////    api enforcedPlatform("com.thingclips.smart:thingsmart-BizBundlesBom:5.17.0")
-//    implementation 'com.thingclips.smart:thingsmart-bizbundle-share'
-//    implementation "com.tencent.mm.opensdk:wechat-sdk-android-without-mta:6.7.0"
-//
-//    // The latest stable App SDK for Android.
-//    implementation 'com.thingclips.smart:thingsmart:5.17.0'
-//
-//    api enforcedPlatform("com.thingclips.smart:thingsmart-BizBundlesBom:5.17.0")
-//    implementation 'com.thingclips.smart:thingsmart-bizbundle-ota'
 
     //viewpager
     implementation 'androidx.viewpager2:viewpager2:1.0.0'
-
-//    // Retrofit 依赖
-//    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
-//    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
 
     //json解析依赖
     implementation 'com.alibaba:fastjson:2.0.28'

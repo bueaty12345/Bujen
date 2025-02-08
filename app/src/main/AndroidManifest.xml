@@ -2,17 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" >
 
-<!--    <provider-->
-<!--        android:name="androidx.core.content.FileProvider"-->
-<!--        android:authorities="com.yunsong.bujen.fileprovider"-->
-<!--        android:exported="false"-->
-<!--        android:grantUriPermissions="true">-->
-<!--        <meta-data-->
-<!--            android:name="android.support.FILE_PROVIDER_PATHS"-->
-<!--            android:resource="@xml/file_paths" />-->
-<!--    </provider>-->
-
-
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" /> <!-- 访问WiFi状态的权限 -->
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
@@ -27,6 +16,7 @@
     <uses-permission android:name="android.permission.CAMERA" /><!-- 相机的权限 -->
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
 
 
     <application
