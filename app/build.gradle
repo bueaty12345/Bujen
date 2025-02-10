@@ -122,5 +122,9 @@ dependencies {
     //json解析依赖
     implementation 'com.alibaba:fastjson:2.0.28'
 
+    //高斯模糊
+    implementation 'jp.wasabeef:glide-transformations:3.0.1'
+
+
 
 }

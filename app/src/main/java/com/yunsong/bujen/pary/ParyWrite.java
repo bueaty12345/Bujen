@@ -283,6 +283,7 @@ public class ParyWrite extends AppCompatActivity implements View.OnClickListener
         img_stop.setOnClickListener(this);
         txt_cancel.setOnClickListener(v->{
             audioRecorder.cancelRecording();
+            handler.removeCallbacks(updateTimerRunnable); // 停止更新
             bottomSheetDialog.dismiss();
         });
 

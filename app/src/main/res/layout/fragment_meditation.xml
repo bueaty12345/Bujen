@@ -13,7 +13,7 @@
         android:orientation="vertical">
 
         <ImageView
-            android:id="@+id/img_pray"
+            android:id="@+id/img_med"
             android:layout_width="match_parent"
             android:layout_height="330dp"
             android:layout_marginBottom="30dp"
