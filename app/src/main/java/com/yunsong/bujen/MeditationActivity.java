@@ -81,7 +81,7 @@ public class MeditationActivity extends AppCompatActivity implements View.OnClic
                         float deltaY =initialY - event.getY();
                         // 判断是否为下滑事件
                         if (deltaY > 100) {  // 当滑动距离超过阈值（比如100px）
-                            startActivity(new Intent(MeditationActivity.this, Local.class));
+                            startActivity(new Intent(MeditationActivity.this, MedLocad.class));
                             overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_down);
                         }
                         break;

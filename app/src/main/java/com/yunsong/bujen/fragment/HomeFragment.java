@@ -162,90 +162,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
 
         // 开始更新
         handler.post(runnable);
-        //为滑动条添加事件监听，每个控件不同果然点击事件方法名都不同
-//        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-//            //这一行注解是保证API在KITKAT以上的模拟器才能顺利运行，也就是19以上
-//            @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-//            @Override
-//            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-//                //进当滑动条到末端时，结束动画
-//
-//            }
-//
-//            @Override
-//            //滑动条开始滑动时调用
-//            public void onStartTrackingTouch(SeekBar seekBar) {
-//            }
-//            @Override
-//            //滑动条停止滑动时调用
-//            public void onStopTrackingTouch(SeekBar seekBar) {
-//                //根据拖动的进度改变音乐播放进度
-//                int progress=seekBar.getProgress();//获取seekBar的进度
-//                musicControl.seekTo(progress);//改变播放进度
-//            }
-//
-//        });
 
         return view;
     }
-//    //handler机制，可以理解为线程间的通信，我获取到一个信息，然后把这个信息告诉你，就这么简单
-//    @SuppressLint("HandlerLeak")
-//    public static Handler handler=new Handler(){//创建消息处理器对象
-//        //在主线程中处理从子线程发送过来的消息
-//        @Override
-//        public void handleMessage(Message msg){
-//            Bundle bundle=msg.getData();//获取从子线程发送过来的音乐播放进度
-//            //获取当前进度currentPosition和总时长duration
-//            int duration=bundle.getInt("duration");
-//            int currentPosition=bundle.getInt("currentPosition");
-//            //对进度条进行设置
-//            seekBar.setMax(duration);
-//            seekBar.setProgress(currentPosition);
-//            //歌曲是多少分钟多少秒钟
-//            int minute=duration/1000/60;
-//            int second=duration/1000%60;
-//            String strMinute=null;
-//            String strSecond=null;
-//            if(minute<10){//如果歌曲的时间中的分钟小于10
-//                strMinute="0"+minute;//在分钟的前面加一个0
-//            }else{
-//                strMinute=minute+"";
-//            }
-//            if (second<10){//如果歌曲中的秒钟小于10
-//                strSecond="0"+second;//在秒钟前面加一个0
-//            }else{
-//                strSecond=second+"";
-//            }
-//            //这里就显示了歌曲总时长
-//            txt_endTime.setText(strMinute+":"+strSecond);
-//            //歌曲当前播放时长
-//            minute=currentPosition/1000/60;
-//            second=currentPosition/1000%60;
-//            if(minute<10){//如果歌曲的时间中的分钟小于10
-//                strMinute="0"+minute;//在分钟的前面加一个0
-//            }else{
-//                strMinute=minute+" ";
-//            }
-//            if (second<10){//如果歌曲中的秒钟小于10
-//                strSecond="0"+second;//在秒钟前面加一个0
-//            }else{
-//                strSecond=second+" ";
-//            }
-//            //显示当前歌曲已经播放的时间
-//            txt_stateTime.setText(strMinute+":"+strSecond);
-//            //设置播放按键
-//            if(bundle.getBoolean("play"))
-//            {
-//                img_bf.setImageResource(R.drawable.home_start);// 音频正在播放
-//                img_bf1.setImageResource(R.drawable.home_start);// 音频正在播放
-//            }
-//            else {
-//                img_bf.setImageResource(R.drawable.home_stop);//音频停止
-//                img_bf1.setImageResource(R.drawable.home_stop);//音频停止
-//            }
-//
-//        }
-//    };
 
 
     private void incrementScore() {

@@ -32,6 +32,9 @@
         tools:replace="android:allowBackup, android:supportsRtl"
         tools:targetApi="31">
         <activity
+            android:name=".MedLocad"
+            android:exported="false" />
+        <activity
             android:name=".MeditationActivity"
             android:exported="false" />
         <activity

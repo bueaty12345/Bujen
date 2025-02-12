@@ -44,7 +44,10 @@
         android:layout_width="match_parent"
         android:layout_height="191dp"
         android:orientation="vertical"
-        android:padding="25dp"
+        android:paddingLeft="25dp"
+        android:paddingTop="25dp"
+        android:paddingRight="25dp"
+        android:paddingBottom="20dp"
         app:layout_constraintBottom_toTopOf="@+id/linearLayout19"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
@@ -95,14 +98,14 @@
             <ImageView
                 android:id="@+id/img_reset"
                 android:layout_width="wrap_content"
-                android:layout_height="24dp"
+                android:layout_height="22dp"
                 android:layout_weight="1"
                 android:src="@drawable/med_reset" />
 
             <ImageView
                 android:id="@+id/img_previous"
                 android:layout_width="wrap_content"
-                android:layout_height="24dp"
+                android:layout_height="18dp"
                 android:layout_weight="1"
                 android:src="@drawable/med_previous" />
 
@@ -116,7 +119,7 @@
             <ImageView
                 android:id="@+id/img_next"
                 android:layout_width="wrap_content"
-                android:layout_height="24dp"
+                android:layout_height="18dp"
                 android:layout_weight="1"
                 android:src="@drawable/med_next" />
 
@@ -134,6 +137,7 @@
         android:id="@+id/linearLayout19"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
         android:gravity="center"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -142,12 +146,12 @@
 
         <com.airbnb.lottie.LottieAnimationView
             android:id="@+id/lottie_breathe"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:visibility="visible"
             app:lottie_autoPlay="true"
             app:lottie_loop="true"
-            app:lottie_rawRes="@raw/qi" />
+            app:lottie_rawRes="@raw/breathing" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
