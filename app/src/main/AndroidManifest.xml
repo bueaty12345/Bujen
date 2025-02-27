@@ -44,7 +44,10 @@
             android:name=".pary.ParyWrite"
             android:exported="false" />
         <activity
-            android:name=".Tutorial_detail"
+            android:name=".TutorialDetail"
+            android:exported="false" />
+        <activity
+            android:name=".PraysDetail"
             android:exported="false" />
         <activity
             android:name=".DragonBonesActivity"

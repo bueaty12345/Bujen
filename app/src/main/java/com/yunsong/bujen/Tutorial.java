@@ -80,7 +80,7 @@ public class Tutorial extends AppCompatActivity {
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                startActivity(new Intent(Tutorial.this,Tutorial_detail.class));
+                startActivity(new Intent(Tutorial.this, TutorialDetail.class));
             }
         });
     }

@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
     <androidx.cardview.widget.CardView
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
         android:layout_marginTop="10dp"
+        android:layout_marginRight="5dp"
         android:layout_marginBottom="10dp"
         android:background="#C4C9BD"
         app:cardCornerRadius="16dp"
@@ -23,7 +25,7 @@
             <ImageView
                 android:id="@+id/img_rectu"
                 android:layout_width="wrap_content"
-                android:layout_height="191dp"
+                android:layout_height="147dp"
                 app:srcCompat="@drawable/parys_bg" />
 
             <LinearLayout
@@ -48,15 +50,42 @@
                         android:gravity="center"
                         android:text="平安喜乐"
                         android:textColor="#000000"
-                        android:textSize="20sp"
+                        android:textSize="14sp"
                         android:textStyle="bold" />
 
                     <ImageView
                         android:id="@+id/img_hart"
-                        android:layout_width="50dp"
+                        android:layout_width="14dp"
                         android:layout_height="20dp"
                         android:layout_gravity="center"
                         app:srcCompat="@drawable/collection_2" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center|right"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:id="@+id/img_star"
+                            android:layout_width="15dp"
+                            android:layout_height="11dp"
+                            app:srcCompat="@drawable/icon_star" />
+
+                        <TextView
+                            android:id="@+id/txt_star"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="4.8"
+                            android:textSize="10sp" />
+
+                        <ImageView
+                            android:id="@+id/img_go2"
+                            android:layout_width="21dp"
+                            android:layout_height="20dp"
+                            android:scaleX="-1"
+                            app:srcCompat="@drawable/back" />
+                    </LinearLayout>
 
                 </LinearLayout>
 
@@ -72,22 +101,11 @@
                         android:layout_marginTop="5dp"
                         android:layout_weight="1"
                         android:gravity="center|left"
-                        android:text="功德值：9500"
+                        android:text="消耗功德：9500"
                         android:textColor="#000000"
-                        android:textSize="18sp"
+                        android:textSize="14sp"
                         android:textStyle="bold" />
 
-                    <Button
-                        android:id="@+id/btn_dh"
-                        android:layout_width="100dp"
-                        android:layout_height="match_parent"
-                        android:layout_marginLeft="10dp"
-                        android:layout_marginRight="20dp"
-                        android:layout_marginBottom="5dp"
-                        android:background="@drawable/round"
-                        android:backgroundTint="#ECE0D2"
-                        android:text="加入祈福"
-                        android:textColor="#49392D" />
                 </LinearLayout>
 
             </LinearLayout>

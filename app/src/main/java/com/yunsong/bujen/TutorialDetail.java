@@ -22,7 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Tutorial_detail extends AppCompatActivity {
+public class TutorialDetail extends AppCompatActivity {
 LinearLayout lin_sk;
 VideoView videoView;
 GridView gridView;

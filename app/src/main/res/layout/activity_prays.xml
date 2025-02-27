@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/y_bg1"
+    android:background="@drawable/pary_bg"
     tools:context=".Prays">
 
     <LinearLayout
@@ -54,22 +54,22 @@
             <com.google.android.material.tabs.TabItem
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="广场" />
+                android:text="基础" />
 
             <com.google.android.material.tabs.TabItem
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="已完成" />
+                android:text="进阶" />
         </com.google.android.material.tabs.TabLayout>
 
-        <ListView
-            android:id="@+id/list_tutorial"
+        <GridView
+            android:id="@+id/grid_parys"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
-            android:divider="@android:color/transparent"
-            android:listSelector="@android:color/transparent" />
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:listSelector="@android:color/transparent"
+            android:numColumns="2" />
 
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

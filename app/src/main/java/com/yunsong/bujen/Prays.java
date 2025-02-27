@@ -1,9 +1,12 @@
 package com.yunsong.bujen;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.ListView;
+import android.widget.SimpleAdapter;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -11,7 +14,6 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.yunsong.bujen.adapter.PraysAdapter;
 import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
@@ -21,7 +23,7 @@ import java.util.Map;
 
 public class Prays extends AppCompatActivity {
     TabLayout tab_prays;
-    ListView listView;
+    GridView gridView;
     ImageView img_back;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,10 +42,10 @@ public class Prays extends AppCompatActivity {
                 // 当选项卡被选中时更新 TextView 内容
                 switch (tab.getPosition()) {
                     case 0:
-                        setSquare();//广场
+                        setSquare();//基础
                         break;
                     case 1:
-                        setDone();//已完成
+                        setDone();//进阶
                         break;
                 }
             }
@@ -63,10 +65,16 @@ public class Prays extends AppCompatActivity {
                 finish();
             }
         });
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                startActivity(new Intent(Prays.this, PraysDetail.class));
+            }
+        });
     }
     private void init(){
         tab_prays=findViewById(R.id.tab_prays);
-        listView=findViewById(R.id.list_tutorial);
+        gridView=findViewById(R.id.grid_parys);
         img_back=findViewById(R.id.img_back);
         setSquare();
     }
@@ -75,14 +83,17 @@ public class Prays extends AppCompatActivity {
         for (int i = 1; i <= 2; i++) {
             Map<String, String> item = new HashMap<>();
             item.put("name", "身体健康 " + i);
-            item.put("gdd", "");
+            item.put("gdd", "需功德点：" + i*1000);
             item.put("sc","0");
             item.put("author","");
             item.put("dh","已完成");
             data.add(item);
         }
-        PraysAdapter adapter = new PraysAdapter(this, data);
-        listView.setAdapter(adapter);
+        // 创建适配器
+        String[] from = {"name", "gdd"}; // 数据源的键
+        int[] to = {R.id.txt_name, R.id.txt_gdd}; // 布局文件中的视图 ID
+        SimpleAdapter adapter = new SimpleAdapter(this, data, R.layout.item_prays, from, to);
+        gridView.setAdapter(adapter);
     }
 
 
@@ -91,7 +102,7 @@ public class Prays extends AppCompatActivity {
         List<Map<String, String>> data = new ArrayList<>();
         for (int i = 1; i <= 8; i++) {
             Map<String, String> item = new HashMap<>();
-            item.put("name", "身体健康 " + i);
+            item.put("name", "平安喜乐 " + i);
             item.put("gdd", "需功德点：" + i*1000);
             item.put("sc","0");
             item.put("author","");
@@ -100,8 +111,10 @@ public class Prays extends AppCompatActivity {
         }
 
         // 创建适配器
-        PraysAdapter adapter = new PraysAdapter(this, data);
-        listView.setAdapter(adapter);
+        String[] from = {"name", "gdd"}; // 数据源的键
+        int[] to = {R.id.txt_name, R.id.txt_gdd}; // 布局文件中的视图 ID
+        SimpleAdapter adapter = new SimpleAdapter(this, data, R.layout.item_prays, from, to);
+        gridView.setAdapter(adapter);
 
     }
 }
