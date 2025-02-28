@@ -12,6 +12,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.yunsong.bujen.ConfirmDialog;
+import com.yunsong.bujen.ZenbeatSetting;
 import com.yunsong.bujen.device.Devices;
 import com.yunsong.bujen.init.Login;
 import com.yunsong.bujen.R;
@@ -29,6 +30,7 @@ public class SettingsFragment extends Fragment implements View.OnClickListener{
     LinearLayout lay_logout,lay_quit,lay_sblb;
     private ConfirmDialog dialog;
 
+    LinearLayout lin_sound,lin_device,lin_collect;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -81,12 +83,29 @@ public class SettingsFragment extends Fragment implements View.OnClickListener{
         lay_quit.setOnClickListener(this);
         lay_logout.setOnClickListener(this);
         lay_sblb.setOnClickListener(this);
+
+
+        lin_sound=view.findViewById(R.id.lin_sound);
+        lin_device=view.findViewById(R.id.lin_device);
+        lin_collect=view.findViewById(R.id.lin_collect);
+        lin_sound.setOnClickListener(this);
+        lin_device.setOnClickListener(this);
+        lin_collect.setOnClickListener(this);
         return view;
     }
 
     @Override
     public void onClick(View view) {
         switch(view.getId()){
+            case R.id.lin_sound:
+                startActivity(new Intent(getActivity(), ZenbeatSetting.class));
+                break;
+           case R.id.lin_device:
+                startActivity(new Intent(getActivity(), Devices.class));
+                break;
+           case R.id.lin_collect:
+//                startActivity(new Intent(getActivity(), Resource.class));
+                break;
             case R.id.lay_logout:
                 showDialog("注销","一周后才会真正注销，注销前登录则会取消注销，确定注销吗？");
 //                startActivity(new Intent(getActivity(), Connect.class));

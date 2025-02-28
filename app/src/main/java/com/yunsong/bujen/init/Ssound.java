@@ -76,6 +76,7 @@ public class Ssound extends AppCompatActivity implements View.OnClickListener{
                 img_kq.setVisibility(View.INVISIBLE);
                 lin_kqbj.setVisibility(View.GONE);
                 lin_jybg.setVisibility(View.VISIBLE);
+                setSound("105","zero_gear");
                 break;
             case R.id.lin_kq:
                 lin_kq.setBackgroundResource(R.drawable.roundgrayb1);
@@ -84,6 +85,7 @@ public class Ssound extends AppCompatActivity implements View.OnClickListener{
                 img_jy.setVisibility(View.INVISIBLE);
                 lin_kqbj.setVisibility(View.VISIBLE);
                 lin_jybg.setVisibility(View.GONE);
+                setSound("105","one_gaer");
                 break;
             case R.id.btn_next:
                 startActivity(new Intent(Ssound.this,SLighting.class));
@@ -97,30 +99,34 @@ public class Ssound extends AppCompatActivity implements View.OnClickListener{
                 setSyNull();
                 lin_ding.setBackgroundResource(R.drawable.roundgrayb);
                 img_ding.setVisibility(View.VISIBLE);
-                setSound("five_voice");
+                setSound("103","five_voice");
                 break;
             case R.id.lin_da:
                 setSyNull();
                 lin_da.setBackgroundResource(R.drawable.roundgrayb);
                 img_da.setVisibility(View.VISIBLE);
-                setSound("two_voice");
+                setSound("103","two_voice");
                 break;
             case R.id.lin_gua:
                 setSyNull();
                 lin_gua.setBackgroundResource(R.drawable.roundgrayb);
                 img_gua.setVisibility(View.VISIBLE);
-                setSound("three_voice");
+                setSound("103","three_voice");
                 break;
             case R.id.lin_don:
                 setSyNull();
                 lin_don.setBackgroundResource(R.drawable.roundgrayb);
                 img_don.setVisibility(View.VISIBLE);
-                setSound("four_voice");
+                setSound("103","four_voice");
                 break;
         }
     }
-    private void setSound(String Sound) {
-        mDevice.publishDps("{\"103\":\""+Sound+"\"}", new IResultCallback() {
+    private void setSound(String id,String Sound) {
+        if (mDevice==null){
+            Toast.makeText(getContext(), "设备未连接", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        mDevice.publishDps("{\""+id+"\":\""+Sound+"\"}", new IResultCallback() {
             @Override
             public void onError(String code, String error) {
                 Toast.makeText(getContext(), "设置失败", Toast.LENGTH_SHORT).show();

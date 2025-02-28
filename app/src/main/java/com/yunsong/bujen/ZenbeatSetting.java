@@ -1,5 +1,8 @@
 package com.yunsong.bujen;
 
+import static com.thingclips.sdk.blelib.utils.BluetoothUtils.getContext;
+import static com.yunsong.bujen.Homepage.mDevice;
+
 import android.os.Bundle;
 import android.view.View;
 import android.widget.CompoundButton;
@@ -8,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SimpleAdapter;
 import android.widget.Switch;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,16 +19,17 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.thingclips.smart.sdk.api.IResultCallback;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ZenbeatSetting extends AppCompatActivity {
-    GridView gridView;
-    ImageView img_back,img_sy;
+public class ZenbeatSetting extends AppCompatActivity implements View.OnClickListener{
+    ImageView img_back,img_sy,img_ding,img_dong,img_fc,img_jk,img_tmd;
     Switch aSwitch;
-    LinearLayout lin_sy;
+    LinearLayout lin_sy,lin_yl,lin_ding,lin_dong,lin_fc,lin_jk,lin_tmd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,42 +42,108 @@ public class ZenbeatSetting extends AppCompatActivity {
             return insets;
         });
         init();
-        img_back.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-            }
-        });
     }
     private void init(){
-        gridView=findViewById(R.id.grid_setting);
         img_back=findViewById(R.id.img_back);
         img_sy=findViewById(R.id.img_sy);
         aSwitch=findViewById(R.id.switch_sy);
         lin_sy=findViewById(R.id.lin_sy);
-        setLight();
+        lin_yl=findViewById(R.id.lin_yl);
+        lin_ding=findViewById(R.id.lin_ding);
+        lin_dong=findViewById(R.id.lin_dong);
+        lin_fc=findViewById(R.id.lin_fc);
+        lin_jk=findViewById(R.id.lin_jk);
+        lin_tmd=findViewById(R.id.lin_tmd);
+        img_ding=findViewById(R.id.img_ding);
+        img_dong=findViewById(R.id.img_dong);
+        img_fc=findViewById(R.id.img_fc);
+        img_jk=findViewById(R.id.img_jk);
+        img_tmd=findViewById(R.id.img_tmd);
+
+        lin_ding.setOnClickListener(this);
+        lin_dong.setOnClickListener(this);
+        lin_fc.setOnClickListener(this);
+        lin_jk.setOnClickListener(this);
+        lin_tmd.setOnClickListener(this);
+        img_back.setOnClickListener(this);
+
         aSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if(b) {lin_sy.setAlpha(1f);img_sy.setImageResource(R.drawable.laba);}
-                else {lin_sy.setAlpha(0.3f);img_sy.setImageResource(R.drawable.erji);}
+                if(b) {lin_sy.setVisibility(View.VISIBLE);
+                    lin_yl.setVisibility(View.VISIBLE);
+                    img_sy.setImageResource(R.drawable.laba);
+                    setSound("105","one_gaer");}
+                else {
+                    lin_sy.setVisibility(View.GONE);
+                    lin_yl.setVisibility(View.GONE);
+                    img_sy.setImageResource(R.drawable.erji);
+                    setSound("105","zero_gear");
+                    }
             }
         });
     }
 
-    private void setLight() {
-        // 准备数据
-        List<Map<String, Object>> data = new ArrayList<>();
-        for (int i = 1; i <= 6; i++) {
-            Map<String, Object> item = new HashMap<>();
-            item.put("name", "声音 " + i);
-            data.add(item);
-        }
+    private void setSyNull() {
+        img_ding.setVisibility(View.INVISIBLE);
+        img_dong.setVisibility(View.INVISIBLE);
+        img_fc.setVisibility(View.INVISIBLE);
+        img_jk.setVisibility(View.INVISIBLE);
+        img_tmd.setVisibility(View.INVISIBLE);
 
-        // 创建适配器
-        String[] from = {"name"}; // 数据源的键
-        int[] to = {R.id.txt_yy}; // 布局文件中的视图 ID
-        SimpleAdapter adapter = new SimpleAdapter(this, data, R.layout.item_ls, from, to);
-        gridView.setAdapter(adapter);
     }
+
+    private void setSound(String id,String Sound) {
+        if (mDevice==null){
+            Toast.makeText(getContext(), "设备未连接", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        mDevice.publishDps("{\""+id+"\":\""+Sound+"\"}", new IResultCallback() {
+            @Override
+            public void onError(String code, String error) {
+                Toast.makeText(getContext(), "设置失败", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onSuccess() {
+                Toast.makeText(getContext(), "设置成功", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()){
+            case R.id.img_back:
+                finish();
+                break;
+            case R.id.lin_ding:
+                setSyNull();
+                setSound("103","one_voice");
+                img_ding.setVisibility(View.VISIBLE);
+                break;
+            case R.id.lin_dong:
+                setSyNull();
+                setSound("103","two_voice");
+                img_dong.setVisibility(View.VISIBLE);
+                break;
+            case R.id.lin_fc:
+                setSyNull();
+                setSound("103","three_voice");
+                img_fc.setVisibility(View.VISIBLE);
+                break;
+            case R.id.lin_jk:
+                setSyNull();
+                setSound("103","four_voice");
+                img_jk.setVisibility(View.VISIBLE);
+                break;
+            case R.id.lin_tmd:
+                setSyNull();
+                setSound("103","five_voice");
+                img_tmd.setVisibility(View.VISIBLE);
+                break;
+        }
+    }
+
+
 }

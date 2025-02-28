@@ -3,6 +3,7 @@ package com.yunsong.bujen.init;
 import static com.thingclips.sdk.blelib.utils.BluetoothUtils.isBluetoothEnabled;
 
 import android.Manifest;
+import android.bluetooth.BluetoothAdapter;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -66,6 +67,18 @@ public class Connect extends AppCompatActivity implements View.OnClickListener{
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.btn_add:
+                BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+                if (bluetoothAdapter == null) {
+                    // 设备不支持蓝牙
+                    Toast.makeText(this, "该设备不支持蓝牙", Toast.LENGTH_SHORT).show();
+                } else {
+                    if (!bluetoothAdapter.isEnabled()) {
+                        // 蓝牙未开启，跳转到开启蓝牙界面
+                        Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                        startActivityForResult(enableBtIntent, 1);  // 1 是请求码
+                    }
+                }
+
                 if (btn_add.getText().equals("开始搜索")) {
                     // 检查并请求蓝牙和位置权限
                     if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
