@@ -10,6 +10,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.airbnb.lottie.LottieAnimationView;
+
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link MeditationFragment#newInstance} factory method to
@@ -17,7 +19,7 @@ import android.widget.ImageView;
  */
 public class MeditationFragment extends Fragment {
     View view;
-    ImageView img_med;
+    LottieAnimationView lottie_med;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -64,8 +66,8 @@ public class MeditationFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         view=inflater.inflate(R.layout.fragment_meditation, container, false);
-        img_med=view.findViewById(R.id.img_med);
-        img_med.setOnClickListener(v->{
+        lottie_med=view.findViewById(R.id.lottie_med);
+        lottie_med.setOnClickListener(v->{
             startActivity(new Intent(getContext(), MeditationActivity.class));
         });
         return view;

@@ -24,9 +24,11 @@ import com.yunsong.bujen.R;
 
 public class Ssound extends AppCompatActivity implements View.OnClickListener{
     LinearLayout lin_jy,lin_kq, lin_kqbj,lin_ding,lin_da,lin_gua,lin_don,lin_jybg;
-    ImageView img_jy,img_kq,img_ding,img_da,img_gua,img_don;
+    ImageView img_jy,img_kq,img_ding,img_da,img_gua,img_don,vol_minus,vol_plus;
     Button btn_next;
     TextView txt_skip;
+    static int volume=1;
+    String[] sound={"zero_gear", "one_gear", "two_gear", "three_gear", "four_gear", "max_gear"};
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,6 +48,8 @@ public class Ssound extends AppCompatActivity implements View.OnClickListener{
         lin_da.setOnClickListener(this);
         lin_gua.setOnClickListener(this);
         lin_don.setOnClickListener(this);
+        vol_minus.setOnClickListener(this);
+        vol_plus.setOnClickListener(this);
     }
     private void init(){
         lin_jy=findViewById(R.id.lin_jy);
@@ -64,6 +68,8 @@ public class Ssound extends AppCompatActivity implements View.OnClickListener{
         img_gua=findViewById(R.id.img_gua);
         img_don=findViewById(R.id.img_don);
         lin_jybg=findViewById(R.id.lin_jybg);
+        vol_minus=findViewById(R.id.volume_minus);
+        vol_plus=findViewById(R.id.volume_plus);
     }
 
     @Override
@@ -118,6 +124,18 @@ public class Ssound extends AppCompatActivity implements View.OnClickListener{
                 lin_don.setBackgroundResource(R.drawable.roundgrayb);
                 img_don.setVisibility(View.VISIBLE);
                 setSound("103","four_voice");
+                break;
+            case R.id.volume_minus:
+                if (volume>1){
+                    volume--;
+                    setSound("105",sound[volume]);
+                }
+                break;
+            case R.id.volume_plus:
+                if (volume<5){
+                    volume++;
+                    setSound("105",sound[volume]);
+                }
                 break;
         }
     }
