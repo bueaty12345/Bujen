@@ -47,7 +47,7 @@ public class Homepage extends AppCompatActivity implements View.OnClickListener 
     LinearLayout ly_center;
     public static RelativeLayout rl_bg;
     public static LinearLayout ly_tab;
-    private FragmentManager fManager;
+    private FragmentManager fManager;//用于管理 Fragment 的切换
     public static long homeId;
     public static IThingDevice mDevice=null;
     public static String homeColor="#ECE0D2";
@@ -55,11 +55,11 @@ public class Homepage extends AppCompatActivity implements View.OnClickListener 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
+        EdgeToEdge.enable(this);//启用沉浸式（边缘到边缘）布局
         setContentView(R.layout.activity_homepage);
         init();
         //获取家庭信息
-        getHomeMassage();
+        getHomeMessage();
         txt_home.setOnClickListener(this);
         txt_center.setOnClickListener(this);
         txt_setting.setOnClickListener(this);
@@ -67,19 +67,13 @@ public class Homepage extends AppCompatActivity implements View.OnClickListener 
 
     }
 
-    private void getDeviceMassage() {
+    private void getDeviceMessage() {
         ThingHomeSdk.newHomeInstance(homeId).getHomeDetail(new IThingHomeResultCallback() {
             @Override
             public void onSuccess(HomeBean homeBean) {
                 if(homeBean.getDeviceList().size()>0){
                     Toast.makeText(Homepage.this, "设备获取成功", Toast.LENGTH_SHORT).show();
-
-                    //设置默认Fragment
-//                    txt_home.setSelected(true);
-//                    HomeFragment homeFragment=new HomeFragment();
-//                    fManager.beginTransaction()
-//                            .replace(R.id.ly_content, homeFragment)
-//                            .commit();
+                    //获取第一个设备id
                     mDevice = ThingHomeSdk.newDeviceInstance(homeBean.getDeviceList().get(0).getDevId());
                     mDevice.registerDevListener(new IDevListener() {
                         /**
@@ -88,7 +82,7 @@ public class Homepage extends AppCompatActivity implements View.OnClickListener 
                          * dpStr 设备发生变动的功能点，为 JSON 字符串，数据格式：{"101": true}
                          */
                         @Override
-                        public void onDpUpdate(String devId, String dpStr){
+                        public void onDpUpdate(String devId, String dpStr){//表示功能点的数据更新
                             Toast.makeText(Homepage.this, "00"+dpStr, Toast.LENGTH_SHORT).show();
                             JSONObject jsonObject = null;
                             try {
@@ -105,7 +99,7 @@ public class Homepage extends AppCompatActivity implements View.OnClickListener 
                                 throw new RuntimeException(e);
                             }
                             if (value101){
-                                gdd_cont++;
+                                gdd_cont++;//gdd_cont是全局变量
                             }
 //                            txt_gdd.setText(gdd_cont+"");
                         };
@@ -166,22 +160,21 @@ public class Homepage extends AppCompatActivity implements View.OnClickListener 
 
     }
 
-    private void getHomeMassage() {
+    private void getHomeMessage() {
+        //异步获取当前用户下的所有“家庭”列表，并通过回调接口返回。
         ThingHomeSdk.getHomeManagerInstance().queryHomeList(new IThingGetHomeListCallback() {
         @Override
         public void onSuccess(List<HomeBean> homeBeans) {
             // do something
-            homeId=homeBeans.get(0).getHomeId();
+            homeId=homeBeans.get(0).getHomeId();//// 获取第一个家庭的 ID
             //初始化家庭设备
-            getDeviceMassage();
+            getDeviceMessage();
         }
         @Override
         public void onError(String errorCode, String error) {
             // do something
         }
     });
-
-
     }
 
     private void init(){
@@ -193,18 +186,19 @@ public class Homepage extends AppCompatActivity implements View.OnClickListener 
         ly_center=findViewById(R.id.ly_center);
         ly_tab=findViewById(R.id.ly_tab_bar);
         rl_bg=findViewById(R.id.rl_bg);
-        fManager = getSupportFragmentManager();
+        fManager = getSupportFragmentManager();//获取 FragmentManager 实例，方便后续进行 Fragment 切换或替换。
         //设置默认Fragment
         txt_home.setSelected(true);
-        HFragment homeFragment=new HFragment();
+        HFragment homeFragment=new HFragment();//创建首页 Fragment 实例
         fManager.beginTransaction()
                 .replace(R.id.ly_content, homeFragment)
                 .commit();
 //        ly_tab.setBackgroundColor(Color.parseColor(homeColor));
         ly_center.setOnClickListener(this);
+        //从本地获取 token 并调用后台接口拉取用户数据
         SharedPreferences sharedPreferences = getSharedPreferences("AppPrefs", MODE_PRIVATE);
         String token = sharedPreferences.getString("user_token", null);  // 从 SharedPreferences 获取 token
-        new GetUserInfoTask().execute(token);
+        new GetUserInfoTask().execute(token);//将该 token 传入一个 AsyncTask（GetUserInfoTask）中异步获取用户信息
     }
     //重置所有文本的选中状态
     private void setSelected(){
@@ -221,23 +215,12 @@ public class Homepage extends AppCompatActivity implements View.OnClickListener 
         switch (view.getId()){
             case R.id.txt_home:
                 txt_home.setSelected(true);
-//                if(mDevice==null){
-//                    ConnectFragment connectFragment=new ConnectFragment();
-//                    fManager.beginTransaction()
-//                            .replace(R.id.ly_content, connectFragment)
-//                            .commit();
-//                }else {
-//                    HomeFragment homeFragment=new HomeFragment();
-//                    fManager.beginTransaction()
-//                            .replace(R.id.ly_content, homeFragment)
-//                            .commit();
+
                     HFragment homeFragment=new HFragment();
                     fManager.beginTransaction()
                             .replace(R.id.ly_content, homeFragment)
                             .commit();
-//                ly_tab.setBackgroundColor(Color.parseColor(homeColor));
                 rl_bg.setBackgroundResource(homebg);
-//                }
                 break;
             case R.id.txt_centre:
                 txt_center.setSelected(true);
@@ -245,10 +228,6 @@ public class Homepage extends AppCompatActivity implements View.OnClickListener 
                 fManager.beginTransaction()
                         .replace(R.id.ly_content, centerFragment)
                         .commit();
-//                ly_tab.setBackgroundColor(Color.parseColor("#ECE0D2"));
-
-
-
                 break;
             case R.id.txt_setting:
                 txt_setting.setSelected(true);
@@ -256,7 +235,6 @@ public class Homepage extends AppCompatActivity implements View.OnClickListener 
                 fManager.beginTransaction()
                         .replace(R.id.ly_content, settingsFragment)
                         .commit();
-//                ly_tab.setBackgroundColor(Color.parseColor("#ECE0D2"));
                 break;
             case R.id.ly_center:
                 txt_center.setSelected(true);
@@ -267,19 +245,23 @@ public class Homepage extends AppCompatActivity implements View.OnClickListener 
                 break;
         }
     }
+
+    //获取用户信息的异步任务类
+    //实现了从服务器请求用户信息、解析数据、存储本地以及更新 UI 的流程
     private class GetUserInfoTask extends AsyncTask<String, Void, String> {
 
         @Override
-        protected String doInBackground(String... params) {
+        protected String doInBackground(String... params) {//后台线程处理
             String token = params[0];
 
             try {
                 URL url = new URL(USER_INFO_URL);  // 获取用户信息的 URL
+                //设置 Bearer Token 认证头，
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                 connection.setRequestMethod("GET");
                 connection.setRequestProperty("Authorization", "Bearer " + token);  // 将 token 放在 Authorization 头部
 
-                int responseCode = connection.getResponseCode();
+                int responseCode = connection.getResponseCode();//判断HTTP是否响应成功
                 if (responseCode == HttpURLConnection.HTTP_OK) {
                     BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
                     String inputLine;
@@ -300,7 +282,7 @@ public class Homepage extends AppCompatActivity implements View.OnClickListener 
         }
 
         @Override
-        protected void onPostExecute(String result) {
+        protected void onPostExecute(String result) {//请求结果处理
             super.onPostExecute(result);
 
             if (result.startsWith("Error:")) {
@@ -312,7 +294,7 @@ public class Homepage extends AppCompatActivity implements View.OnClickListener 
                     String phone = jsonResponse.getString("phone");
                     // 你可以根据接口返回的字段设置用户的其他信息
 
-                    // 保存用户信息到 SharedPreferences
+                    // 保存用户信息到 SharedPreferences,本地
                     SharedPreferences sharedPreferences = getSharedPreferences("AppPrefs", MODE_PRIVATE);
                     SharedPreferences.Editor editor = sharedPreferences.edit();
                     editor.putString("user_nickname", nickname);

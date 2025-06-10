@@ -4,11 +4,13 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.yunsong.bujen.ConfirmDialog;
@@ -29,6 +31,9 @@ import com.thingclips.smart.sdk.api.IResultCallback;
 public class SettingsFragment extends Fragment implements View.OnClickListener{
     LinearLayout lay_logout,lay_quit,lay_sblb;
     private ConfirmDialog dialog;
+
+    private   TextView txt_setting_gdd;
+    private SettingsViewModel sharedViewModel;
 
     LinearLayout lin_sound,lin_device,lin_collect;
 
@@ -80,6 +85,7 @@ public class SettingsFragment extends Fragment implements View.OnClickListener{
         lay_logout=view.findViewById(R.id.lay_logout);
         lay_quit=view.findViewById(R.id.lay_quit);
         lay_sblb=view.findViewById(R.id.lay_sblb);
+        txt_setting_gdd=view.findViewById(R.id.textView47);
         lay_quit.setOnClickListener(this);
         lay_logout.setOnClickListener(this);
         lay_sblb.setOnClickListener(this);
@@ -91,6 +97,13 @@ public class SettingsFragment extends Fragment implements View.OnClickListener{
         lin_sound.setOnClickListener(this);
         lin_device.setOnClickListener(this);
         lin_collect.setOnClickListener(this);
+
+        // 初始化 ViewModel
+        sharedViewModel = new ViewModelProvider(requireActivity()).get(SettingsViewModel.class);
+        sharedViewModel.getGddCont().observe(getViewLifecycleOwner(), value -> {
+            txt_setting_gdd.setText(String.valueOf(value));
+        });
+
         return view;
     }
 

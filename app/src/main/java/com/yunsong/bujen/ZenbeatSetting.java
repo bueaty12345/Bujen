@@ -27,9 +27,11 @@ import java.util.List;
 import java.util.Map;
 
 public class ZenbeatSetting extends AppCompatActivity implements View.OnClickListener{
-    ImageView img_back,img_sy,img_ding,img_dong,img_fc,img_jk,img_tmd;
+    ImageView img_back,img_sy,img_ding,img_dong,img_fc,img_jk,img_tmd,vol_minus,vol_plus;
     Switch aSwitch;
     LinearLayout lin_sy,lin_yl,lin_ding,lin_dong,lin_fc,lin_jk,lin_tmd;
+    static int volume=1;
+    String[] sound={"zero_gear", "one_gear", "two_gear", "three_gear", "four_gear", "max_gear"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +61,8 @@ public class ZenbeatSetting extends AppCompatActivity implements View.OnClickLis
         img_fc=findViewById(R.id.img_fc);
         img_jk=findViewById(R.id.img_jk);
         img_tmd=findViewById(R.id.img_tmd);
+        vol_minus=findViewById(R.id.volume_minus);
+        vol_plus=findViewById(R.id.volume_plus);
 
         lin_ding.setOnClickListener(this);
         lin_dong.setOnClickListener(this);
@@ -66,6 +70,8 @@ public class ZenbeatSetting extends AppCompatActivity implements View.OnClickLis
         lin_jk.setOnClickListener(this);
         lin_tmd.setOnClickListener(this);
         img_back.setOnClickListener(this);
+        vol_minus.setOnClickListener(this);
+        vol_plus.setOnClickListener(this);
 
         aSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -141,6 +147,18 @@ public class ZenbeatSetting extends AppCompatActivity implements View.OnClickLis
                 setSyNull();
                 setSound("103","five_voice");
                 img_tmd.setVisibility(View.VISIBLE);
+                break;
+            case R.id.volume_minus:
+                if (volume>1){
+                    volume--;
+                    setSound("105",sound[volume]);
+                }
+                break;
+            case R.id.volume_plus:
+                if (volume<5){
+                    volume++;
+                    setSound("105",sound[volume]);
+                }
                 break;
         }
     }

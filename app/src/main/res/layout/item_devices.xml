@@ -7,29 +7,61 @@
     android:layout_marginBottom="5dp"
     android:background="@drawable/roundgray"
     android:gravity="center_vertical"
-    android:padding="10dp">
+    android:orientation="horizontal"
+    android:padding="10dp"
+
+    >
 
     <ImageView
         android:id="@+id/imageView23"
-        android:layout_width="wrap_content"
+        android:layout_width="46dp"
         android:layout_height="46dp"
         android:layout_weight="0.1"
         app:srcCompat="@drawable/ds_logo" />
 
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_weight="5"
-        android:text="电子木鱼"
-        android:textColor="#49392D"
-        android:textSize="16sp" />
-
-    <TextView
-        android:id="@+id/textView3"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:text="已连接"
-        android:textColor="#8049392D" />
+        android:orientation="vertical"
+        android:layout_marginStart="0dp">
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="电子木鱼"
+            android:textColor="#49392D"
+            android:textSize="16sp" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="4dp">
+
+            <TextView
+                android:id="@+id/textView3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="已连接"
+                android:textColor="#8049392D"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/textViewBattery"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="电量：90%"
+                android:textColor="#8049392D"
+                android:textSize="14sp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/imageViewMore"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:src="@drawable/info_circle" />
 </LinearLayout>

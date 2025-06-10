@@ -68,10 +68,6 @@ public class Devices extends AppCompatActivity implements View.OnClickListener{
                         startActivity(it);
             }
         });
-
-
-
-
     };
     private void getDeviceMassage() {
         ThingHomeSdk.newHomeInstance(homeId).getHomeDetail(new IThingHomeResultCallback() {

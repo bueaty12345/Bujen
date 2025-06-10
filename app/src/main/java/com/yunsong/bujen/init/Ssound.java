@@ -48,8 +48,7 @@ public class Ssound extends AppCompatActivity implements View.OnClickListener{
         lin_da.setOnClickListener(this);
         lin_gua.setOnClickListener(this);
         lin_don.setOnClickListener(this);
-        vol_minus.setOnClickListener(this);
-        vol_plus.setOnClickListener(this);
+
     }
     private void init(){
         lin_jy=findViewById(R.id.lin_jy);
@@ -68,8 +67,7 @@ public class Ssound extends AppCompatActivity implements View.OnClickListener{
         img_gua=findViewById(R.id.img_gua);
         img_don=findViewById(R.id.img_don);
         lin_jybg=findViewById(R.id.lin_jybg);
-        vol_minus=findViewById(R.id.volume_minus);
-        vol_plus=findViewById(R.id.volume_plus);
+
     }
 
     @Override
@@ -125,18 +123,18 @@ public class Ssound extends AppCompatActivity implements View.OnClickListener{
                 img_don.setVisibility(View.VISIBLE);
                 setSound("103","four_voice");
                 break;
-            case R.id.volume_minus:
-                if (volume>1){
-                    volume--;
-                    setSound("105",sound[volume]);
-                }
-                break;
-            case R.id.volume_plus:
-                if (volume<5){
-                    volume++;
-                    setSound("105",sound[volume]);
-                }
-                break;
+//            case R.id.volume_minus:
+//                if (volume>1){
+//                    volume--;
+//                    setSound("105",sound[volume]);
+//                }
+//                break;
+//            case R.id.volume_plus:
+//                if (volume<5){
+//                    volume++;
+//                    setSound("105",sound[volume]);
+//                }
+//                break;
         }
     }
     private void setSound(String id,String Sound) {

@@ -24,6 +24,7 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.os.IBinder;
 import android.view.LayoutInflater;
@@ -73,6 +74,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
     private String mParam1;
     private String mParam2;
 
+    private SettingsViewModel sharedViewModel;
+
 
     public HomeFragment() {
         // Required empty public constructor
@@ -98,21 +101,21 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
     Runnable runnable = new Runnable() {
         @Override
         public void run() {
-            // 更新数据的代码
+            // 定时更新数据
             updateData();
 
-            // 每10秒再次执行
+            // 每1秒再次执行
             handler.postDelayed(this, 1000);
         }
     };
 
     private void updateData() {
         int gg=Integer.parseInt(txt_gdd.getText().toString());
-        if(gg<gdd_cont){
+        if(gg < gdd_cont){
             createBubbleTextView();
             txt_gdd.setText(gdd_cont+"");
         }
-
+        sharedViewModel.setGddCont(gdd_cont);
     }
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -121,6 +124,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+
+
     }
 
     @SuppressLint("MissingInflatedId")
@@ -160,6 +165,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
                 .load(R.drawable.muyu) // 或者使用网络链接
                 .into(img_qiao);
 
+        sharedViewModel = new ViewModelProvider(requireActivity()).get(SettingsViewModel.class);
+
         // 开始更新
         handler.post(runnable);
 
@@ -175,16 +182,16 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
     }
 
     @SuppressLint("ResourceType")
-    public void createBubbleTextView() {
-        final TextView bubbleTextView = new TextView(getContext());
-        bubbleTextView.setText("+1");
+    public void createBubbleTextView() {//增加‘+1’气泡动画
+        final TextView bubbleTextView = new TextView(getActivity());//通过代码动态创建了一个 TextView，用于显示 +1
+        bubbleTextView.setText("+1");//设置文字显示为“+1”
         bubbleTextView.setTextSize(30);
-        bubbleTextView.setX(img_qiao.getX() + 600);
+        bubbleTextView.setX(img_qiao.getX() + 600);//位置
         bubbleTextView.setY(img_qiao.getY() - 100);
-        bubbleTextView.setAlpha(1f);
+        bubbleTextView.setAlpha(1f);//透明度，1为不透明
         ((ViewGroup) view.findViewById(R.id.lin_111)).addView(bubbleTextView);
 
-        // 动画效果
+        // 动画效果，上升动画，Y坐标
         ObjectAnimator moveAnimator = ObjectAnimator.ofFloat(bubbleTextView, "translationY", -500f);
         moveAnimator.setDuration(1500);
 
@@ -194,10 +201,10 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
         moveAnimator.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
-                ((ViewGroup)view. findViewById(R.id.lin_111)).removeView(bubbleTextView);
+                ((ViewGroup)view. findViewById(R.id.lin_111)).removeView(bubbleTextView);//监听事件，结束后移除动画
             }
         });
-// 创建震动动画
+        // 创建震动动画
         TranslateAnimation shake = new TranslateAnimation(0, 0, -10f, 10f);
         shake.setDuration(100); // 动画持续时间
         shake.setRepeatCount(3); // 重复次数
@@ -224,6 +231,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
                     musicControl.continuePlay();
                     img_bf.setImageResource(R.drawable.home_start);
                 } else {
+                    //第一次点击
                     musicControl.play(Mi);
                     img_bf.setImageResource(R.drawable.home_start);
                 }
@@ -232,15 +240,15 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
             case R.id.img_list: startActivity(new Intent(getContext(), Local.class));break;
             case R.id.img_y_setting: case R.id.lin_setting:
                 startActivity(new Intent(getContext(), Music.class));
-                getActivity().overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_down);
+                getActivity().overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_down);//入场/出场动画
                 break;
         }
     }
-    //用于实现连接服务，比较模板化，不需要详细知道内容
+    //用于实现连接服务，比较模板化，不需要详细知道内容,用来连接和管理后台音乐播放的 MusicService 服务
     class MyServiceConn implements ServiceConnection {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service){
-            musicControl = (MusicService.MusicControl) service;
+            musicControl = (MusicService.MusicControl) service;//绑定到后台的音乐服务（MusicService），然后通过获取到的 MusicControl 对象，实现了对音乐的控制功能
             MusicController.getInstance().setMusicControl(musicControl);
         }
         @Override

@@ -5,8 +5,10 @@ import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.telephony.TelephonyManager;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -48,11 +50,11 @@ public class Login extends AppCompatActivity implements View.OnClickListener{
         btn_else = findViewById(R.id.btn_elseAdd);
 
         // 动态获取手机号权限
-        if (checkPermissions()) {
+//        if (checkPermissions()) {
             getPhoneNumber();
-        } else {
-            requestPermissions();
-        }
+//        } else {
+//            requestPermissions();
+//        }
         //本机直接登录
         btn_add.setOnClickListener(this);
         //其他手机号码登录
@@ -87,9 +89,19 @@ public class Login extends AppCompatActivity implements View.OnClickListener{
     }
 
     private boolean checkPermissions() {
-        return ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_NUMBERS) == PackageManager.PERMISSION_GRANTED;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            // Android 13 及以上：READ_PHONE_NUMBERS 足够
+            return ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_NUMBERS)
+                    == PackageManager.PERMISSION_GRANTED;
+        } else {
+            // Android 12 及以下：两个权限都判断（有些 ROM 可能只识别 READ_PHONE_STATE）
+            return ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE)
+                    == PackageManager.PERMISSION_GRANTED
+                    && ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_NUMBERS)
+                    == PackageManager.PERMISSION_GRANTED;
+        }
     }
+
 
     private void requestPermissions() {
         ActivityCompat.requestPermissions(this, new String[]{
@@ -112,21 +124,31 @@ public class Login extends AppCompatActivity implements View.OnClickListener{
         }
         phoneNumber = telephonyManager.getLine1Number();
 
-        if (phoneNumber != null) {
-            // 获取前四位和后四位
-            String front = phoneNumber.substring(3, 6);
-            String back = phoneNumber.substring(phoneNumber.length() - 4);
-            txt_phone.setText(front + "****" + back);
-            // 获取运营商名称
-            String operatorName = telephonyManager.getNetworkOperatorName();
+        if (phoneNumber != null && phoneNumber.length() >= 7) {
+            try {
+                // 获取中间三位和后四位（前3位+****+后4位）
+                String front = phoneNumber.substring(3, 6);
+                String back = phoneNumber.substring(phoneNumber.length() - 4);
+                txt_phone.setText(front + "****" + back);
 
-            txt_toast.setText(operatorName+getResources().getString(R.string.login_text2));
-            Toast.makeText(this, getResources().getString(R.string.get_success), Toast.LENGTH_SHORT).show();
+                // 获取运营商名称
+                String operatorName = telephonyManager.getNetworkOperatorName();
+                txt_toast.setText(operatorName + getResources().getString(R.string.login_text2));
+                Toast.makeText(this, getResources().getString(R.string.get_success), Toast.LENGTH_SHORT).show();
+
+            } catch (Exception e) {
+                Log.e("Login", "Phone number formatting failed: " + phoneNumber, e);
+                findViewById(R.id.lin_phone).setVisibility(View.INVISIBLE);
+                btn_else.setVisibility(View.INVISIBLE);
+                Toast.makeText(this, getResources().getString(R.string.login_text3), Toast.LENGTH_SHORT).show();
+            }
+
         } else {
             findViewById(R.id.lin_phone).setVisibility(View.INVISIBLE);
             btn_else.setVisibility(View.INVISIBLE);
             Toast.makeText(this, getResources().getString(R.string.login_text3), Toast.LENGTH_SHORT).show();
         }
+
     }
 
     // 处理请求结果

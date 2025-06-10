@@ -215,11 +215,14 @@ private final String REGISTER_URL = BuildConfig.API_SERVER+"/dev-api/app/login";
         new LoginTask().execute(phone, password,uid);
     }
 
-    // 异步任务进行网络请求
+    // 异步任务进行网络请求，用于在后台线程中执行登录操作。
+    //第一个string:...params是传入的参数（用户名，密码，UUID）
+    //void：表示不在执行过程中汇报进度
+    //String:最终执行完成后返回的结果类型（服务器返回的响应）
     private class LoginTask extends AsyncTask<String, Void, String> {
 
         @Override
-        protected String doInBackground(String... params) {
+        protected String doInBackground(String... params) {//在子线程中执行，不能更新 UI。
             String phone = params[0];
             String password = params[1];
             String uid = params[2];
@@ -228,9 +231,9 @@ private final String REGISTER_URL = BuildConfig.API_SERVER+"/dev-api/app/login";
                 // 创建URL对象
                 URL url = new URL(REGISTER_URL);
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                connection.setRequestMethod("POST");
-                connection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
-                connection.setDoOutput(true);
+                connection.setRequestMethod("POST");//设置请求方式为 POST
+                connection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");//设置内容类型为 JSON
+                connection.setDoOutput(true);//打开输出流用于传输数据
 
                 // 创建JSON请求体
                 String jsonInputString = "{\"username\": \"" + phone + "\", \"password\": \"" + password + "\", \"uuid\": \"" + uid + "\"}";
@@ -265,6 +268,7 @@ private final String REGISTER_URL = BuildConfig.API_SERVER+"/dev-api/app/login";
 
         }
 
+        //用于在网络请求完成后在主线程中处理返回结果、保存登录 token 并跳转页面
         @Override
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
@@ -281,7 +285,7 @@ private final String REGISTER_URL = BuildConfig.API_SERVER+"/dev-api/app/login";
                     // 获取 SharedPreferences 实例
                     SharedPreferences sharedPreferences = getSharedPreferences("AppPrefs", MODE_PRIVATE);
 
-// 存储 Token
+                    // 存储 Token
                     SharedPreferences.Editor editor = sharedPreferences.edit();
                     editor.putString("user_token", token);  // "push_token" 为存储 token 的键
                     editor.apply();  // 使用 apply() 异步保存

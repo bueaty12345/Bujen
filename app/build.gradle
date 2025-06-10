@@ -32,16 +32,16 @@ android {
     }
     signingConfigs {
         debug {
-            storeFile file('D:\\keystore\\bujen.jks')
-            storePassword '736488349'
+            storeFile file('D:\\key\\keystore.jks')
+            storePassword '123456'
             keyAlias 'key0'
-            keyPassword '736488349'
+            keyPassword '123456'
         }
         release {
-            storeFile file("D:\\keystore\\bujen.jks")  // keystore 文件的路径
-            storePassword "736488349"  // keystore 密码
+            storeFile file("D:\\key\\keystore.jks")  // keystore 文件的路径
+            storePassword "123456"  // keystore 密码
             keyAlias "key0"  // 密钥别名
-            keyPassword "736488349"  // 密钥密码
+            keyPassword "123456"  // 密钥密码
         }
     }
     buildFeatures {
@@ -50,7 +50,7 @@ android {
 
     buildTypes {
         debug {
-            buildConfigField "String", "API_SERVER", "\"http://192.168.0.177:80\""
+            buildConfigField "String", "API_SERVER", "\"http://47.96.64.203:8080\""
         }
         release {
             minifyEnabled false
