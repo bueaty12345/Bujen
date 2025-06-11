@@ -39,7 +39,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:padding="20dp"
-                android:text="本地灯光音效"
+                android:text="我的祈祷"
                 android:textColor="#000000"
                 android:textSize="24sp"
                 app:layout_constraintTop_toTopOf="parent"
@@ -61,12 +61,13 @@
             <com.google.android.material.tabs.TabItem
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="声音" />
+                android:text="基础" />
 
             <com.google.android.material.tabs.TabItem
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="灯光" />
+                android:text="进阶" />
+
         </com.google.android.material.tabs.TabLayout>
 
         <ListView

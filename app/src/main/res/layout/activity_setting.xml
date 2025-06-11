@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/y_bg1"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".ZenbeatSetting">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <!-- 顶部Bar -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp">
+
+            <ImageView
+                android:id="@+id/img_back"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/back"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
+            <TextView
+                android:id="@+id/textView4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="设置"
+                android:textColor="#000000"
+                android:textSize="22sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <!-- 顶部横线 -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#CCCCCC" />
+
+        <!-- 内容区域 -->
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingHorizontal="16dp">
+
+                <!-- 模块A -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:background="@drawable/item_setting"
+                    android:layout_marginTop="16dp"
+                    android:paddingVertical="8dp">
+
+                    <!-- 账号设置 -->
+                    <LinearLayout
+                        android:id="@+id/lin_account"
+                        style="@style/ItemRowStyle">
+                        <ImageView
+                            android:id="@+id/img_account"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@drawable/icon_account" />
+                        <TextView
+                            android:id="@+id/tv_account"
+                            style="@style/ItemTextStyle"
+                            android:text="账号设置" />
+                        <ImageView
+                            android:id="@+id/img_arrow_volume"
+                            style="@style/ItemArrowStyle" />
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="#CCCCCC"
+                        android:layout_marginHorizontal="16dp"/>
+
+                    <!-- 资料编辑 -->
+                    <LinearLayout
+                        android:id="@+id/lin_edit"
+                        style="@style/ItemRowStyle">
+                        <ImageView
+                            android:id="@+id/img_edit"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@drawable/icon_edit2" />
+                        <TextView
+                            android:id="@+id/tv_edit"
+                            style="@style/ItemTextStyle"
+                            android:text="资料编辑" />
+                        <ImageView
+                            style="@style/ItemArrowStyle" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- 模块B -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:background="@drawable/item_setting"
+                    android:layout_marginTop="16dp"
+                    android:paddingVertical="8dp">
+
+                    <!-- 电池电量提醒 -->
+                    <LinearLayout
+                        android:id="@+id/lin_battery"
+                        style="@style/ItemRowStyle">
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@drawable/icon_battery" />
+                        <TextView
+                            style="@style/ItemTextStyle"
+                            android:text="电池电量提醒" />
+<!--                        <ImageView-->
+<!--                            style="@style/ItemArrowStyle" />-->
+
+                        <Switch
+                            android:id="@+id/sw_battery"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical" />
+
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="#CCCCCC"
+                        android:layout_marginHorizontal="16dp"/>
+
+                    <!-- 通知提醒 -->
+                    <LinearLayout
+                        android:id="@+id/lin_notification"
+                        style="@style/ItemRowStyle">
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@drawable/icon_notification" />
+                        <TextView
+                            style="@style/ItemTextStyle"
+                            android:text="通知提醒" />
+                        <Switch
+                            android:id="@+id/sw_notice"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical" />
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="#CCCCCC"
+                        android:layout_marginHorizontal="16dp"/>
+
+                    <!-- 历史记录 -->
+                    <LinearLayout
+                        android:id="@+id/lin_history"
+                        style="@style/ItemRowStyle">
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@drawable/icon_record" />
+                        <TextView
+                            style="@style/ItemTextStyle"
+                            android:text="历史记录" />
+                        <ImageView
+                            style="@style/ItemArrowStyle" />
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="#CCCCCC"
+                        android:layout_marginHorizontal="16dp"/>
+
+                    <!-- 清除缓存 -->
+                    <LinearLayout
+                        android:id="@+id/lin_clear_cache"
+                        style="@style/ItemRowStyle">
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@drawable/icon_delete" />
+                        <TextView
+                            style="@style/ItemTextStyle"
+                            android:text="清除缓存" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="225MB"/>
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="#CCCCCC"
+                        android:layout_marginHorizontal="16dp"/>
+
+                    <!-- 关于 -->
+                    <LinearLayout
+                        android:id="@+id/lin_about"
+                        style="@style/ItemRowStyle">
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@drawable/icon_about" />
+                        <TextView
+                            style="@style/ItemTextStyle"
+                            android:text="关于" />
+                        <ImageView
+                            style="@style/ItemArrowStyle" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- 退出登录 -->
+                <LinearLayout
+                    android:id="@+id/log_out"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:background="@drawable/roundgray"
+                    android:paddingVertical="12dp"
+                    android:paddingHorizontal="16dp"
+                    android:layout_marginTop="16dp"
+                    android:gravity="center">
+
+                    <TextView
+                        android:id="@+id/log_outText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
+                        android:text="退出登录"
+                        android:textColor="#968b80"
+                        android:textSize="16sp" />
+                </LinearLayout>
+
+            </LinearLayout>
+        </ScrollView>
+    </LinearLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -124,6 +124,24 @@
         <activity
             android:name=".Homepage"
             android:exported="true" />
+        <activity
+            android:name=".MyTutorial"
+            android:exported="false" />
+        <activity
+            android:name=".MyPray"
+            android:exported="false" />
+        <activity android:name=".MyCollect"
+            android:exported="false" />
+        <activity android:name=".setting.Setting"
+            android:exported="false" />
+        <activity android:name=".setting.Account"
+            android:exported="false" />
+        <activity android:name=".setting.EditPassword"
+            android:exported="false" />
+        <activity android:name=".setting.PhoneNumber"
+            android:exported="false" />
+        <activity android:name=".setting.EditMail"
+            android:exported="false" />
 
         <meta-data
             android:name="THING_SMART_APPKEY"

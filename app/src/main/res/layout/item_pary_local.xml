@@ -20,7 +20,7 @@
             android:id="@+id/img_tu"
             android:layout_width="70dp"
             android:layout_height="70dp"
-            app:srcCompat="@drawable/local_music" />
+            app:srcCompat="@drawable/local_music1" />
 
         <LinearLayout
             android:id="@+id/linearLayout3"

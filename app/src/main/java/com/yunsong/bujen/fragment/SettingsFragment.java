@@ -14,6 +14,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.yunsong.bujen.ConfirmDialog;
+import com.yunsong.bujen.Local;
+import com.yunsong.bujen.MyCollect;
+import com.yunsong.bujen.MyPray;
+import com.yunsong.bujen.MyTutorial;
+import com.yunsong.bujen.setting.Setting;
 import com.yunsong.bujen.ZenbeatSetting;
 import com.yunsong.bujen.device.Devices;
 import com.yunsong.bujen.init.Login;
@@ -30,12 +35,11 @@ import com.thingclips.smart.sdk.api.IResultCallback;
  */
 public class SettingsFragment extends Fragment implements View.OnClickListener{
     LinearLayout lay_logout,lay_quit,lay_sblb;
-    private ConfirmDialog dialog;
 
     private   TextView txt_setting_gdd;
     private SettingsViewModel sharedViewModel;
 
-    LinearLayout lin_sound,lin_device,lin_collect;
+    LinearLayout lin_sound,lin_device,lin_collect,lay_music,lay_Tutorial,lay_pray,service,mySetting;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -82,21 +86,23 @@ public class SettingsFragment extends Fragment implements View.OnClickListener{
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view=inflater.inflate(R.layout.fragment_settings, container, false);
-        lay_logout=view.findViewById(R.id.lay_logout);
-        lay_quit=view.findViewById(R.id.lay_quit);
-        lay_sblb=view.findViewById(R.id.lay_sblb);
         txt_setting_gdd=view.findViewById(R.id.textView47);
-        lay_quit.setOnClickListener(this);
-        lay_logout.setOnClickListener(this);
-        lay_sblb.setOnClickListener(this);
-
-
         lin_sound=view.findViewById(R.id.lin_sound);
         lin_device=view.findViewById(R.id.lin_device);
         lin_collect=view.findViewById(R.id.lin_collect);
+        lay_music=view.findViewById(R.id.lay_music);
+        lay_Tutorial=view.findViewById(R.id.lay_Tutorial);
+        lay_pray=view.findViewById(R.id.lay_pray);
+        service=view.findViewById(R.id.lay_service);
+        mySetting=view.findViewById(R.id.mySetting);
         lin_sound.setOnClickListener(this);
         lin_device.setOnClickListener(this);
         lin_collect.setOnClickListener(this);
+        lay_music.setOnClickListener(this);
+        lay_Tutorial.setOnClickListener(this);
+        lay_pray.setOnClickListener(this);
+        service.setOnClickListener(this);
+        mySetting.setOnClickListener(this);
 
         // 初始化 ViewModel
         sharedViewModel = new ViewModelProvider(requireActivity()).get(SettingsViewModel.class);
@@ -117,76 +123,22 @@ public class SettingsFragment extends Fragment implements View.OnClickListener{
                 startActivity(new Intent(getActivity(), Devices.class));
                 break;
            case R.id.lin_collect:
-//                startActivity(new Intent(getActivity(), Resource.class));
+                startActivity(new Intent(getActivity(), MyCollect.class));
                 break;
-            case R.id.lay_logout:
-                showDialog("注销","一周后才会真正注销，注销前登录则会取消注销，确定注销吗？");
-//                startActivity(new Intent(getActivity(), Connect.class));
+            case R.id.lay_music:
+                startActivity(new Intent(getActivity(), Local.class));
                 break;
-            case R.id.lay_quit:
-                showDialog("退出","你确定要退出登录吗？");
+            case R.id.lay_Tutorial:
+                startActivity(new Intent(getActivity(), MyTutorial.class));
                 break;
-                case R.id.lay_sblb:
-                    startActivity(new Intent(getActivity(), Devices.class));
+            case R.id.lay_pray:
+                startActivity(new Intent(getActivity(), MyPray.class));
                 break;
+            case R.id.lay_service:
+//                startActivity(new Intent(getActivity(),service.class));
+            case R.id.mySetting:
+                startActivity(new Intent(getActivity(), Setting.class));
         }
     }
-    private void showDialog(String title,String message) {
-        ConfirmDialog.Builder builder = new ConfirmDialog.Builder(getContext());
-        dialog = builder.cancelTouchout(false)
-                .view(R.layout.dialog_confirm)
-                .style(R.style.Dialog)
-                .setTitle(message)
-                .addViewOnclick(R.id.txt_confirm, new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        // 处理确定按钮点击
-                        switch (title){
-                            case "注销":
-                                toLogout();
-                                break;
-                            case "退出":
-                                toQuit();
-                                break;
-                        }
-                    }
-                })
-                .build();
-        dialog.show();
-    }
 
-    private void toQuit() {
-        ThingHomeSdk.getUserInstance().logout(new ILogoutCallback() {
-            @Override
-            public void onSuccess() {
-                //退出登录成功
-                startActivity(new Intent(getActivity(), Login.class));
-                // 销毁当前 Activity
-                getActivity().finish();
-            }
-
-            @Override
-            public void onError(String errorCode, String errorMsg) {
-                Toast.makeText(getContext(), "退出失败"+errorMsg, Toast.LENGTH_SHORT).show();
-            }
-        });
-
-    }
-
-    private void toLogout() {
-        ThingHomeSdk.getUserInstance().cancelAccount(new IResultCallback() {
-            @Override
-            public void onError(String code, String error) {
-                Toast.makeText(getContext(), "注销失败"+error, Toast.LENGTH_SHORT).show();
-            }
-            @Override
-            public void onSuccess() {
-                Toast.makeText(getContext(), "注销成功", Toast.LENGTH_SHORT).show();
-                startActivity(new Intent(getActivity(), Register.class));
-                // 销毁当前 Activity
-                getActivity().finish();
-            }
-        });
-
-    }
 }

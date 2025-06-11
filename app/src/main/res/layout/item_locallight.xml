@@ -15,11 +15,11 @@
         android:backgroundTint="#FFFCF3"
         android:padding="10dp">
 
-        <ImageView
-            android:id="@+id/img_tu"
+        <View
+            android:id="@+id/view_color"
             android:layout_width="71dp"
             android:layout_height="71dp"
-            app:srcCompat="@drawable/local_music1" />
+            android:background="@drawable/round_locallightbg" />
 
         <LinearLayout
             android:id="@+id/linearLayout3"

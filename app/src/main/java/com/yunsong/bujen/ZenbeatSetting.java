@@ -3,6 +3,7 @@ package com.yunsong.bujen;
 import static com.thingclips.sdk.blelib.utils.BluetoothUtils.getContext;
 import static com.yunsong.bujen.Homepage.mDevice;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.CompoundButton;
@@ -15,6 +16,7 @@ import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SwitchCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -27,10 +29,17 @@ import java.util.List;
 import java.util.Map;
 
 public class ZenbeatSetting extends AppCompatActivity implements View.OnClickListener{
-    ImageView img_back,img_sy,img_ding,img_dong,img_fc,img_jk,img_tmd,vol_minus,vol_plus;
+    ImageView img_back,img_sy,img_ding,img_dong,img_fc,img_jk,img_tmd,vol_minus,vol_plus,volumeBar;
     Switch aSwitch;
-    LinearLayout lin_sy,lin_yl,lin_ding,lin_dong,lin_fc,lin_jk,lin_tmd;
+    LinearLayout lin_sy,lin_yl,lin_ding,lin_dong,lin_fc,lin_jk,lin_tmd,volumeContainer;
     static int volume=1;
+    private final int[] volumeImages={
+            R.drawable.volume_1,
+            R.drawable.volume_2,
+            R.drawable.volume_3,
+            R.drawable.volume_4,
+            R.drawable.volume_5
+    };
     String[] sound={"zero_gear", "one_gear", "two_gear", "three_gear", "four_gear", "max_gear"};
 
     @Override
@@ -63,6 +72,8 @@ public class ZenbeatSetting extends AppCompatActivity implements View.OnClickLis
         img_tmd=findViewById(R.id.img_tmd);
         vol_minus=findViewById(R.id.volume_minus);
         vol_plus=findViewById(R.id.volume_plus);
+        volumeContainer=findViewById(R.id.volume_container);
+        volumeBar=findViewById(R.id.volume_bar);
 
         lin_ding.setOnClickListener(this);
         lin_dong.setOnClickListener(this);
@@ -72,6 +83,8 @@ public class ZenbeatSetting extends AppCompatActivity implements View.OnClickLis
         img_back.setOnClickListener(this);
         vol_minus.setOnClickListener(this);
         vol_plus.setOnClickListener(this);
+
+        updateVolumeBar();
 
         aSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -88,6 +101,7 @@ public class ZenbeatSetting extends AppCompatActivity implements View.OnClickLis
                     }
             }
         });
+
     }
 
     private void setSyNull() {
@@ -152,15 +166,21 @@ public class ZenbeatSetting extends AppCompatActivity implements View.OnClickLis
                 if (volume>1){
                     volume--;
                     setSound("105",sound[volume]);
+                    updateVolumeBar();
                 }
                 break;
             case R.id.volume_plus:
                 if (volume<5){
                     volume++;
                     setSound("105",sound[volume]);
+                    updateVolumeBar();
                 }
                 break;
         }
+    }
+
+    private void updateVolumeBar(){
+        volumeBar.setImageResource(volumeImages[volume-1]);
     }
 
 
