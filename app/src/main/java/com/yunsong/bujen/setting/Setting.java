@@ -25,7 +25,7 @@ import com.yunsong.bujen.init.Register;
 
 public class Setting extends AppCompatActivity implements View.OnClickListener{
 
-    LinearLayout log_out,lin_account;
+    LinearLayout log_out,lin_account,lin_edit,lin_about,lin_history,lin_clear_cache;
     ImageView img_back;
     private ConfirmDialog dialog;
 
@@ -45,9 +45,18 @@ public class Setting extends AppCompatActivity implements View.OnClickListener{
         img_back=findViewById(R.id.img_back);
         log_out=findViewById(R.id.log_out);
         lin_account=findViewById(R.id.lin_account);
+        lin_edit=findViewById(R.id.lin_edit);
+        lin_about=findViewById(R.id.lin_about);
+        lin_history=findViewById(R.id.lin_history);
+        lin_clear_cache=findViewById(R.id.lin_clear_cache);
 
+        img_back.setOnClickListener(this);
         log_out.setOnClickListener(this);
         lin_account.setOnClickListener(this);
+        lin_edit.setOnClickListener(this);
+        lin_about.setOnClickListener(this);
+        lin_history.setOnClickListener(this);
+        lin_clear_cache.setOnClickListener(this);
     }
 
 
@@ -63,6 +72,16 @@ public class Setting extends AppCompatActivity implements View.OnClickListener{
                 break;
             case R.id.lin_account:
                 startActivity(new Intent(Setting.this, Account.class));
+                break;
+            case R.id.lin_edit:
+                startActivity(new Intent(Setting.this,ProfileEditor.class));
+                break;
+            case R.id.lin_about:
+                startActivity(new Intent(Setting.this,About.class));
+                break;
+            case R.id.lin_history:
+                startActivity(new Intent(Setting.this,History.class));
+
         }
     }
 

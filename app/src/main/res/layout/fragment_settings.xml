@@ -7,7 +7,6 @@
     android:background="@drawable/bg_my"
     tools:context=".fragment.SettingsFragment">
 
-    <!-- TODO: Update blank fragment layout -->
 
     <ScrollView
         android:layout_width="match_parent"

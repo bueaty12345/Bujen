@@ -12,13 +12,14 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.yunsong.bujen.R;
 
-public class PhoneNumber extends AppCompatActivity implements View.OnClickListener{
+public class Feedback extends AppCompatActivity implements View.OnClickListener{
+
     ImageView img_back;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_phonenumber);
+        setContentView(R.layout.activity_feedback);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -26,7 +27,6 @@ public class PhoneNumber extends AppCompatActivity implements View.OnClickListen
         });
         init();
     }
-
     private void init(){
         img_back=findViewById(R.id.img_back);
 
@@ -39,6 +39,7 @@ public class PhoneNumber extends AppCompatActivity implements View.OnClickListen
             case R.id.img_back:
                 finish();
                 break;
+
         }
     }
 }

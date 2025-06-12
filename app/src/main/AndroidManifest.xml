@@ -142,6 +142,18 @@
             android:exported="false" />
         <activity android:name=".setting.EditMail"
             android:exported="false" />
+        <activity android:name=".setting.Tripartite"
+            android:exported="false" />
+        <activity android:name=".setting.ProfileEditor"
+            android:exported="false" />
+        <activity android:name=".setting.About"
+            android:exported="false" />
+        <activity android:name=".setting.Feedback"
+            android:exported="false" />
+        <activity android:name=".setting.History"
+            android:exported="false" />
+        <activity android:name=".setting.PrayHistory"
+            android:exported="false" />
 
         <meta-data
             android:name="THING_SMART_APPKEY"

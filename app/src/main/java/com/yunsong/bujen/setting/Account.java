@@ -1,10 +1,12 @@
 package com.yunsong.bujen.setting;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -23,8 +25,10 @@ import com.yunsong.bujen.init.Register;
 public class Account extends AppCompatActivity implements View.OnClickListener{
     ConstraintLayout log_out;
 
-    LinearLayout lin_edit,lin_account,lin_mailEdit;
+    LinearLayout lin_edit,lin_account,lin_mailEdit,lin_tripartite;
     ImageView img_back;
+
+    TextView tv_account_number;
 
     private ConfirmDialog dialog;
     @Override
@@ -38,6 +42,7 @@ public class Account extends AppCompatActivity implements View.OnClickListener{
             return insets;
         });
         init();
+        loadPhoneNumberFromPrefs();
     }
 
     private void init(){
@@ -46,14 +51,22 @@ public class Account extends AppCompatActivity implements View.OnClickListener{
         lin_edit=findViewById(R.id.lin_edit);
         lin_account=findViewById(R.id.lin_account);
         lin_mailEdit=findViewById(R.id.lin_mailEdit);
+        lin_tripartite=findViewById(R.id.lin_tripartite);
+        tv_account_number=findViewById(R.id.tv_account_number);
 
         img_back.setOnClickListener(this);
         log_out.setOnClickListener(this);
         lin_edit.setOnClickListener(this);
         lin_account.setOnClickListener(this);
         lin_mailEdit.setOnClickListener(this);
+        lin_tripartite.setOnClickListener(this);
     }
 
+    private void loadPhoneNumberFromPrefs() {
+        SharedPreferences sharedPreferences = getSharedPreferences("AppPrefs", MODE_PRIVATE);
+        String phone = sharedPreferences.getString("user_phone", "未设置手机号");
+        tv_account_number.setText(phone);
+    }
 
     @Override
     public void onClick(View v) {
@@ -72,6 +85,9 @@ public class Account extends AppCompatActivity implements View.OnClickListener{
                 break;
             case R.id.lin_mailEdit:
                 startActivity(new Intent(Account.this, EditMail.class));
+                break;
+            case R.id.lin_tripartite:
+                startActivity(new Intent(Account.this,Tripartite.class));
         }
     }
 

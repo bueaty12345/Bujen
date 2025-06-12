@@ -39,7 +39,7 @@ import java.net.URL;
 import java.util.List;
 
 public class Homepage extends AppCompatActivity implements View.OnClickListener {
-    private final String USER_INFO_URL = BuildConfig.API_SERVER+"/dev-api/getAppInfo"; //获取信息接口URL
+    private final String USER_INFO_URL = BuildConfig.API_SERVER+"/getAppInfo"; //获取信息接口URL
     public static boolean isPaused = false;
     public static TextView txt_gdd;
     TextView txt_home,txt_center,txt_setting;
@@ -198,7 +198,9 @@ public class Homepage extends AppCompatActivity implements View.OnClickListener 
         //从本地获取 token 并调用后台接口拉取用户数据
         SharedPreferences sharedPreferences = getSharedPreferences("AppPrefs", MODE_PRIVATE);
         String token = sharedPreferences.getString("user_token", null);  // 从 SharedPreferences 获取 token
+
         new GetUserInfoTask().execute(token);//将该 token 传入一个 AsyncTask（GetUserInfoTask）中异步获取用户信息
+        Log.d("MyToken主页", "token = " + token);
     }
     //重置所有文本的选中状态
     private void setSelected(){
@@ -289,20 +291,33 @@ public class Homepage extends AppCompatActivity implements View.OnClickListener 
                 Toast.makeText(getApplicationContext(), result, Toast.LENGTH_SHORT).show();
             } else {
                 try {
-                    JSONObject jsonResponse = new JSONObject(result);
-                    String nickname = jsonResponse.getString("nickname");
-                    String phone = jsonResponse.getString("phone");
-                    // 你可以根据接口返回的字段设置用户的其他信息
+                    Log.d("RegisterTask", "Raw result: " + result);
 
+                    if (!result.trim().startsWith("{")) {
+                        Log.e("RegisterTask", "返回的不是 JSON 对象，无法解析: " + result);
+                        return;
+                    }
+
+                    // 解析 JSON 数据
+                    JSONObject jsonResponse = new JSONObject(result);
+                    JSONObject dataObject = jsonResponse.getJSONObject("user");
+                    String nickname = dataObject.optString("nickname");
+                    String phone = dataObject.optString("phone");
+                    String signature = dataObject.optString("signature");
+                    // 你可以根据接口返回的字段设置用户的其他信息
+                    Log.d("UserInfo", "nickname: " + nickname);
+                    Log.d("UserInfo", "phone: " + phone);
+                    Log.d("UserInfo", "email: " + signature);
                     // 保存用户信息到 SharedPreferences,本地
                     SharedPreferences sharedPreferences = getSharedPreferences("AppPrefs", MODE_PRIVATE);
                     SharedPreferences.Editor editor = sharedPreferences.edit();
                     editor.putString("user_nickname", nickname);
                     editor.putString("user_phone", phone);
+                    editor.putString("user_signature",signature);
                     editor.apply();  // 使用 apply() 异步保存
 
                     // 在 UI 上显示用户信息
-                    updateUIWithUserInfo(nickname, phone);
+                    updateUIWithUserInfo(nickname, phone,signature);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -310,7 +325,7 @@ public class Homepage extends AppCompatActivity implements View.OnClickListener 
             Log.d("RegisterTask", "Response: " + result);
         }
 
-        private void updateUIWithUserInfo(String nickname, String phone) {
+        private void updateUIWithUserInfo(String nickname, String phone,String signature) {
             // 更新 UI 显示用户信息
 
         }

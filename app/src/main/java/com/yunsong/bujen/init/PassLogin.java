@@ -41,7 +41,7 @@ public class PassLogin extends AppCompatActivity implements View.OnClickListener
     EditText edit_phone,edit_password;
     String phone=null;
     private boolean isPasswordVisible = false;
-    private final String REGISTER_URL = BuildConfig.API_SERVER+"/dev-api/app/login"; //登录接口URL
+    private final String REGISTER_URL = BuildConfig.API_SERVER+"/app/login"; //登录接口URL
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
