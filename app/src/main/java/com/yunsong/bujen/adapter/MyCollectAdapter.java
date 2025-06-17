@@ -8,22 +8,24 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.yunsong.bujen.ConfirmDialog;
 import com.yunsong.bujen.MyCollect;
-import com.yunsong.bujen.MyPray;
 import com.yunsong.bujen.R;
+import com.yunsong.bujen.databean.MyMusicBean;
+import com.yunsong.bujen.databean.MyTutorialBean;
+import com.yunsong.bujen.model.CollectItem;
 
 import java.util.List;
-import java.util.Map;
 
 public class MyCollectAdapter extends BaseAdapter {
     private Context context;
-    private List<Map<String, String>> data;
+    private List<CollectItem> data;
     private static int selectedPosition = 0; // 选中的项索引
     private ConfirmDialog dialog;
 
-    public MyCollectAdapter(MyCollect local, List<Map<String, String>> data) {
-        this.context = local;
+    public MyCollectAdapter(Context context,  List<CollectItem> data) {
+        this.context = context;
         this.data = data;
     }
     @Override
@@ -43,65 +45,125 @@ public class MyCollectAdapter extends BaseAdapter {
 
     @Override
     public View getView(int i, View view, ViewGroup viewGroup) {
-        MyCollectAdapter.viewHolder holder;
-        if (view == null) {
-            holder = new MyCollectAdapter.viewHolder();
-            view = LayoutInflater.from(context).inflate(R.layout.item_collect, viewGroup, false);
-            holder.img_tu = view.findViewById(R.id.img_tu);
-            holder.img_selet = view.findViewById(R.id.img_selet);
-            holder.txt_mname = view.findViewById(R.id.txt_mname);
-            holder.txt_gdd = view.findViewById(R.id.txt_gdd);
-            holder.txt_hy = view.findViewById(R.id.txt_hy);
-            holder.txt_auther = view.findViewById(R.id.txt_auther);
-            view.setTag(holder);
-        }else {
-            holder = (MyCollectAdapter.viewHolder) view.getTag();
+        CollectItem item = data.get(i);
+        int type = item.getType();
+
+        if (type == 0) {
+            // Music
+            MyMusicBean music = (MyMusicBean) item;
+            viewHolder holder;
+            if (view == null || !(view.getTag() instanceof viewHolder)) {
+                holder = new viewHolder();
+                view = LayoutInflater.from(context).inflate(R.layout.item_collect, viewGroup, false);
+                holder.img_tu = view.findViewById(R.id.img_tu);
+                holder.img_selet = view.findViewById(R.id.img_selet);
+                holder.txt_mname = view.findViewById(R.id.txt_mname);
+                holder.txt_gdd = view.findViewById(R.id.txt_gdd);
+                holder.txt_hy = view.findViewById(R.id.txt_hy);
+                holder.txt_auther = view.findViewById(R.id.txt_auther);
+                holder.txt_star=view.findViewById(R.id.txt_star);
+                holder.txt_time=view.findViewById(R.id.txt_time);
+                view.setTag(holder);
+            } else {
+                holder = (viewHolder) view.getTag();
+            }
+
+            holder.txt_mname.setText(music.musicName);
+            holder.txt_auther.setText("作者：" + music.singer);
+            holder.txt_gdd.setText("需功德点：" + music.requiredMeritPoints);
+            holder.txt_hy.setText(music.dh == 0 ? "待兑换" : "已拥有");
+            holder.txt_star.setText(String.format("%.1f", music.rating));
+            String timeText = String.format("%d:%02d", music.duration / 60, music.duration % 60);
+            holder.txt_time.setText(timeText);
+
+            Glide.with(context)
+                    .load(music.musicCover)
+                    .placeholder(R.drawable.recommend1)
+                    .into(holder.img_tu);
+
+            holder.img_selet.setImageResource(music.sc == 1 ? R.drawable.collection_1 : R.drawable.collection_2);
+            holder.img_selet.setOnClickListener(v -> {
+                music.sc = music.sc == 0 ? 1 : 0;
+                notifyDataSetChanged();
+            });
+
+            holder.txt_hy.setOnClickListener(v -> {
+                if (music.dh == 0) {
+                    showDialog(holder.txt_hy, music);
+                    notifyDataSetChanged();
+                }
+            });
+
+        } else if (type == 1) {
+        } else if (type == 2) {
+            MyTutorialBean tutorial = (MyTutorialBean) item;
+            viewHolder holder;
+            if (view == null || !(view.getTag() instanceof viewHolder)) {
+                holder = new viewHolder();
+                view = LayoutInflater.from(context).inflate(R.layout.item_collect, viewGroup, false);
+                holder.img_tu = view.findViewById(R.id.img_tu);
+                holder.img_selet = view.findViewById(R.id.img_selet);
+                holder.txt_mname = view.findViewById(R.id.txt_mname);
+                holder.txt_gdd = view.findViewById(R.id.txt_gdd);
+                holder.txt_hy = view.findViewById(R.id.txt_hy);
+                holder.txt_auther = view.findViewById(R.id.txt_auther);
+                holder.txt_star=view.findViewById(R.id.txt_star);
+                holder.txt_time=view.findViewById(R.id.txt_time);
+                view.setTag(holder);
+            } else {
+                holder = (viewHolder) view.getTag();
+            }
+
+            holder.txt_mname.setText(tutorial.tutorialName);
+            holder.txt_auther.setText("作者：" + tutorial.author);
+            holder.txt_gdd.setText("需功德点：" + tutorial.requiredMeritPoints);
+            if (tutorial.dh == null) {
+                holder.txt_hy.setText("待兑换");  // 或者设置为空字符串 ""
+            } else if (tutorial.dh == 0) {
+                holder.txt_hy.setText("待兑换");
+            } else {
+                holder.txt_hy.setText("已拥有");
+            }
+            holder.txt_star.setText(String.format("%.1f", (double) tutorial.rating));
+
+
+//        Glide.with(context)
+//                .load(item.musicCover)
+//                .placeholder(R.drawable.recommend1)
+//                .into(holder.img_tu);
+
+
+            holder.img_selet.setImageResource(tutorial.sc ==1 ? R.drawable.collection_1 : R.drawable.collection_2);
+            holder.img_selet.setOnClickListener(v -> {
+                tutorial.sc = (tutorial.sc == 0 ? 1 : 0);
+                notifyDataSetChanged();
+            });
+            holder.txt_hy.setOnClickListener(v -> {
+                if (tutorial.dh == 0) {
+//                    showDialog(holder.txt_hy, tutorial);
+                    notifyDataSetChanged();
+                }
+            });
+        }else if(type==3) {
         }
-        Map<String, String> map=data.get(i);
-        holder.txt_mname.setText(map.get("name"));
-        holder.txt_gdd.setText(map.get("gdd"));
-        holder.txt_auther.setText(map.get("auther"));
-        // 设置选中状态
-        holder.img_selet.setImageResource(map.get("sc").equals("1") ? R.drawable.collection_1 : R.drawable.collection_2);
-        holder.img_selet.setOnClickListener(v -> {
-            if(data.get(i).get("sc").equals("0")){
-                holder.img_selet.setImageResource(R.drawable.collection_1);
-                data.get(i).put("sc","1");
-            }
-            else {
-                holder.img_selet.setImageResource(R.drawable.collection_2);
-                data.get(i).put("sc","0");
-            }
-            notifyDataSetChanged(); // 刷新适配器
 
-        });
-        holder.txt_hy.setOnClickListener(v -> {
-            if(holder.txt_hy.getText().equals("待兑换")){
-//               showDialog(v.findViewById(R.id.txt_hy));
-                setDialog(holder.txt_hy);
-                notifyDataSetChanged(); // 刷新适配器
-            }
-
-        });
         return view;
     }
+
     private final class viewHolder {
         ImageView img_tu,img_selet;
-        TextView txt_mname,txt_gdd,txt_hy,txt_auther;
+        TextView txt_mname,txt_gdd,txt_hy,txt_auther,txt_star,txt_time;
     }
-    private void setDialog(TextView v) {
+    private void showDialog(TextView v, MyMusicBean item) {
         ConfirmDialog.Builder builder = new ConfirmDialog.Builder(context);
         dialog = builder.cancelTouchout(false)
                 .view(R.layout.dialog_confirm)
                 .style(R.style.Dialog)
-                .addViewOnclick(R.id.txt_confirm, new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        v.setText("已拥有");
-                        dialog.dismiss();  // 这里添加取消对话框的代码
-                    }
-                })
-                .build();
+                .addViewOnclick(R.id.txt_confirm, view -> {
+                    item.dh = 1;
+                    v.setText("已拥有");
+                    dialog.dismiss();
+                }).build();
         dialog.show();
     }
 }

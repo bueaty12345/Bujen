@@ -21,6 +21,7 @@ import com.thingclips.smart.sdk.api.IResultCallback;
 import com.yunsong.bujen.ConfirmDialog;
 import com.yunsong.bujen.R;
 import com.yunsong.bujen.init.Register;
+import com.yunsong.bujen.utils.UserInfoUtils;
 
 public class Account extends AppCompatActivity implements View.OnClickListener{
     ConstraintLayout log_out;
@@ -42,7 +43,6 @@ public class Account extends AppCompatActivity implements View.OnClickListener{
             return insets;
         });
         init();
-        loadPhoneNumberFromPrefs();
     }
 
     private void init(){
@@ -60,13 +60,10 @@ public class Account extends AppCompatActivity implements View.OnClickListener{
         lin_account.setOnClickListener(this);
         lin_mailEdit.setOnClickListener(this);
         lin_tripartite.setOnClickListener(this);
+
+        tv_account_number.setText(UserInfoUtils.getUserPhone(this));
     }
 
-    private void loadPhoneNumberFromPrefs() {
-        SharedPreferences sharedPreferences = getSharedPreferences("AppPrefs", MODE_PRIVATE);
-        String phone = sharedPreferences.getString("user_phone", "未设置手机号");
-        tv_account_number.setText(phone);
-    }
 
     @Override
     public void onClick(View v) {

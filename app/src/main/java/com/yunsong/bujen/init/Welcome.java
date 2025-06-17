@@ -25,6 +25,9 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.alibaba.fastjson.JSONObject;
+import com.facebook.soloader.SoLoader;
+import com.gzl.smart.gzlminiapp.miniapp.GZLMiniAppSDK;
+import com.thing.smart.miniappclient.ThingMiniAppClient;
 import com.yunsong.bujen.BuildConfig;
 import com.yunsong.bujen.Homepage;
 import com.yunsong.bujen.R;
@@ -51,7 +54,7 @@ private final String REGISTER_URL = BuildConfig.API_SERVER+"/dev-api/app/login";
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        ThingHomeSdk.init(this.getApplication());
+//        ThingHomeSdk.init(this.getApplication());
         init();
     }
     public void init(){

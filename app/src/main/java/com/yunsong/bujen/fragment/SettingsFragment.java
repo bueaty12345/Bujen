@@ -27,6 +27,8 @@ import com.yunsong.bujen.init.Register;
 import com.thingclips.smart.android.user.api.ILogoutCallback;
 import com.thingclips.smart.home.sdk.ThingHomeSdk;
 import com.thingclips.smart.sdk.api.IResultCallback;
+import com.yunsong.bujen.utils.DataStorageUtils;
+import com.yunsong.bujen.utils.UserInfoUtils;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -36,7 +38,7 @@ import com.thingclips.smart.sdk.api.IResultCallback;
 public class SettingsFragment extends Fragment implements View.OnClickListener{
     LinearLayout lay_logout,lay_quit,lay_sblb;
 
-    private   TextView txt_setting_gdd;
+    private   TextView txt_virtuePoints,tv_nickname_info,tv_signature_info;
     private SettingsViewModel sharedViewModel;
 
     LinearLayout lin_sound,lin_device,lin_collect,lay_music,lay_Tutorial,lay_pray,service,mySetting;
@@ -86,7 +88,7 @@ public class SettingsFragment extends Fragment implements View.OnClickListener{
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view=inflater.inflate(R.layout.fragment_settings, container, false);
-        txt_setting_gdd=view.findViewById(R.id.textView47);
+        txt_virtuePoints=view.findViewById(R.id.virtuePoints);
         lin_sound=view.findViewById(R.id.lin_sound);
         lin_device=view.findViewById(R.id.lin_device);
         lin_collect=view.findViewById(R.id.lin_collect);
@@ -95,6 +97,9 @@ public class SettingsFragment extends Fragment implements View.OnClickListener{
         lay_pray=view.findViewById(R.id.lay_pray);
         service=view.findViewById(R.id.lay_service);
         mySetting=view.findViewById(R.id.mySetting);
+        tv_signature_info=view.findViewById(R.id.tv_signature_info);
+        tv_nickname_info=view.findViewById(R.id.tv_nickname_info);
+
         lin_sound.setOnClickListener(this);
         lin_device.setOnClickListener(this);
         lin_collect.setOnClickListener(this);
@@ -104,11 +109,16 @@ public class SettingsFragment extends Fragment implements View.OnClickListener{
         service.setOnClickListener(this);
         mySetting.setOnClickListener(this);
 
+        tv_nickname_info.setText(UserInfoUtils.getUserNickname(requireContext()));
+        tv_signature_info.setText(UserInfoUtils.getUserSignature(requireContext()));
+
         // 初始化 ViewModel
         sharedViewModel = new ViewModelProvider(requireActivity()).get(SettingsViewModel.class);
         sharedViewModel.getGddCont().observe(getViewLifecycleOwner(), value -> {
-            txt_setting_gdd.setText(String.valueOf(value));
+            txt_virtuePoints.setText(String.valueOf(value));
         });
+//        txt_virtuePoints.setText(String.valueOf(DataStorageUtils.getGddCount(requireContext())));
+
 
         return view;
     }

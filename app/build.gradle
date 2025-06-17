@@ -125,6 +125,18 @@ dependencies {
     //高斯模糊
     implementation 'jp.wasabeef:glide-transformations:3.0.1'
 
+    //版本管理组件-必选
+    implementation enforcedPlatform("com.thingclips.smart:thingsmart-BizBundlesBom:5.8.16")
+    // MiniApp SDK 业务包-必选
+    implementation "com.thingclips.smart:thingsmart-bizbundle-miniapp"
+    // 扩展能力组件集合，提供小程序扩展能力，按需依赖声明
+    // 基础扩展能力，对标微信大部分 API
+    implementation "com.thingclips.smart:thingsmart-bizbundle-basekit"
+    implementation 'com.thingclips.smart:thingsmart-bizbundle-bizkit'
 
+    // 扫码能力
+    // 如果是在中国大陆地区扫码，请依赖
+    // implementation 'com.thingclips.smart:thingsmart-qrcode-scankit:5.8.0-rc.1'
+    // implementation 'com.thingclips.smart:thingsmart-qrcode-api:5.8.0-rc.3'
 
 }

@@ -40,6 +40,7 @@ import android.widget.TextView;
 import com.yunsong.bujen.Local;
 import com.yunsong.bujen.R;
 import com.bumptech.glide.Glide;
+import com.yunsong.bujen.utils.DataStorageUtils;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -55,7 +56,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
     View view;
     LinearLayout lin_setting;
     public static LinearLayout lin_dg;
-    public static int gdd_cont=10086;
+    public static int gdd_cont=0;
     public static int Mi=0;
 //    private Handler handler = new Handler();  // 用于更新 UI
     private MusicService.MusicControl musicControl;
@@ -110,12 +111,19 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
     };
 
     private void updateData() {
-        int gg=Integer.parseInt(txt_gdd.getText().toString());
-        if(gg < gdd_cont){
+        if (getContext() == null) return;
+
+        int localGddCount = DataStorageUtils.getGddCount(requireContext());
+
+        int currentUiGdd = Integer.parseInt(txt_gdd.getText().toString());
+
+        if (currentUiGdd < localGddCount) {
             createBubbleTextView();
-            txt_gdd.setText(gdd_cont+"");
+            txt_gdd.setText(String.valueOf(localGddCount));
         }
-        sharedViewModel.setGddCont(gdd_cont);
+
+        // 更新 ViewModel 中的数据（用于数据共享）
+        sharedViewModel.setGddCont(localGddCount);
     }
     @Override
     public void onCreate(Bundle savedInstanceState) {

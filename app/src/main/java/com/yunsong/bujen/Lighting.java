@@ -41,7 +41,7 @@ public class Lighting extends AppCompatActivity {
     ImageView img_back;
     private ConfirmDialog dialog;
     int position=0;
-    private final String USER_INFO_URL = BuildConfig.API_SERVER+"/dev-api/system/music/app/list"; //获取音乐接口URL
+    private final String USER_INFO_URL = BuildConfig.API_SERVER+"/system/music/app/list"; //获取音乐接口URL
     List<MusicBean> dataList = new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {

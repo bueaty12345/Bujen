@@ -4,11 +4,15 @@ package com.yunsong.bujen;
 import static com.yunsong.bujen.fragment.HomeFragment.gdd_cont;
 
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -17,7 +21,10 @@ import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelStoreOwner;
 
+import com.thing.smart.miniappclient.ThingMiniAppClient;
 import com.yunsong.bujen.fragment.CenterFragment;
 import com.yunsong.bujen.fragment.HFragment;
 import com.yunsong.bujen.fragment.HomeFragment;
@@ -28,6 +35,8 @@ import com.thingclips.smart.home.sdk.callback.IThingGetHomeListCallback;
 import com.thingclips.smart.home.sdk.callback.IThingHomeResultCallback;
 import com.thingclips.smart.sdk.api.IDevListener;
 import com.thingclips.smart.sdk.api.IThingDevice;
+import com.yunsong.bujen.fragment.SettingsViewModel;
+import com.yunsong.bujen.utils.DataStorageUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -42,6 +51,7 @@ public class Homepage extends AppCompatActivity implements View.OnClickListener 
     private final String USER_INFO_URL = BuildConfig.API_SERVER+"/getAppInfo"; //获取信息接口URL
     public static boolean isPaused = false;
     public static TextView txt_gdd;
+    ImageView ivMiniApp;
     TextView txt_home,txt_center,txt_setting;
     FrameLayout ly_content;
     LinearLayout ly_center;
@@ -52,6 +62,10 @@ public class Homepage extends AppCompatActivity implements View.OnClickListener 
     public static IThingDevice mDevice=null;
     public static String homeColor="#ECE0D2";
     public static int homebg=R.drawable.home_bg2;
+
+    private float dX, dY;
+    private float touchDownX;
+    private long lastClickTime = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -100,8 +114,8 @@ public class Homepage extends AppCompatActivity implements View.OnClickListener 
                             }
                             if (value101){
                                 gdd_cont++;//gdd_cont是全局变量
+                                DataStorageUtils.saveGddCount(Homepage.this,gdd_cont);
                             }
-//                            txt_gdd.setText(gdd_cont+"");
                         };
 
                         /**
@@ -186,6 +200,7 @@ public class Homepage extends AppCompatActivity implements View.OnClickListener 
         ly_center=findViewById(R.id.ly_center);
         ly_tab=findViewById(R.id.ly_tab_bar);
         rl_bg=findViewById(R.id.rl_bg);
+        ivMiniApp=findViewById(R.id.iv_miniapp_float);
         fManager = getSupportFragmentManager();//获取 FragmentManager 实例，方便后续进行 Fragment 切换或替换。
         //设置默认Fragment
         txt_home.setSelected(true);
@@ -201,7 +216,56 @@ public class Homepage extends AppCompatActivity implements View.OnClickListener 
 
         new GetUserInfoTask().execute(token);//将该 token 传入一个 AsyncTask（GetUserInfoTask）中异步获取用户信息
         Log.d("MyToken主页", "token = " + token);
+        txt_gdd.setText(String.valueOf(DataStorageUtils.getGddCount(this)));
+
+        ivMiniApp.setOnTouchListener((v, event) -> {
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    dX = v.getX() - event.getRawX();
+                    dY = v.getY() - event.getRawY();
+                    touchDownX = event.getRawX();
+                    return true;
+                case MotionEvent.ACTION_MOVE:
+                    float newX = event.getRawX() + dX;
+                    float newY = event.getRawY() + dY;
+
+                    // 限制边界（防止滑出屏幕）
+                    View parent = (View) v.getParent();
+                    int parentWidth = parent.getWidth();
+                    int parentHeight = parent.getHeight();
+
+                    newX = Math.max(0, Math.min(newX, parentWidth - v.getWidth()));
+                    newY = Math.max(0, Math.min(newY, parentHeight - v.getHeight() - 100));
+
+                    v.setX(newX);
+                    v.setY(newY);
+                    return true;
+                case MotionEvent.ACTION_UP:
+                    if (Math.abs(event.getRawX() - touchDownX) < 20) {
+                        long now = System.currentTimeMillis();
+                        if (now - lastClickTime > 300) {
+                            lastClickTime = now;
+                            openMiniApp();
+                        }
+                    } else {
+                        // 滑动触发
+                        openMiniApp();
+                    }
+                    return true;
+            }
+            return false;
+        });
     }
+
+    private void openMiniApp() {
+        Bundle params = new Bundle();
+        params.putString("from", "homepage_float_ball");
+        ThingMiniAppClient
+                .coreClient()
+                .openMiniAppByAppId(this, "tyfarinynzhfisqswp", null, null);
+    }
+
+
     //重置所有文本的选中状态
     private void setSelected(){
         txt_home.setSelected(false);
@@ -330,5 +394,8 @@ public class Homepage extends AppCompatActivity implements View.OnClickListener 
 
         }
     }
+
+
+
 
 }

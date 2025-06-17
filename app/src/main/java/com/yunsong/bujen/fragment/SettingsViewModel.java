@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 public class SettingsViewModel extends ViewModel {
-    private final MutableLiveData<Integer> gddCont = new MutableLiveData<>();
+    private final MutableLiveData<Integer> gddCont = new MutableLiveData<>(0);
 
     public void setGddCont(int value) {
         gddCont.setValue(value);

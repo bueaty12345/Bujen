@@ -10,9 +10,11 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.yunsong.bujen.MyPray;
 import com.yunsong.bujen.MyTutorial;
 import com.yunsong.bujen.R;
+import com.yunsong.bujen.databean.MyPrayBean;
 import com.yunsong.bujen.fragment.MusicController;
 import com.yunsong.bujen.fragment.MusicService;
 
@@ -21,9 +23,9 @@ import java.util.Map;
 
 public class MyPrayAdapter extends BaseAdapter {
     private Context context;
-    private List<Map<String, Object>> data;
+    private List<MyPrayBean> data;
 
-    public MyPrayAdapter(MyPray local, List<Map<String, Object>> data) {
+    public MyPrayAdapter(MyPray local, List<MyPrayBean> data) {
         this.context = local;
         this.data = data;
     }
@@ -49,36 +51,29 @@ public class MyPrayAdapter extends BaseAdapter {
             holder = new MyPrayAdapter.viewHolder();
             view = LayoutInflater.from(context).inflate(R.layout.item_mypray, viewGroup, false);
             holder.img_tu = view.findViewById(R.id.img_tu);
-//            holder.img_selet = view.findViewById(R.id.img_selet);
             holder.txt_mname = view.findViewById(R.id.txt_mname);
+            holder.second_line=view.findViewById(R.id.second_line);
             view.setTag(holder);
         }else {
             holder = (MyPrayAdapter.viewHolder) view.getTag();
         }
-        Map<String, Object> map=data.get(i);
-        holder.txt_mname.setText((String) map.get("name"));
-        holder.img_tu.setImageResource((int) map.get("image"));
-        // 设置背景颜色
-//        if (i == Mi) {
-//            holder.img_selet.setVisibility(View.VISIBLE);
-//        } else {
-//            holder.img_selet.setVisibility(View.INVISIBLE);
-//        }
+        MyPrayBean item = data.get(i);
+        holder.txt_mname.setText(item.blessing_theme);
+        Glide.with(context)
+                .load(item.blessing_background_url)
+                .placeholder(R.drawable.recommend1)
+                .into(holder.img_tu);
+        holder.second_line.setText(item.zen_quote);
         // 设置点击事件
         view.setOnClickListener(v -> {
             notifyDataSetChanged(); // 刷新适配器
-//            Mi=i;
-//            MusicService.MusicControl control = MusicController.getInstance().getMusicControl();
-//            if (control != null) {
-//                control.play(Mi);
-//            }
 
         });
         return view;
     }
     private final class viewHolder {
         ImageView img_tu,img_selet;
-        TextView txt_mname;
+        TextView txt_mname,second_line;
     }
 
 }

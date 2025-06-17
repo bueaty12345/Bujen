@@ -53,6 +53,7 @@ public class PassLogin extends AppCompatActivity implements View.OnClickListener
             return insets;
         });
         init();
+
     }
     void init() {
         img_back=findViewById(R.id.img_back);

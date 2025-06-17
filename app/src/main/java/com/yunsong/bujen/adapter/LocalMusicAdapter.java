@@ -10,19 +10,20 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.yunsong.bujen.Local;
 import com.yunsong.bujen.R;
+import com.yunsong.bujen.databean.MyMusicBean;
 import com.yunsong.bujen.fragment.MusicController;
 import com.yunsong.bujen.fragment.MusicService;
 
 import java.util.List;
-import java.util.Map;
 
 public class LocalMusicAdapter extends BaseAdapter {
     private Context context;
-    private List<Map<String, Object>> data;
+    private List<MyMusicBean> data;
 
-    public LocalMusicAdapter(Local local, List<Map<String, Object>> data) {
+    public LocalMusicAdapter(Local local, List<MyMusicBean> data) {
         this.context = local;
         this.data = data;
     }
@@ -54,9 +55,12 @@ public class LocalMusicAdapter extends BaseAdapter {
         }else {
             holder = (viewHolder) view.getTag();
         }
-        Map<String, Object> map=data.get(i);
-        holder.txt_mname.setText((String) map.get("name"));
-        holder.img_tu.setImageResource((int) map.get("image"));
+        MyMusicBean item = data.get(i);
+        holder.txt_mname.setText(item.musicName);
+        Glide.with(context)
+                .load(item.musicCover)
+                .placeholder(R.drawable.recommend1) // 可选占位图
+                .into(holder.img_tu);
         // 设置背景颜色
         if (i == Mi) {
             holder.img_selet.setVisibility(View.VISIBLE);
