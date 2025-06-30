@@ -44,7 +44,7 @@ public class Register extends AppCompatActivity implements View.OnClickListener{
     EditText edit_phone,edit_password;
     String phone=null,code="0";
     private boolean isPasswordVisible = false;
-    private final String REGISTER_URL = BuildConfig.API_SERVER+"/dev-api/app/register"; //注册接口URL
+    private final String REGISTER_URL = BuildConfig.API_SERVER+"/app/register"; //注册接口URL
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

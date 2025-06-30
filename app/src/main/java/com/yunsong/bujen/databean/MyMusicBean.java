@@ -21,8 +21,8 @@ public class MyMusicBean implements CollectItem {
     public String description;
     public Date createdAt;
     public Integer requiredMeritPoints;
-    public Integer sc;
-    public Integer dh;
+    public Boolean sc;
+    public Boolean dh;
 
     @Override
     public String toString() {
@@ -178,19 +178,19 @@ public class MyMusicBean implements CollectItem {
         this.requiredMeritPoints = requiredMeritPoints;
     }
 
-    public Integer getSc() {
+    public Boolean getSc() {
         return sc;
     }
 
-    public void setSc(Integer sc) {
+    public void setSc(Boolean sc) {
         this.sc = sc;
     }
 
-    public Integer getDh() {
+    public Boolean getDh() {
         return dh;
     }
 
-    public void setDh(Integer dh) {
+    public void setDh(Boolean dh) {
         this.dh = dh;
     }
 

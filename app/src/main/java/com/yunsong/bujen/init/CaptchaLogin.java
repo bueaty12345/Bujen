@@ -47,7 +47,7 @@ public class CaptchaLogin extends AppCompatActivity implements View.OnClickListe
     private CountDownTimer countdownTimer;
     private boolean isCountingDown = false;
     private static final long COUNTDOWN_TIME_IN_MILLIS = 60000; // 60秒
-    private final String REGISTER_URL = BuildConfig.API_SERVER+"/dev-api/app/login"; //登录接口URL
+    private final String REGISTER_URL = BuildConfig.API_SERVER+"/app/login"; //登录接口URL
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

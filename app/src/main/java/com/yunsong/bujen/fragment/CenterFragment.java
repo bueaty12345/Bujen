@@ -1,6 +1,9 @@
 package com.yunsong.bujen.fragment;
 
+import static android.content.Context.MODE_PRIVATE;
+
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -13,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.yunsong.bujen.Lighting;
 import com.yunsong.bujen.Prays;
@@ -20,7 +24,9 @@ import com.yunsong.bujen.R;
 import com.yunsong.bujen.Supplies;
 import com.yunsong.bujen.Tutorial;
 import com.yunsong.bujen.adapter.LightAdapter;
+import com.yunsong.bujen.adapter.MusicAdapter;
 import com.yunsong.bujen.adapter.MyAdapter;
+import com.yunsong.bujen.adapter.MyCollectAdapter;
 import com.yunsong.bujen.adapter.MyData;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
@@ -31,11 +37,15 @@ import com.youth.banner.adapter.BannerImageAdapter;
 import com.youth.banner.holder.BannerImageHolder;
 import com.youth.banner.indicator.CircleIndicator;
 import com.youth.banner.listener.OnBannerListener;
+import com.yunsong.bujen.adapter.MyTutorialAdapter;
+import com.yunsong.bujen.adapter.TutorialAdapter;
+import com.yunsong.bujen.databean.MusicBean;
+import com.yunsong.bujen.databean.MyLightBean;
+import com.yunsong.bujen.databean.MyTutorialBean;
+import com.yunsong.bujen.utils.ApiHelper;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -47,6 +57,8 @@ public class CenterFragment extends Fragment implements View.OnClickListener, On
     TabLayout tabLayout;
     ListView listView;
     Banner banner;
+
+    int position=0;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -138,21 +150,90 @@ public class CenterFragment extends Fragment implements View.OnClickListener, On
                 .setOnBannerListener(this); // 设置点击监听器
 
 
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener(){
+
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                // 当选项卡被选中时更新 TextView 内容
+                switch (tab.getPosition()) {
+                    case 0:
+                        setSound();//音乐
+                        position=0;
+                        break;
+                    case 1:
+                        setLamplight();//灯光
+                        position=1;
+                        break;
+                    case 2:
+                        setTutorial();//教程
+                        position=1;
+                        break;
+                }
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
+
         return view;
     }
+
+    private void setTutorial() {
+        SharedPreferences sharedPreferences = getContext().getSharedPreferences("AppPrefs", MODE_PRIVATE);
+        String token = sharedPreferences.getString("user_token", null);
+        ApiHelper.fetchTutorialList(getContext(), token, new ApiHelper.Callback<MyTutorialBean>() {
+            @Override
+            public void onSuccess(List<MyTutorialBean> list) {
+                TutorialAdapter adapter = new TutorialAdapter(getContext(), list,R.layout.item_lighting);
+                listView.setAdapter(adapter);
+            }
+
+            @Override
+            public void onError(String message) {
+                Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void setLamplight() {
+        SharedPreferences sharedPreferences = getContext().getSharedPreferences("AppPrefs", MODE_PRIVATE);
+        String token = sharedPreferences.getString("user_token", null);
+        ApiHelper.fetchLightList(getContext(), token, new ApiHelper.Callback<MyLightBean>() {
+            @Override
+            public void onSuccess(List<MyLightBean> list) {
+                LightAdapter adapter = new LightAdapter(getContext(), list);
+                listView.setAdapter(adapter);
+            }
+
+            @Override
+            public void onError(String message) {
+                Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
     private void setSound() {
-        // 准备数据
-        List<Map<String, String>> data = new ArrayList<>();
-        for (int i = 1; i <= 5; i++) {
-            Map<String, String> item = new HashMap<>();
-            item.put("name", "音乐曲目 " + i);
-            item.put("auther","作者："+i);
-            item.put("gdd", "需功德点：" + i * 1000);
-            item.put("sc", "0");
-            data.add(item);
-        }
-        LightAdapter adapter = new LightAdapter(getActivity(), data);
-        listView.setAdapter(adapter);
+        SharedPreferences sharedPreferences =  getContext().getSharedPreferences("AppPrefs", MODE_PRIVATE);
+        String token = sharedPreferences.getString("user_token", null);  // 从 SharedPreferences 获取 token
+        ApiHelper.fetchMusicList(getContext(), token, new ApiHelper.Callback<MusicBean>() {
+            @Override
+            public void onSuccess(List<MusicBean> list) {
+                MusicAdapter adapter = new MusicAdapter(getContext(), list);
+                listView.setAdapter(adapter);
+            }
+
+            @Override
+            public void onError(String message) {
+                Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override

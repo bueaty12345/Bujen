@@ -69,7 +69,8 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:layout_marginTop="10dp">
 
                 <androidx.cardview.widget.CardView
                     android:layout_width="match_parent"
@@ -86,61 +87,11 @@
                         android:orientation="vertical">
 
                         <RelativeLayout
+                            android:id="@+id/img_cover"
                             android:layout_width="match_parent"
                             android:layout_height="193dp"
-                            android:background="@drawable/detail_bg">
+                            android:background="@drawable/recommend1">
 
-                            <VideoView
-                                android:id="@+id/videoView"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content" />
-
-                            <TextView
-                                android:id="@+id/txt_time"
-                                android:layout_width="53dp"
-                                android:layout_height="wrap_content"
-                                android:layout_alignParentTop="true"
-                                android:layout_alignParentEnd="true"
-                                android:layout_marginTop="-13dp"
-                                android:layout_marginEnd="-18dp"
-                                android:background="@drawable/round"
-                                android:backgroundTint="#4549392D"
-                                android:gravity="left"
-                                android:paddingLeft="9dp"
-                                android:paddingTop="15dp"
-                                android:paddingBottom="2dp"
-                                android:text="5:10"
-                                android:textColor="#FFFFFF"
-                                android:textSize="12sp" />
-
-                            <LinearLayout
-                                android:id="@+id/lin_sk"
-                                android:layout_width="wrap_content"
-                                android:layout_height="26dp"
-                                android:layout_alignParentStart="true"
-                                android:layout_alignParentBottom="true"
-                                android:layout_marginStart="8dp"
-                                android:layout_marginBottom="9dp"
-                                android:background="@drawable/round"
-                                android:backgroundTint="#CCC8C1"
-                                android:orientation="horizontal"
-                                android:padding="4dp">
-
-                                <TextView
-                                    android:id="@+id/textView20"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="试看"
-                                    android:textColor="#FFFFFF"
-                                    android:textSize="12sp" />
-
-                                <ImageView
-                                    android:id="@+id/imageView10"
-                                    android:layout_width="19dp"
-                                    android:layout_height="19dp"
-                                    android:layout_marginLeft="6dp"
-                                    app:srcCompat="@drawable/icon_play" />
-                            </LinearLayout>
 
                         </RelativeLayout>
 
@@ -210,10 +161,10 @@
                     </LinearLayout>
 
                     <TextView
-                        android:id="@+id/txt_auther"
+                        android:id="@+id/txt_content"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="作者:留白 | 2024-11-14"
+                        android:text="留白"
                         android:textColor="#9949392D"
                         android:textSize="14sp" />
 
@@ -239,7 +190,7 @@
                         android:visibility="visible" />
 
                     <TextView
-                        android:id="@+id/textView22"
+                        android:id="@+id/txt_description"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="“隐入尘烟处，来去皆随风;炊烟渐起时，相守即是终。
@@ -259,20 +210,6 @@
                         android:textSize="16sp"
                         android:textStyle="normal" />
 
-                    <Button
-                        android:id="@+id/btn_again"
-                        android:layout_width="226dp"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_marginTop="13dp"
-                        android:layout_marginBottom="5dp"
-                        android:background="@drawable/roundgray00"
-                        android:backgroundTint="#DED1C1"
-                        android:gravity="center"
-                        android:text="再听一遍"
-                        android:textColor="#49392D"
-                        android:textSize="16sp"
-                        android:textStyle="normal" />
 
                 </LinearLayout>
 
@@ -287,7 +224,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="8dp"
-                        android:text="相关推荐"
+                        android:text="教程内容"
                         android:textColor="#1C1B1F"
                         android:textSize="18sp" />
 

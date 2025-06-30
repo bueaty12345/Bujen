@@ -62,6 +62,6 @@
         <item>日本</item>
         <item>其他</item>
     </string-array>
-
+    <string name="meditation">Meditation</string>
 
 </resources>

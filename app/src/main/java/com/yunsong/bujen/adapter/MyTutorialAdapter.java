@@ -60,9 +60,10 @@ public class MyTutorialAdapter extends BaseAdapter {
 //                .into(holder.img_tu);
         holder.second_line.setText(String.valueOf(item.createdAt));
 
-        holder.love.setImageResource(item.sc ==1 ? R.drawable.collection_1 : R.drawable.collection_2);
+        holder.love.setImageResource(item.sc ? R.drawable.collection_1 : R.drawable.collection_2);
+
         holder.love.setOnClickListener(v -> {
-            item.sc = (item.sc == 0 ? 1 : 0);
+            item.sc = !item.sc;
             notifyDataSetChanged();
         });
         // 设置背景颜色

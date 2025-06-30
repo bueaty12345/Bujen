@@ -64,7 +64,8 @@
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:scrollbars="none">
+            android:scrollbars="none"
+            android:layout_marginTop="10dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -88,13 +89,18 @@
                         <RelativeLayout
                             android:layout_width="match_parent"
                             android:layout_height="193dp"
-                            android:background="@drawable/detail_bg">
+                            android:background="@drawable/recommend1">
 
                             <ImageView
                                 android:id="@+id/img_tu"
-                                android:layout_width="wrap_content"
+                                android:layout_width="match_parent"
                                 android:layout_height="193dp"
-                                app:srcCompat="@drawable/detail_bg" />
+                                android:scaleType="centerCrop"
+                                android:adjustViewBounds="true"
+                                android:layout_gravity="center"
+                                android:background="@color/gray"
+                                android:contentDescription="封面图"
+                                app:srcCompat="@drawable/recommend1" />
 
                             <TextView
                                 android:id="@+id/txt_time"
@@ -168,14 +174,21 @@
 
                             <TextView
                                 android:id="@+id/txt_mname"
-                                android:layout_width="wrap_content"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:ellipsize="end"
-                                android:maxLines="1"
+                                android:maxWidth="150dp"
                                 android:text="TextView"
                                 android:textColor="#000000"
                                 android:textSize="18sp"
-                                android:textStyle="normal" />
+                                android:textStyle="normal"
+                                android:ellipsize="end"
+                                android:maxLines="1"
+                                android:lineSpacingExtra="4dp"
+                                android:breakStrategy="simple"
+                                android:singleLine="true" />
+
+
+
 
 
                             <ImageView
@@ -200,7 +213,7 @@
                                 app:srcCompat="@drawable/icon_star" />
 
                             <TextView
-                                android:id="@+id/txt_star"
+                                android:id="@+id/txt_rating"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="4.8"
@@ -209,13 +222,38 @@
 
                     </LinearLayout>
 
-                    <TextView
-                        android:id="@+id/txt_auther"
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="TextView"
-                        android:textColor="#9949392D"
-                        android:textSize="14sp" />
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:paddingRight="16dp">
+
+                        <TextView
+                            android:id="@+id/txt_auther"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="作者名"
+                            android:textColor="#9949392D"
+                            android:textSize="14sp" />
+
+                        <!-- 中间竖线 -->
+                        <View
+                            android:layout_width="1dp"
+                            android:layout_height="14dp"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginEnd="8dp"
+                            android:background="#9949392D" />
+
+                        <TextView
+                            android:id="@+id/txt_date"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="2025-06-18"
+                            android:textColor="#9949392D"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+
 
                     <TextView
                         android:id="@+id/txt_gdd"
@@ -239,7 +277,7 @@
                         android:visibility="visible" />
 
                     <TextView
-                        android:id="@+id/textView22"
+                        android:id="@+id/txt_description"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="可以在一方静室,也可以到访一处春山.在方寸之间 在无尽之野 听颂钵伴风铃阵阵妙音,在身心里经历一场轰鸣,有风起风落 有云卷云舒。"

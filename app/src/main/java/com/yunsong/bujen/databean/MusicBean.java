@@ -7,7 +7,7 @@ public class MusicBean {
     private static final long serialVersionUID = 1L;
 
     /** $column.columnComment */
-    private Long musicId;
+    private Integer musicId;
 
     /** 资源类型 */
     private String resourceType;
@@ -27,17 +27,17 @@ public class MusicBean {
     private Long duration;
 
     /** 评分 */
-    private BigDecimal rating;
+    private Number rating;
 
     /** 音乐描述 */
     private String description;
 
     /** 创建时间 */
-    private Date createdAt;
+    private String createdAt;
 
     /** 所需功德点 */
 
-    private Long requiredMeritPoints;
+    private Integer requiredMeritPoints;
 
     /** 是否收藏 */
     private Boolean isSC;
@@ -45,12 +45,12 @@ public class MusicBean {
     /** 是否兑换 */
     private Boolean isDH;
 
-    public void setMusicId(Long musicId)
+    public void setMusicId(Integer musicId)
     {
         this.musicId = musicId;
     }
 
-    public Long getMusicId()
+    public Integer getMusicId()
     {
         return musicId;
     }
@@ -99,12 +99,12 @@ public class MusicBean {
     {
         return duration;
     }
-    public void setRating(BigDecimal rating)
+    public void setRating(Number rating)
     {
         this.rating = rating;
     }
 
-    public BigDecimal getRating()
+    public Number getRating()
     {
         return rating;
     }
@@ -117,21 +117,21 @@ public class MusicBean {
     {
         return description;
     }
-    public void setCreatedAt(Date createdAt)
+    public void setCreatedAt(String createdAt)
     {
         this.createdAt = createdAt;
     }
 
-    public Date getCreatedAt()
+    public String getCreatedAt()
     {
         return createdAt;
     }
-    public void setRequiredMeritPoints(Long requiredMeritPoints)
+    public void setRequiredMeritPoints(Integer requiredMeritPoints)
     {
         this.requiredMeritPoints = requiredMeritPoints;
     }
 
-    public Long getRequiredMeritPoints()
+    public Integer getRequiredMeritPoints()
     {
         return requiredMeritPoints;
     }

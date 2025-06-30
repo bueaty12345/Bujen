@@ -1,6 +1,7 @@
 package com.yunsong.bujen.adapter;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,19 +9,22 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.yunsong.bujen.ConfirmDialog;
 import com.yunsong.bujen.R;
+import com.yunsong.bujen.databean.MyLightBean;
+import com.yunsong.bujen.utils.ExchangeHelper;
 
 import java.util.List;
 import java.util.Map;
 
 public class LightAdapter extends BaseAdapter {
     private Context context;
-    private List<Map<String, String>> data;
+    private List<MyLightBean> data;
     private static int selectedPosition = 0; // 选中的项索引
     private ConfirmDialog dialog;
 
-    public LightAdapter(Context local, List<Map<String, String>> data) {
+    public LightAdapter(Context local, List<MyLightBean> data) {
         this.context = local;
         this.data = data;
     }
@@ -45,47 +49,57 @@ public class LightAdapter extends BaseAdapter {
         if (view == null) {
             holder = new viewHolder();
             view = LayoutInflater.from(context).inflate(R.layout.item_lighting, viewGroup, false);
-            holder.img_tu = view.findViewById(R.id.img_tu);
+            holder.img_tu = view.findViewById(R.id.img_cover);
             holder.img_selet = view.findViewById(R.id.img_selet);
             holder.txt_mname = view.findViewById(R.id.txt_mname);
             holder.txt_gdd = view.findViewById(R.id.txt_gdd);
             holder.txt_hy = view.findViewById(R.id.txt_hy);
             holder.txt_auther = view.findViewById(R.id.txt_auther);
+            holder.txt_star=view.findViewById(R.id.txt_star);
             view.setTag(holder);
-        }else {
+        } else {
             holder = (viewHolder) view.getTag();
         }
-        Map<String, String> map=data.get(i);
-        holder.txt_mname.setText(map.get("name"));
-        holder.txt_gdd.setText(map.get("gdd"));
-        holder.txt_auther.setText(map.get("auther"));
-        // 设置选中状态
-        holder.img_selet.setImageResource(map.get("sc").equals("1") ? R.drawable.collection_1 : R.drawable.collection_2);
+
+        MyLightBean item = data.get(i);
+        holder.txt_mname.setText(item.getBackgroundName());
+        holder.txt_gdd.setText("需功德点：" + item.getRequiredMeritPoints());
+        holder.txt_auther.setText("作者：" + item.getAuthor());
+        if(item.getRating()==null){
+            holder.txt_star.setText("0");
+        }else {
+            holder.txt_star.setText(item.getRating().toString());
+        }
+
+        holder.img_selet.setImageResource(item.isSc() ? R.drawable.collection_1 : R.drawable.collection_2);
+
         holder.img_selet.setOnClickListener(v -> {
-            if(data.get(i).get("sc").equals("0")){
-                holder.img_selet.setImageResource(R.drawable.collection_1);
-                data.get(i).put("sc","1");
-            }
-            else {
-                holder.img_selet.setImageResource(R.drawable.collection_2);
-                data.get(i).put("sc","0");
-            }
-            notifyDataSetChanged(); // 刷新适配器
-
+            item.setSc(!item.isSc());
+            notifyDataSetChanged();
         });
-        holder.txt_hy.setOnClickListener(v -> {
-            if(holder.txt_hy.getText().equals("待兑换")){
-//               showDialog(v.findViewById(R.id.txt_hy));
-                setDialog(holder.txt_hy);
-                notifyDataSetChanged(); // 刷新适配器
-            }
 
-        });
+        boolean dh = ExchangeHelper.isExchanged(context, item.getResourceType(), item.getBackgroundId());
+        holder.txt_hy.setText(dh ? "已兑换" : "待兑换");
+
+
+//        holder.img_tu.setImageResource(item.getBackgroundImageUrl());
+        //封面
+        String backgroundImageUrl = item.getBackgroundImageUrl();
+        Log.d("图片","地址"+backgroundImageUrl);
+        if (backgroundImageUrl != null && !backgroundImageUrl.isEmpty()) {
+            Glide.with(context)
+                    .load(backgroundImageUrl)
+                    .placeholder(R.drawable.detail_bg)
+                    .error(R.drawable.detail_bg)
+                    .into(holder.img_tu);
+        }
+
+
         return view;
     }
     private final class viewHolder {
         ImageView img_tu,img_selet;
-        TextView txt_mname,txt_gdd,txt_hy,txt_auther;
+        TextView txt_mname,txt_gdd,txt_hy,txt_auther,txt_star;
     }
     private void setDialog(TextView v) {
         ConfirmDialog.Builder builder = new ConfirmDialog.Builder(context);

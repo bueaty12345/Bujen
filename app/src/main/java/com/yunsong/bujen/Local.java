@@ -17,7 +17,9 @@ import androidx.core.view.WindowInsetsCompat;
 import com.yunsong.bujen.adapter.LocalLightAdapter;
 import com.yunsong.bujen.adapter.LocalMusicAdapter;
 import com.google.android.material.tabs.TabLayout;
+import com.yunsong.bujen.databean.MyLightBean;
 import com.yunsong.bujen.databean.MyMusicBean;
+import com.yunsong.bujen.utils.CommonFetchTask;
 import com.yunsong.bujen.utils.UserInfoUtils;
 
 import org.json.JSONArray;
@@ -142,8 +144,8 @@ public class Local extends AppCompatActivity {
                     item.musicCover = obj.optString("musicCover");
                     item.musicUrl = obj.optString("musicUrl");
                     item.requiredMeritPoints = obj.optInt("requiredMeritPoints");
-                    item.sc = obj.optInt("sc", 0);
-                    item.dh = obj.optInt("dh", 0);
+                    item.sc = obj.optBoolean("sc");
+                    item.dh = obj.optBoolean("dh");
                     item.rating=obj.optDouble("rating");
                     data.add(item);
                 }
@@ -165,44 +167,58 @@ public class Local extends AppCompatActivity {
 
     }
     private void setLamplight() {
-// 准备数据
-        String[] dd={"关闭","绿色","红色","橙色","蓝色"};
-        List<Map<String, String>> data = new ArrayList<>();
-        for (int i = 1; i <= 4; i++) {
-            Map<String, String> item = new HashMap<>();
-            item.put("name", "灯光 " + i);
-            data.add(item);
-        }
-        LocalLightAdapter adapter;
-        // 创建适配器
-        String[] from = {"name"}; // 数据源的键
-        int[] to = {R.id.txt_mname}; // 布局文件中的视图 ID
-        adapter = new LocalLightAdapter(this, data);
-        listView.setAdapter(adapter);
+        String token = UserInfoUtils.getToken(this);
+        new CommonFetchTask<>(this, LIGHT_INFO_URL,
+                rows -> {
+                    List<MyLightBean> data = new ArrayList<>();
+                    for (int i = 0; i < rows.length(); i++) {
+                        JSONObject obj = rows.getJSONObject(i);
+                        MyLightBean item = new MyLightBean();
+                        item.backgroundId = obj.optInt("backgroundId");
+                        item.resourceType = obj.optString("resourceType");
+                        item.backgroundImageUrl = obj.optString("backgroundImageUrl");
+                        item.backgroundName = obj.optString("backgroundName");
+                        item.author = obj.optString("author");
+                        item.rating = obj.optDouble("rating");
+                        item.description = obj.optString("description");
+                        item.createdAt = obj.optString("createdAt");
+                        item.requiredMeritPoints = obj.optInt("requiredMeritPoints");
+                        item.sc = obj.optBoolean("sc");
+                        item.dh = obj.optBoolean("dh");
+                        data.add(item);
+                    }
+                    return data;
+                },
+                data -> listView.setAdapter(new LocalLightAdapter(Local.this, data)),
+                "LightFetch"
+        ).execute(token);
     }
 
     private void setMusic() {
         String token = UserInfoUtils.getToken(this);
-        new Local.FetchMusicTask().execute(token);
-//        // 准备数据
-//        List<Map<String, Object>> data = new ArrayList<>();
-//        int[] imageIds = {
-//                R.drawable.local_music1,
-//                R.drawable.local_music2,
-//                R.drawable.local_music3,
-//                R.drawable.local_music4,
-//                R.drawable.local_music5
-//        };
-//        for (int i = 1; i <= 5; i++) {
-//            Map<String, Object> item = new HashMap<>();
-//            item.put("name", "音乐曲目 " + i);
-//            item.put("image", imageIds[i-1]);
-//            data.add(item);
-//        }
-//
-//        // 创建适配器
-//        LocalMusicAdapter adapter = new LocalMusicAdapter(this, data);
-//        listView.setAdapter(adapter);
+        new CommonFetchTask<>(this, MUSIC_INFO_URL,
+                rows -> {
+                    List<MyMusicBean> data = new ArrayList<>();
+                    for (int i = 0; i < rows.length(); i++) {
+                        JSONObject obj = rows.getJSONObject(i);
+                        MyMusicBean item = new MyMusicBean();
+                        item.musicName = obj.optString("musicName");
+                        item.singer = obj.optString("singer");
+                        item.duration = obj.optInt("duration");
+                        item.musicCover = obj.optString("musicCover");
+                        item.musicUrl = obj.optString("musicUrl");
+                        item.requiredMeritPoints = obj.optInt("requiredMeritPoints");
+                        item.sc = obj.optBoolean("sc");
+                        item.dh = obj.optBoolean("dh");
+                        item.rating = obj.optDouble("rating");
+                        data.add(item);
+                    }
+                    return data;
+                },
+                data -> listView.setAdapter(new LocalMusicAdapter(Local.this, data)),
+                "MusicFetch"
+        ).execute(token);
+
     }
 
 }

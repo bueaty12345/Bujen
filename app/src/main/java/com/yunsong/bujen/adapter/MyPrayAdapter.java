@@ -25,8 +25,8 @@ public class MyPrayAdapter extends BaseAdapter {
     private Context context;
     private List<MyPrayBean> data;
 
-    public MyPrayAdapter(MyPray local, List<MyPrayBean> data) {
-        this.context = local;
+    public MyPrayAdapter(Context context, List<MyPrayBean> data) {
+        this.context = context;
         this.data = data;
     }
     @Override
@@ -53,6 +53,7 @@ public class MyPrayAdapter extends BaseAdapter {
             holder.img_tu = view.findViewById(R.id.img_tu);
             holder.txt_mname = view.findViewById(R.id.txt_mname);
             holder.second_line=view.findViewById(R.id.second_line);
+            holder.txt_alreadyHave=view.findViewById(R.id.txt_alreadyHave);
             view.setTag(holder);
         }else {
             holder = (MyPrayAdapter.viewHolder) view.getTag();
@@ -63,17 +64,30 @@ public class MyPrayAdapter extends BaseAdapter {
                 .load(item.blessing_background_url)
                 .placeholder(R.drawable.recommend1)
                 .into(holder.img_tu);
-        holder.second_line.setText(item.zen_quote);
-        // 设置点击事件
-        view.setOnClickListener(v -> {
-            notifyDataSetChanged(); // 刷新适配器
 
-        });
+        holder.second_line.setText(item.blessingMethod);//Text,ImageText,Audio
+        switch (item.blessingMethod) {
+            case "Text":
+                holder.second_line.setText("800字限定");
+                break;
+            case "ImageText":
+                holder.second_line.setText("900字 + 1图限定");
+                break;
+            case "Audio":
+                holder.second_line.setText("6'00\"语音限定");
+                break;
+            default:
+                holder.second_line.setText("800字限定");
+                break;
+        }
+
+        holder.txt_alreadyHave.setText("已有"+item.exchangeQuantity);
+
         return view;
     }
     private final class viewHolder {
         ImageView img_tu,img_selet;
-        TextView txt_mname,second_line;
+        TextView txt_mname,second_line,txt_alreadyHave;
     }
 
 }

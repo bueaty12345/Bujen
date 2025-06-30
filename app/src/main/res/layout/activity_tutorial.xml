@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/y_bg1"
+    android:background="#ECE0D2"
     tools:context=".Tutorial">
 
     <LinearLayout
@@ -43,30 +43,6 @@
 
         </LinearLayout>
 
-        <com.google.android.material.tabs.TabLayout
-            android:id="@+id/tab_tutorial"
-            android:layout_width="224dp"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="16dp"
-            app:tabIndicatorColor="@color/black"
-            app:tabRippleColor="@android:color/transparent">
-
-            <com.google.android.material.tabs.TabItem
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="广场" />
-
-            <com.google.android.material.tabs.TabItem
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="已兑换" />
-
-            <com.google.android.material.tabs.TabItem
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="收藏" />
-        </com.google.android.material.tabs.TabLayout>
-
 
         <GridView
             android:id="@+id/grid_tutorial"
@@ -74,7 +50,7 @@
             android:layout_height="match_parent"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
-            android:numColumns="2"
+            android:numColumns="1"
             android:listSelector="@android:color/transparent"/>
 
     </LinearLayout>

@@ -2,7 +2,7 @@ package com.yunsong.bujen.databean;
 
 import com.yunsong.bujen.model.CollectItem;
 
-public class MyPrayBean implements CollectItem {
+public class MyPrayBean  {
     public Integer blessing_id;
     public String resource_type;
     public String blessing_category;
@@ -11,6 +11,8 @@ public class MyPrayBean implements CollectItem {
     public String zen_quote;
     public String created_at;
     public Integer required_merit_points;
+    public String blessingMethod;
+    public Integer exchangeQuantity;
 
     @Override
     public String toString() {
@@ -23,6 +25,8 @@ public class MyPrayBean implements CollectItem {
                 ", zen_quote='" + zen_quote + '\'' +
                 ", created_at='" + created_at + '\'' +
                 ", required_merit_points=" + required_merit_points +
+                ", blessingMethod='" + blessingMethod + '\'' +
+                ", exchangeQuantity=" + exchangeQuantity +
                 '}';
     }
 
@@ -90,8 +94,19 @@ public class MyPrayBean implements CollectItem {
         this.required_merit_points = required_merit_points;
     }
 
-    @Override
-    public int getType() {
-        return 3;
+    public String getBlessingMethod() {
+        return blessingMethod;
+    }
+
+    public void setBlessingMethod(String blessingMethod) {
+        this.blessingMethod = blessingMethod;
+    }
+
+    public Integer getExchangeQuantity() {
+        return exchangeQuantity;
+    }
+
+    public void setExchangeQuantity(Integer exchangeQuantity) {
+        this.exchangeQuantity = exchangeQuantity;
     }
 }

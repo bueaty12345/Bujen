@@ -44,7 +44,8 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
             android:orientation="vertical"
             android:padding="10dp">
 
@@ -57,37 +58,22 @@
                 android:textSize="24sp" />
 
             <TextView
-                android:id="@+id/textView30"
+                android:id="@+id/new_date"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="2024 年 12 月 23 日" />
 
-            <Button
-                android:id="@+id/btn_write"
+            <ListView
+                android:id="@+id/list_local"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="纯文" />
-
-            <Button
-                android:id="@+id/btn_write2"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="图文" />
-
-            <Button
-                android:id="@+id/btn_write3"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="语音" />
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:layout_marginTop="16dp"
+                android:divider="@android:color/transparent"
+                android:listSelector="@android:color/transparent" />
         </LinearLayout>
 
-        <ListView
-            android:id="@+id/list_local"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="16dp"
-            android:divider="@android:color/transparent"
-            android:listSelector="@android:color/transparent" />
+
 
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

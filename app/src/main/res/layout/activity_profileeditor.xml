@@ -79,8 +79,8 @@
 
                             <ImageView
                                 android:id="@+id/img_icon_headPortrait"
-                                android:layout_width="20dp"
-                                android:layout_height="20dp"
+                                android:layout_width="32dp"
+                                android:layout_height="32dp"
                                 android:src="@drawable/icon_phonenumber"
                                 android:layout_gravity="center_vertical"
                                 android:contentDescription="图标"/>
@@ -113,7 +113,7 @@
                             android:text="昵称" />
 
                         <TextView
-                            android:id="@+id/tv_nickname_info"
+                            android:id="@+id/et_nickname"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="摸鱼高阶选手"

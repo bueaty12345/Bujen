@@ -14,6 +14,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.thingclips.smart.android.user.api.ILogoutCallback;
+import com.thingclips.smart.bizbundle.initializer.BizBundleInitializer;
 import com.thingclips.smart.home.sdk.ThingHomeSdk;
 import com.thingclips.smart.sdk.api.IResultCallback;
 import com.yunsong.bujen.ConfirmDialog;
@@ -121,6 +122,7 @@ public class Setting extends AppCompatActivity implements View.OnClickListener{
             @Override
             public void onSuccess() {
                 // 退出登录成功
+                BizBundleInitializer.onLogout(Setting.this);
                 Intent intent = new Intent(Setting.this, Login.class);
                 startActivity(intent);
                 finish();

@@ -3,14 +3,14 @@ package com.yunsong.bujen;
 
 import static com.yunsong.bujen.fragment.HomeFragment.gdd_cont;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -19,15 +19,17 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.lifecycle.ViewModelStoreOwner;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.CustomTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.thing.smart.miniappclient.ThingMiniAppClient;
 import com.yunsong.bujen.fragment.CenterFragment;
 import com.yunsong.bujen.fragment.HFragment;
-import com.yunsong.bujen.fragment.HomeFragment;
 import com.yunsong.bujen.fragment.SettingsFragment;
 import com.thingclips.smart.home.sdk.ThingHomeSdk;
 import com.thingclips.smart.home.sdk.bean.HomeBean;
@@ -35,8 +37,8 @@ import com.thingclips.smart.home.sdk.callback.IThingGetHomeListCallback;
 import com.thingclips.smart.home.sdk.callback.IThingHomeResultCallback;
 import com.thingclips.smart.sdk.api.IDevListener;
 import com.thingclips.smart.sdk.api.IThingDevice;
-import com.yunsong.bujen.fragment.SettingsViewModel;
 import com.yunsong.bujen.utils.DataStorageUtils;
+import com.yunsong.bujen.utils.UserInfoUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -77,9 +79,13 @@ public class Homepage extends AppCompatActivity implements View.OnClickListener 
         txt_home.setOnClickListener(this);
         txt_center.setOnClickListener(this);
         txt_setting.setOnClickListener(this);
+        gdd_cont = DataStorageUtils.getGddCount(Homepage.this);
+        Log.d("TokenCheck", "当前本地token: " + UserInfoUtils.getToken(this));
 
-
+        loadBgFromPrefs();
     }
+
+
 
     private void getDeviceMessage() {
         ThingHomeSdk.newHomeInstance(homeId).getHomeDetail(new IThingHomeResultCallback() {
@@ -114,7 +120,7 @@ public class Homepage extends AppCompatActivity implements View.OnClickListener 
                             }
                             if (value101){
                                 gdd_cont++;//gdd_cont是全局变量
-                                DataStorageUtils.saveGddCount(Homepage.this,gdd_cont);
+                                com.yunsong.bujen.utils.DataStorageUtils.saveGddCount(Homepage.this,gdd_cont);
                             }
                         };
 
@@ -211,12 +217,11 @@ public class Homepage extends AppCompatActivity implements View.OnClickListener 
 //        ly_tab.setBackgroundColor(Color.parseColor(homeColor));
         ly_center.setOnClickListener(this);
         //从本地获取 token 并调用后台接口拉取用户数据
-        SharedPreferences sharedPreferences = getSharedPreferences("AppPrefs", MODE_PRIVATE);
-        String token = sharedPreferences.getString("user_token", null);  // 从 SharedPreferences 获取 token
 
-        new GetUserInfoTask().execute(token);//将该 token 传入一个 AsyncTask（GetUserInfoTask）中异步获取用户信息
-        Log.d("MyToken主页", "token = " + token);
-        txt_gdd.setText(String.valueOf(DataStorageUtils.getGddCount(this)));
+        String token = UserInfoUtils.getToken(this);
+
+        new GetUserInfoTask().execute(token);
+        txt_gdd.setText(String.valueOf(com.yunsong.bujen.utils.DataStorageUtils.getGddCount(this)));
 
         ivMiniApp.setOnTouchListener((v, event) -> {
             switch (event.getAction()) {
@@ -368,16 +373,19 @@ public class Homepage extends AppCompatActivity implements View.OnClickListener 
                     String nickname = dataObject.optString("nickname");
                     String phone = dataObject.optString("phone");
                     String signature = dataObject.optString("signature");
-                    // 你可以根据接口返回的字段设置用户的其他信息
-                    Log.d("UserInfo", "nickname: " + nickname);
-                    Log.d("UserInfo", "phone: " + phone);
-                    Log.d("UserInfo", "email: " + signature);
+                    String gender = dataObject.optString("gender");
+                    String avatar = dataObject.optString("avatar");
+                    Integer id = dataObject.optInt("id");
+
                     // 保存用户信息到 SharedPreferences,本地
                     SharedPreferences sharedPreferences = getSharedPreferences("AppPrefs", MODE_PRIVATE);
                     SharedPreferences.Editor editor = sharedPreferences.edit();
                     editor.putString("user_nickname", nickname);
                     editor.putString("user_phone", phone);
                     editor.putString("user_signature",signature);
+                    editor.putString("user_gender",gender);
+                    editor.putString("user_avatar",avatar);
+                    editor.putInt("id",id);
                     editor.apply();  // 使用 apply() 异步保存
 
                     // 在 UI 上显示用户信息
@@ -395,7 +403,44 @@ public class Homepage extends AppCompatActivity implements View.OnClickListener 
         }
     }
 
+    private void loadBgFromPrefs() {
+        SharedPreferences prefs = getSharedPreferences("homepage_config", MODE_PRIVATE);
+        String bgUrl = prefs.getString("bg_url", null);
 
+        if (bgUrl != null && !bgUrl.isEmpty()) {
+            // 用 Glide 加载网络图片，设置为背景
+            Glide.with(this)
+                    .load(bgUrl)
+                    .into(new CustomTarget<Drawable>() {
+                        @Override
+                        public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
+                            rl_bg.setBackground(resource);
+                        }
+
+                        @Override
+                        public void onLoadCleared(@Nullable Drawable placeholder) {
+                            // 清理时可以设置默认背景
+                            rl_bg.setBackground(placeholder);
+                        }
+                    });
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        int gdd = com.yunsong.bujen.utils.DataStorageUtils.getGddCount(this);
+        txt_gdd.setText(String.valueOf(gdd));
+
+        loadBgFromPrefs();
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+
+        loadBgFromPrefs();
+    }
 
 
 }

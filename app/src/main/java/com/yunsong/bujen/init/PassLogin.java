@@ -21,11 +21,13 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.alibaba.fastjson.JSONObject;
+import com.thingclips.smart.bizbundle.initializer.BizBundleInitializer;
 import com.yunsong.bujen.BuildConfig;
 import com.yunsong.bujen.R;
 import com.thingclips.smart.android.user.api.ILoginCallback;
 import com.thingclips.smart.android.user.bean.User;
 import com.thingclips.smart.home.sdk.ThingHomeSdk;
+import com.yunsong.bujen.guidance.AgeActivity;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -123,7 +125,8 @@ public class PassLogin extends AppCompatActivity implements View.OnClickListener
             @Override
             public void onSuccess(User user) {
                 //注登录成功跳首页
-                startActivity(new Intent(PassLogin.this, Connect.class));
+                BizBundleInitializer.onLogin();
+                startActivity(new Intent(PassLogin.this, AgeActivity.class));
                 Toast.makeText(PassLogin.this, getResources().getString(R.string.login_success), Toast.LENGTH_SHORT).show();
                 Log.d("RegisterTask", "uid: " + user.getUid());
                 LoginUser(phone,password,user.getUid());

@@ -20,23 +20,22 @@ public class MyTutorialBean implements CollectItem {
     public String description;
     public String createdAt;
     public int requiredMeritPoints;
-    public Integer sc;
+    public Boolean sc;
+    public Boolean dh;
 
-    public Integer getDh() {
+    public Boolean getDh() {
         return dh;
     }
 
-    public void setDh(Integer dh) {
+    public void setDh(Boolean dh) {
         this.dh = dh;
     }
 
-    public Integer dh;
-
-    public Integer getSc() {
+    public Boolean getSc() {
         return sc;
     }
 
-    public void setSc(Integer sc) {
+    public void setSc(Boolean sc) {
         this.sc = sc;
     }
 

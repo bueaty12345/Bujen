@@ -16,6 +16,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -24,6 +25,7 @@ import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,18 +40,38 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.yunsong.bujen.BuildConfig;
+import com.yunsong.bujen.ConfirmDialog;
 import com.yunsong.bujen.R;
+import com.yunsong.bujen.utils.FileUploadUtils;
+import com.yunsong.bujen.utils.FileUtils;
+import com.yunsong.bujen.utils.UserInfoUtils;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 import java.util.Stack;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class ParyWrite extends AppCompatActivity implements View.OnClickListener {
     private ImageView img_main, img_zp, img_xj,img_play,img_stop;
     private ImageView img_back,img_chehui,img_huifu,img_ok;
     private LinearLayout lin_write,lin_high;
-    private TextView txt_cancel,txt_duration;
+    private TextView txt_cancel,txt_duration,txt_sort ,txt_date ;
     private EditText edtxt_content,edtxt_title;
 
     private static final int PERMISSION_REQUEST_CODE = 0;
@@ -72,6 +94,12 @@ public class ParyWrite extends AppCompatActivity implements View.OnClickListener
     private Stack<String> undoStack = new Stack<>();
     private Stack<String> redoStack = new Stack<>();
     private boolean isUserTyping = true; // 标记用户是否正在输入
+    private File imageFile;
+    private String imageUrl = "";
+
+    private BottomSheetDialog bottomSheetDialog;
+
+    private ConfirmDialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,18 +128,30 @@ public class ParyWrite extends AppCompatActivity implements View.OnClickListener
         edtxt_content = findViewById(R.id.edtxt_content);
         edtxt_title = findViewById(R.id.edtxt_title);
 
-
-
-
-
         Intent intent=getIntent();
         type=intent.getStringExtra("type");
+        txt_sort = findViewById(R.id.txt_sort);
+        txt_date = findViewById(R.id.txt_date);
+        if ("纯文".equals(type)) {
+            txt_sort.setText("800字限定");
+        } else if ("图文".equals(type)) {
+            txt_sort.setText("900字+1图限定");
+        } else if ("语音".equals(type)) {
+            txt_sort.setText("6’00”语音限定");
+        } else {
+            txt_sort.setText("未知类型");
+        }
+
         if(type.equals("纯文")){
             lin_high.setVisibility(View.GONE);
         }else if(type.equals("语音")){
             img_main.setImageResource(R.drawable.icon_yuyin);
-
         }
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日 HH:mm", Locale.CHINA);
+        String currentDateTime = sdf.format(new Date());
+        txt_date.setText(currentDateTime);
+
         audioRecorder = new AudioRecorder();
         img_main.setOnClickListener(this);
         img_zp.setOnClickListener(this);
@@ -218,41 +258,44 @@ public class ParyWrite extends AppCompatActivity implements View.OnClickListener
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == Activity.RESULT_OK) {
+            Bitmap bitmap = null;
             if (requestCode == OPEN_GALLERY_REQUEST_CODE && data != null) {
                 try {
-                    InputStream inputStream = getContentResolver().openInputStream(data.getData());
-                    Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-                    updateImageView(bitmap);
-                } catch (FileNotFoundException e) {
+                    Uri uri = data.getData();
+                    imageFile = FileUtils.uriToFile(this, uri);
+                    bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(uri));
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             } else if (requestCode == REQUEST_TAKE_PHOTO && data != null) {
                 Bundle extras = data.getExtras();
                 if (extras != null && extras.containsKey("data")) {
-                    Bitmap imageBitmap = (Bitmap) extras.get("data");
-                    updateImageView(imageBitmap);
+                    bitmap = (Bitmap) extras.get("data");
+                    try {
+                        imageFile = FileUtils.bitmapToTempFile(this, bitmap);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
+            }
+
+            if (bitmap != null) {
+                updateImageView(bitmap); // 展示图片
+                uploadImageFile();       // 上传图片
             }
         }
     }
 
     // 更新 ImageView 或添加新的 ImageView
     private void updateImageView(Bitmap bitmap) {
-        // 获取最后一个子视图
         View lastChild = lin_write.getChildAt(lin_write.getChildCount() - 1);
-        // 判断最后一个子视图是否为 ImageView 类型
         if (lastChild instanceof ImageView) {
             ((ImageView) lastChild).setImageBitmap(bitmap);
         } else {
             ImageView mImg = new ImageView(this);
-            // 获取屏幕宽度
-            int screenWidth = getResources().getDisplayMetrics().widthPixels;  // 单位为像素
-
+            int screenWidth = getResources().getDisplayMetrics().widthPixels;
             float aspectRatio = (float) bitmap.getWidth() / bitmap.getHeight();
-
-// 根据屏幕宽度计算高度
             int height = (int) (screenWidth / aspectRatio);
-
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(screenWidth, height);
             mImg.setLayoutParams(params);
             mImg.setImageBitmap(bitmap);
@@ -266,7 +309,7 @@ public class ParyWrite extends AppCompatActivity implements View.OnClickListener
 
     public void setDialog(){
         // 参数2：设置BottomSheetDialog的主题样式；将背景设置为transparent，这样我们写的shape_bottom_sheet_dialog.xml才会起作用
-        BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this, R.style.BottomSheetDialog);
+        bottomSheetDialog = new BottomSheetDialog(this, R.style.BottomSheetDialog);
 //不传第二个参数
 //BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this);
 
@@ -351,6 +394,11 @@ public class ParyWrite extends AppCompatActivity implements View.OnClickListener
             case R.id.img_stop:
                 audioRecorder.stopRecording();
                 stopRecordingTimer(); // 停止计时
+
+                if (!TextUtils.isEmpty(recordedFilePath)) {
+                    addAudioCard(recordedFilePath, txt_duration.getText().toString());
+                }
+
                 Toast.makeText(this, "录音已保存: " + recordedFilePath, Toast.LENGTH_LONG).show();
                 break;
             case R.id.img_play:
@@ -362,6 +410,7 @@ public class ParyWrite extends AppCompatActivity implements View.OnClickListener
                 Toast.makeText(this, "录音开始", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.img_ok:
+                saveBlessing();
                 break;
             case R.id.img_huifu:
                 if (!redoStack.isEmpty()) {
@@ -395,6 +444,210 @@ public class ParyWrite extends AppCompatActivity implements View.OnClickListener
 //                break;
         }
     }
+
+    private void addAudioCard(String audioPath, String duration) {
+        View audioCard = LayoutInflater.from(this).inflate(R.layout.item_voiceinfo, null);
+
+        TextView tvTotalTime = audioCard.findViewById(R.id.tv_total_time);
+        TextView tvDuration = audioCard.findViewById(R.id.tv_audio_duration);
+        SeekBar seekBar = audioCard.findViewById(R.id.seekBar);
+        TextView tvProgress = audioCard.findViewById(R.id.tv_progress);
+        ImageView btnPlay = audioCard.findViewById(R.id.btn_play);
+        ImageView btnDelete = audioCard.findViewById(R.id.btn_delete);
+
+        // 设置时长
+        tvTotalTime.setText(duration);
+        tvDuration.setText(duration);
+
+        // 播放按钮逻辑
+        btnPlay.setOnClickListener(v -> {
+            playAudioWithSeekBar(audioPath, seekBar, tvProgress);
+        });
+
+        // 删除按钮弹窗确认
+        btnDelete.setOnClickListener(v -> {
+            ConfirmDialog.Builder builder = new ConfirmDialog.Builder(this);
+             dialog = builder
+                    .cancelTouchout(false)
+                    .view(R.layout.dialog_confirm)
+                    .style(R.style.Dialog)
+                    .addViewOnclick(R.id.txt_confirm, v1 -> {
+                        lin_write.removeView(audioCard);
+                        recordedFilePath = null;
+                    })
+                    .addViewOnclick(R.id.txt_confirm, v1 -> {
+                        lin_write.removeView(audioCard);
+                        recordedFilePath = null;
+                        dialog.dismiss(); // 加这句
+                    })
+                    .build();
+
+            // 设置弹窗文字
+            TextView tvTitle = dialog.findViewById(R.id.txt_title);
+            if (tvTitle != null) {
+                tvTitle.setText("确定是否删除内容");
+            }
+
+            dialog.show();
+        });
+
+        lin_write.addView(audioCard);
+
+        // 上传语音文件
+        File audioFile = new File(audioPath);
+        FileUploadUtils.uploadFile(this, audioFile, new FileUploadUtils.UploadCallback() {
+            @Override
+            public void onSuccess(String url) {
+                recordedFilePath = url;
+                runOnUiThread(() -> Toast.makeText(ParyWrite.this, "语音上传成功", Toast.LENGTH_SHORT).show());
+            }
+
+            @Override
+            public void onFailure(String errorMsg) {
+                runOnUiThread(() -> Toast.makeText(ParyWrite.this, "语音上传失败：" + errorMsg, Toast.LENGTH_SHORT).show());
+            }
+        });
+    }
+
+    private void playAudioWithSeekBar(String filePath, SeekBar seekBar, TextView tvProgress) {
+        if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+            mediaPlayer.stop();
+            mediaPlayer.release();
+        }
+
+        mediaPlayer = new MediaPlayer();
+        try {
+            mediaPlayer.setDataSource(filePath);
+            mediaPlayer.prepare();
+            mediaPlayer.start();
+
+            seekBar.setMax(mediaPlayer.getDuration());
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+                        int current = mediaPlayer.getCurrentPosition();
+                        seekBar.setProgress(current);
+                        tvProgress.setText(formatTime(current / 1000));
+                        handler.postDelayed(this, 500);
+                    }
+                }
+            }, 0);
+
+            mediaPlayer.setOnCompletionListener(mp -> {
+                seekBar.setProgress(0);
+                tvProgress.setText("00:00");
+            });
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            Toast.makeText(this, "播放失败", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
+    private void uploadImageFile() {
+        if (imageFile == null) return;
+
+        FileUploadUtils.uploadFile(this, imageFile, new FileUploadUtils.UploadCallback() {
+            @Override
+            public void onSuccess(String url) {
+                imageUrl = url;
+                runOnUiThread(() ->
+                        Toast.makeText(ParyWrite.this, "图片上传成功", Toast.LENGTH_SHORT).show()
+                );
+            }
+
+            @Override
+            public void onFailure(String errorMsg) {
+                runOnUiThread(() ->
+                        Toast.makeText(ParyWrite.this, "图片上传失败：" + errorMsg, Toast.LENGTH_SHORT).show()
+                );
+            }
+        });
+    }
+
+    private void saveBlessing() {
+        String title = edtxt_title.getText().toString().trim();
+        String content = edtxt_content.getText().toString().trim();
+
+        if (TextUtils.isEmpty(title) || TextUtils.isEmpty(content)) {
+            Toast.makeText(this, "标题或内容不能为空", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String blessingMethod = getIntent().getStringExtra("blessingMethod");
+        if ("图文".equals(blessingMethod)) {
+            if (imageFile == null) {
+                Toast.makeText(this, "请先选择或拍摄一张图片", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            postBlessing(title, content, blessingMethod, imageUrl, recordedFilePath);
+        } else if ("语音".equals(blessingMethod)) {
+            if (TextUtils.isEmpty(recordedFilePath)) {
+                Toast.makeText(this, "请先录音", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            postBlessing(title, content, blessingMethod, imageUrl, recordedFilePath);
+        } else {
+            postBlessing(title, content, blessingMethod, imageUrl, recordedFilePath);
+        }
+
+    }
+
+    private void postBlessing(String title, String content, String blessingMethod,String imageUrl,String audioUrl) {
+        String token = UserInfoUtils.getToken(this);
+        int userId = UserInfoUtils.getUserId(this);
+        int blessingId = getIntent().getIntExtra("blessingId", 1);
+
+        JSONObject json = new JSONObject();
+        try {
+            json.put("userId", userId);
+            json.put("blessingTime", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(new Date()));
+            json.put("blessingId", blessingId);
+            json.put("blessingTitle", title);
+            json.put("blessingMethod", blessingMethod);
+            json.put("blessingContent", content);
+            json.put("blessingAudioUrl", audioUrl);
+            json.put("blessingImageUrl", imageUrl);
+            json.put("wishTime", "");
+            json.put("achieveTime", "");
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return;
+        }
+
+        Log.d("postBlessing","postBlessing"+json);
+        OkHttpClient client = new OkHttpClient();
+        RequestBody body = RequestBody.create(json.toString(), MediaType.get("application/json; charset=utf-8"));
+
+        Request request = new Request.Builder()
+                .url(BuildConfig.API_SERVER + "/system/recordb")
+                .post(body)
+                .addHeader("Authorization", "Bearer " + token)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                runOnUiThread(() -> Toast.makeText(ParyWrite.this, "保存失败: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    runOnUiThread(() -> {
+                        Toast.makeText(ParyWrite.this, "保存成功", Toast.LENGTH_SHORT).show();
+                        finish();
+                    });
+                } else {
+                    runOnUiThread(() -> Toast.makeText(ParyWrite.this, "保存失败，状态码：" + response.code(), Toast.LENGTH_SHORT).show());
+                }
+            }
+        });
+    }
+
+
     private void startRecordingTimer() {
         startTime = System.currentTimeMillis();
         updateTimerRunnable = new Runnable() {

@@ -1,6 +1,7 @@
 package com.yunsong.bujen.adapter;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +10,12 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.CustomTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.yunsong.bujen.ConfirmDialog;
 import com.yunsong.bujen.R;
 
@@ -51,6 +58,7 @@ public class PraysAdapter extends BaseAdapter {
             holder.txt_mname = view.findViewById(R.id.txt_name);
             holder.txt_gdd = view.findViewById(R.id.txt_gdd);
             holder.btn_dh = view.findViewById(R.id.btn_dh);
+            holder.img_cover=view.findViewById(R.id.img_cover);
             view.setTag(holder);
         }else {
             holder = (viewHolder) view.getTag();
@@ -58,7 +66,6 @@ public class PraysAdapter extends BaseAdapter {
         Map<String, String> map=data.get(i);
         holder.txt_mname.setText(map.get("name"));
         holder.txt_gdd.setText(map.get("gdd"));
-        holder.btn_dh.setText(map.get("dh"));
         // 设置选中状态
         holder.img_selet.setImageResource(map.get("sc").equals("1") ? R.drawable.collection_1 : R.drawable.collection_2);
         holder.img_selet.setOnClickListener(v -> {
@@ -73,16 +80,18 @@ public class PraysAdapter extends BaseAdapter {
 //            notifyDataSetChanged(); // 刷新适配器
 
         });
-        holder.btn_dh.setOnClickListener(v -> {
-            if(holder.btn_dh.getText().equals("兑换")){
-//                showDialog(v.findViewById(R.id.btn_dh));
-                setDialog(holder.btn_dh);
-            }else if(holder.btn_dh.getText().equals("加入祈福")){
-                showDialog2(holder.btn_dh);
-            }
-//            notifyDataSetChanged(); // 刷新适配器
 
-        });
+        String blessingBackgroundUrl =map.get("blessingBackgroundUrl");
+        if (blessingBackgroundUrl != null && !blessingBackgroundUrl.isEmpty()) {
+            if (blessingBackgroundUrl != null && !blessingBackgroundUrl.isEmpty()) {
+                Glide.with(context)
+                        .load(blessingBackgroundUrl)
+                        .placeholder(R.drawable.detail_bg)
+                        .error(R.drawable.detail_bg)
+                        .into(holder.img_cover);
+            }
+        }
+
         // 设置点击事件
 //        view.setOnClickListener(v -> {
 //            selectedPosition = i; // 更新选中的项
@@ -93,39 +102,10 @@ public class PraysAdapter extends BaseAdapter {
         return view;
     }
     private final class viewHolder {
-        ImageView img_selet;
+        ImageView img_selet,img_cover;
         TextView txt_mname,txt_gdd;
         Button btn_dh;
     }
-private void setDialog(Button v) {
-    ConfirmDialog.Builder builder = new ConfirmDialog.Builder(context);
-    dialog = builder.cancelTouchout(false)
-            .view(R.layout.dialog_confirm)
-            .style(R.style.Dialog)
-            .addViewOnclick(R.id.txt_confirm, new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    v.setText("开始学习");
-                    dialog.dismiss();  // 这里添加取消对话框的代码
-                }
-            })
-            .build();
-    dialog.show();
-}
-    private void showDialog2(Button v) {
-        ConfirmDialog.Builder builder = new ConfirmDialog.Builder(context);
-        dialog = builder.cancelTouchout(false)
-                .view(R.layout.dialog_confirm)
-                .style(R.style.Dialog)
-                .setTitle("确定加入祈福吗")
-                .addViewOnclick(R.id.txt_confirm, new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        v.setText("已加入");
-                        dialog.dismiss();  // 这里添加取消对话框的代码
-                    }
-                })
-                .build();
-        dialog.show();
-    }
+
+
 }

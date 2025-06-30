@@ -13,16 +13,23 @@ import android.widget.TextView;
 import com.yunsong.bujen.Homepage;
 import com.yunsong.bujen.Local;
 import com.yunsong.bujen.R;
+import com.yunsong.bujen.databean.MyLightBean;
 
 import java.util.List;
 import java.util.Map;
 
 public class LocalLightAdapter extends BaseAdapter {
     private Context context;
-    private List<Map<String, String>> data;
+    private List<MyLightBean> data;
     private static int selectedPosition = 0; // 选中的项索引
+    private final String[] bgColors = {
+            "#C5D4BD",
+            "#F5AB9D",
+            "#E1A47D",
+            "#BECFD7"
+    };
 
-    public LocalLightAdapter(Local local, List<Map<String, String>> data) {
+    public LocalLightAdapter(Local local, List<MyLightBean> data) {
         this.context = local;
         this.data = data;
     }
@@ -44,13 +51,8 @@ public class LocalLightAdapter extends BaseAdapter {
     @Override
     public View getView(int i, View view, ViewGroup viewGroup) {
         viewHolder holder;
-//        int[] dg={R.drawable.home_bg2,R.drawable.dg_green,R.drawable.dg_red,R.drawable.dg_orange,R.drawable.dg_blue};
-        String[] bgColors = {
-                "#C5D4BD",
-                "#F5AB9D",
-                "#E1A47D",
-                "#BECFD7"
-        };
+        int[] dg={R.drawable.home_bg2,R.drawable.dg_green,R.drawable.dg_red,R.drawable.dg_orange,R.drawable.dg_blue};
+
         String[] bar={"#ECE0D2","#DCE7D7","#F7CFC3","#F3E0C9","#D9E2E7"};
         if (view == null) {
             holder = new viewHolder();
@@ -62,8 +64,8 @@ public class LocalLightAdapter extends BaseAdapter {
         }else {
             holder = (viewHolder) view.getTag();
         }
-        Map<String, String> map=data.get(i);
-        holder.txt_mname.setText(map.get("name"));
+        MyLightBean item = data.get(i);
+        holder.txt_mname.setText(item.backgroundName);
         // 设置圆角背景颜色
         GradientDrawable drawable = new GradientDrawable();
         drawable.setColor(Color.parseColor(bgColors[i]));
@@ -80,10 +82,10 @@ public class LocalLightAdapter extends BaseAdapter {
         view.setOnClickListener(v -> {
             selectedPosition = i; // 更新选中的项
             notifyDataSetChanged(); // 刷新适配器
-//            Homepage.rl_bg.setBackgroundResource(dg[i]);
-//            Homepage.homebg=dg[i];
-//            Homepage.ly_tab.setBackgroundColor(Color.parseColor(bar[i]));
-//            Homepage.homeColor=bar[i];
+            Homepage.rl_bg.setBackgroundResource(dg[i]);
+            Homepage.homebg=dg[i];
+            Homepage.ly_tab.setBackgroundColor(Color.parseColor(bar[i]));
+            Homepage.homeColor=bar[i];
         });
         return view;
     }

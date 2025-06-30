@@ -479,7 +479,7 @@
     "com.thingclips.smart.scene.business.dpc.AbsSceneDashboardManagerService": "com.thingclips.smart.scene.home.service.SceneDashboardManagerService",
     "com.thingclips.smart.sharedevice.api.AbsDeviceShareService": "com.thingclips.smart.sharedevice.DeviceShareService",
     "com.thingclips.smart.sim.api.AbsIotCardFlowService": "com.thingclips.smart.sim.IotCardFlowService",
-    "com.thingclips.smart.statapi.StatService": "com.thingclips.smart.stat.StatServiceImpl",
+
     "com.thingclips.smart.theme.dynamic.resource.api.AbsThemeDynamicResourceService": "com.thingclips.smart.theme.dynamic.resource.ThemeDynamicResourceServiceImpl",
     "com.thingclips.smart.light.scene.api.AbsLightSceneDataService": "com.thingclips.smart.light.scene.core.LightSceneDataServiceImpl",
     "com.thingclips.smart.scene.edit.plug.api.device.DefaultPlugSceneDeviceRouterService": "com.thingclips.smart.scene.device.aircaft.DefaultPlugSceneDeviceRouterServiceImpl",

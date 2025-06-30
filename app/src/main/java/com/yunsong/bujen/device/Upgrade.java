@@ -50,13 +50,13 @@ public class Upgrade extends AppCompatActivity {
             @Override
             public void onSuccess(List<UpgradeInfoBean> upgradeInfoBeans) {
                 switch (upgradeInfoBeans.get(0).getUpgradeStatus()){
-                    case 0:txt_new.setText("无新版本");break;
+                    case 0:txt_new.setText("已是最新版本");break;
                     case 1:txt_new.setText("有新版本");break;
                     case 2:txt_new.setText("在升级中");break;
                     case 5:txt_new.setText("等待设备唤醒");break;
                 }
-                txt_mz.setText(upgradeInfoBeans.get(0).getCurrentVersion());
-
+                txt_mz.setText("主联网模组:"+upgradeInfoBeans.get(0).getCurrentVersion());
+                txt_mcu.setText("MCU模块:"+upgradeInfoBeans.get(0).getCurrentVersion());
             }
 
             @Override

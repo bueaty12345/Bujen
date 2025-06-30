@@ -17,27 +17,28 @@
             android:orientation="vertical">
 
             <RelativeLayout
+                android:id="@+id/img_cover"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@drawable/jc_bg1">
+                android:background="@drawable/recommend1">
 
-                <TextView
-                    android:id="@+id/txt_time"
-                    android:layout_width="53dp"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentTop="true"
-                    android:layout_alignParentEnd="true"
-                    android:layout_marginTop="-13dp"
-                    android:layout_marginEnd="-18dp"
-                    android:background="@drawable/round"
-                    android:backgroundTint="#4549392D"
-                    android:gravity="left"
-                    android:paddingLeft="9dp"
-                    android:paddingTop="15dp"
-                    android:paddingBottom="2dp"
-                    android:text="5:10"
-                    android:textColor="#FFFFFF"
-                    android:textSize="12sp" />
+<!--                <TextView-->
+<!--                    android:id="@+id/txt_time"-->
+<!--                    android:layout_width="53dp"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_alignParentTop="true"-->
+<!--                    android:layout_alignParentEnd="true"-->
+<!--                    android:layout_marginTop="-13dp"-->
+<!--                    android:layout_marginEnd="-18dp"-->
+<!--                    android:background="@drawable/round"-->
+<!--                    android:backgroundTint="#4549392D"-->
+<!--                    android:gravity="left"-->
+<!--                    android:paddingLeft="9dp"-->
+<!--                    android:paddingTop="15dp"-->
+<!--                    android:paddingBottom="2dp"-->
+<!--                    android:text="5:10"-->
+<!--                    android:textColor="#FFFFFF"-->
+<!--                    android:textSize="12sp" />-->
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -45,7 +46,7 @@
                     android:layout_alignParentBottom="true"
                     android:layout_marginBottom="0dp"
                     android:layout_weight="1"
-                    android:background="#4D000000"
+                    android:background="#FFFCF3"
                     android:orientation="vertical"
                     android:padding="6dp">
 
@@ -56,18 +57,18 @@
                         android:orientation="horizontal">
 
                         <TextView
-                            android:id="@+id/txt_name"
+                            android:id="@+id/txt_mname"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
                             android:gravity="center"
-                            android:text="尘烟"
-                            android:textColor="#FFFFFF"
-                            android:textSize="20sp"
+                            android:text="初级:尘烟"
+                            android:textColor="#000000"
+                            android:textSize="14sp"
                             android:textStyle="bold" />
 
                         <ImageView
-                            android:id="@+id/img_hart"
+                            android:id="@+id/img_selet"
                             android:layout_width="50dp"
                             android:layout_height="20dp"
                             android:layout_gravity="center"
@@ -75,33 +76,27 @@
 
                     </LinearLayout>
 
+                    <TextView
+                        android:id="@+id/txt_description"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="TextView"
+                        android:textSize="10sp"
+                        android:textColor="#49392D"
+                        android:layout_marginVertical="5dp"/>
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         android:orientation="horizontal">
 
                         <TextView
                             android:id="@+id/txt_gdd"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_marginTop="5dp"
-                            android:layout_weight="1"
-                            android:gravity="center|left"
-                            android:text="作者：留白"
-                            android:textColor="#80FFFFFF"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="TextView"
+                            android:textColor="#000000"
                             android:textSize="14sp" />
 
-                        <Button
-                            android:id="@+id/btn_dh"
-                            android:layout_width="100dp"
-                            android:layout_height="match_parent"
-                            android:layout_marginLeft="10dp"
-                            android:layout_marginRight="20dp"
-                            android:layout_marginBottom="5dp"
-                            android:background="@drawable/round"
-                            android:backgroundTint="#ECE0D2"
-                            android:text="去学习"
-                            android:textColor="#49392D" />
                     </LinearLayout>
 
                 </LinearLayout>

@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="#f4f0e4"
     tools:context=".fragment.CenterFragment">
 
     <!-- TODO: Update blank fragment layout -->
@@ -170,7 +171,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="5dp"
                             android:gravity="center"
-                            android:text="@string/tutorial"
+                            android:text="@string/meditation"
                             android:textColor="#000000" />
 
                     </LinearLayout>
@@ -307,12 +308,12 @@
                             <com.google.android.material.tabs.TabItem
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="@string/tutorial" />
+                                android:text="灯光" />
 
                             <com.google.android.material.tabs.TabItem
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="@string/consumables" />
+                                android:text="@string/tutorial" />
                         </com.google.android.material.tabs.TabLayout>
 
                         <ListView

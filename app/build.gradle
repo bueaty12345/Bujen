@@ -102,7 +102,7 @@ dependencies {
 
     // App SDK 最新稳定安卓版：
     implementation 'com.facebook.soloader:soloader:0.10.4+'
-    implementation 'com.thingclips.smart:thingsmart:5.17.0'
+    implementation 'com.thingclips.smart:thingsmart:6.2.2'
     //加载动画
     implementation 'com.github.zzz40500:android-shapeLoadingView:1.0.3.2'
     //gif
@@ -125,8 +125,13 @@ dependencies {
     //高斯模糊
     implementation 'jp.wasabeef:glide-transformations:3.0.1'
 
+    //AI智能体
+    api enforcedPlatform("com.thingclips.smart:thingsmart-BizBundlesBom:${biz_bom_version}")
+    api "com.thingclips.smart:thingsmart-bizbundle-ai_agent"
+//    api "com.thingclips.smart:thingsmart:${sdk_version}}"
+
     //版本管理组件-必选
-    implementation enforcedPlatform("com.thingclips.smart:thingsmart-BizBundlesBom:5.8.16")
+//    implementation enforcedPlatform("com.thingclips.smart:thingsmart-BizBundlesBom:5.8.16")
     // MiniApp SDK 业务包-必选
     implementation "com.thingclips.smart:thingsmart-bizbundle-miniapp"
     // 扩展能力组件集合，提供小程序扩展能力，按需依赖声明
@@ -138,5 +143,10 @@ dependencies {
     // 如果是在中国大陆地区扫码，请依赖
     // implementation 'com.thingclips.smart:thingsmart-qrcode-scankit:5.8.0-rc.1'
     // implementation 'com.thingclips.smart:thingsmart-qrcode-api:5.8.0-rc.3'
+
+    implementation 'org.greenrobot:eventbus:3.3.1'
+
+    //Google
+//    implementation 'com.google.android.gms:play-services-auth:21.3.0'
 
 }

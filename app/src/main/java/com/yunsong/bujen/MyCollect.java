@@ -20,6 +20,8 @@ import com.yunsong.bujen.adapter.LightAdapter;
 import com.yunsong.bujen.adapter.MyCollectAdapter;
 import com.yunsong.bujen.adapter.MyPrayAdapter;
 import com.yunsong.bujen.adapter.MyTutorialAdapter;
+import com.yunsong.bujen.databean.BlessingBean;
+import com.yunsong.bujen.databean.MyLightBean;
 import com.yunsong.bujen.databean.MyMusicBean;
 import com.yunsong.bujen.databean.MyPrayBean;
 import com.yunsong.bujen.databean.MyTutorialBean;
@@ -47,8 +49,8 @@ public class MyCollect extends AppCompatActivity {
 
     private List<MyMusicBean> musicList = new ArrayList<>();
     private List<MyTutorialBean> tutorialList = new ArrayList<>();
-    private List<MyPrayBean> prayList = new ArrayList<>();
-//    private List<MyLightBean> lightList = new ArrayList<>();
+    private List<BlessingBean> prayList = new ArrayList<>();
+    private List<MyLightBean> lightList = new ArrayList<>();
     private BaseAdapter currentAdapter;
 
     @Override
@@ -127,8 +129,8 @@ public class MyCollect extends AppCompatActivity {
                     item.musicCover = obj.optString("musicCover");
                     item.musicUrl = obj.optString("musicUrl");
                     item.requiredMeritPoints = obj.optInt("requiredMeritPoints");
-                    item.sc = obj.optInt("sc", 0);
-                    item.dh = obj.optInt("dh", 0);
+                    item.sc = obj.optBoolean("sc");
+                    item.dh = obj.optBoolean("dh");
                     item.rating = obj.optDouble("rating");
                     musicList.add(item);
                 }
@@ -149,9 +151,10 @@ public class MyCollect extends AppCompatActivity {
                     item.tutorialName = obj.optString("tutorialName");
                     item.createdAt = obj.optString("createdAt");
                     item.requiredMeritPoints = obj.optInt("requiredMeritPoints");
-                    item.sc = obj.optInt("sc", 0);
-                    item.dh = obj.optInt("dh", 0);
+                    item.sc = obj.optBoolean("sc");
+                    item.dh = obj.optBoolean("dh");
                     item.author=obj.optString("author");
+                    item.rating=obj.optInt("rating");
                     tutorialList.add(item);
                 }
             } catch (Exception e) {
@@ -166,15 +169,15 @@ public class MyCollect extends AppCompatActivity {
                 if (rows == null) return;
                 for (int i = 0; i < rows.length(); i++) {
                     JSONObject obj = rows.getJSONObject(i);
-                    MyPrayBean bean = new MyPrayBean();
-                    bean.blessing_id = obj.optInt("blessingId");
-                    bean.resource_type = obj.optString("resourceType");
-                    bean.blessing_category = obj.optString("blessingCategory");
-                    bean.blessing_background_url = obj.optString("blessingBackgroundUrl");
-                    bean.blessing_theme = obj.optString("blessingTheme");
-                    bean.zen_quote = obj.optString("zenQuote");
-                    bean.created_at = obj.optString("createdAt");
-                    bean.required_merit_points = obj.optInt("requiredMeritPoints");
+                    BlessingBean bean = new BlessingBean();
+                    bean.blessingId = obj.optInt("blessingId");
+                    bean.resourceType = obj.optString("resourceType");
+                    bean.blessingCategory = obj.optString("blessingCategory");
+                    bean.blessingBackgroundUrl = obj.optString("blessingBackgroundUrl");
+                    bean.blessingTheme = obj.optString("blessingTheme");
+                    bean.zenQuote = obj.optString("zenQuote");
+                    bean.createdAt = obj.optString("createdAt");
+                    bean.requiredMeritPoints = obj.optInt("requiredMeritPoints");
                     prayList.add(bean);
                 }
             } catch (Exception e) {
@@ -183,20 +186,26 @@ public class MyCollect extends AppCompatActivity {
         }
 
         private void fetchLight(String token) {
-//            try {
-//                String result = httpGet(LIGHT_INFO_URL, token);
-//                JSONArray rows = new JSONObject(result).optJSONArray("rows");
-//                if (rows == null) return;
-//                for (int i = 0; i < rows.length(); i++) {
-//                    JSONObject obj = rows.getJSONObject(i);
-//                    MyLightBean item = new MyLightBean();
-//                    item.lightName = obj.optString("lightName");
-//                    item.requiredMeritPoints = obj.optInt("requiredMeritPoints");
-//                    lightList.add(item);
-//                }
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
+            try {
+                String result = httpGet(LIGHT_INFO_URL, token);
+                Log.d("fetchLight","收藏教程"+result);
+                JSONArray rows = new JSONObject(result).optJSONArray("rows");
+                if (rows == null) return;
+                for (int i = 0; i < rows.length(); i++) {
+                    JSONObject obj = rows.getJSONObject(i);
+                    MyLightBean item = new MyLightBean();
+                    item.backgroundName = obj.optString("backgroundName");
+                    item.author = obj.optString("author");
+                    item.backgroundImageUrl = obj.optString("backgroundImageUrl");
+                    item.requiredMeritPoints = obj.optInt("requiredMeritPoints");
+                    item.sc = obj.optBoolean("sc");
+                    item.dh = obj.optBoolean("dh");
+                    item.rating = obj.optDouble("rating");
+                    lightList.add(item);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
         private String httpGet(String urlStr, String token) throws Exception {
@@ -234,8 +243,8 @@ public class MyCollect extends AppCompatActivity {
     }
 
     private void setLight() {
-//        currentAdapter = new MyCollectAdapter(this, new ArrayList<>(lightList));
-//        listView.setAdapter(currentAdapter);
+        currentAdapter = new MyCollectAdapter(this, new ArrayList<>(lightList));
+        listView.setAdapter(currentAdapter);
     }
 
     private void init(){

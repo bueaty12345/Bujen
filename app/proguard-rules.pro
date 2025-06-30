@@ -42,3 +42,8 @@
 # Matter SDK
 -keep class chip.** { *; }
 -dontwarn chip.**
+
+-keep class com.thingclips.smart.android.tangram.** { *; }
+-keep class com.thingclips.smart.stat.** { *; }
+-keep class com.thingclips.smart.statapi.** { *; }
+

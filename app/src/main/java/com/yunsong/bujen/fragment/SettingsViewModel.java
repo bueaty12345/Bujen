@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel;
 
 public class SettingsViewModel extends ViewModel {
     private final MutableLiveData<Integer> gddCont = new MutableLiveData<>(0);
-
+    private final MutableLiveData<String> avatarBase64 = new MutableLiveData<>();
     public void setGddCont(int value) {
         gddCont.setValue(value);
     }

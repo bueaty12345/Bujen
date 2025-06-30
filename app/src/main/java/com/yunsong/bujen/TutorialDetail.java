@@ -1,31 +1,43 @@
 package com.yunsong.bujen;
 
-import android.content.pm.ActivityInfo;
-import android.net.Uri;
+import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.view.WindowManager;
+import android.view.View;
+import android.widget.Button;
 import android.widget.GridView;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.MediaController;
 import android.widget.RelativeLayout;
-import android.widget.SimpleAdapter;
-import android.widget.VideoView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.CustomTarget;
+import com.bumptech.glide.request.transition.Transition;
+import com.yunsong.bujen.utils.DataStorageUtils;
+import com.yunsong.bujen.utils.ExchangeHelper;
+import com.yunsong.bujen.utils.FavoriteHelper;
+import com.yunsong.bujen.utils.UserInfoUtils;
 
-public class TutorialDetail extends AppCompatActivity {
+public class TutorialDetail extends AppCompatActivity implements View.OnClickListener {
 LinearLayout lin_sk;
-VideoView videoView;
 GridView gridView;
+    RelativeLayout img_cover;
+
+TextView txt_mname,txt_content,txt_gdd,txt_description,txt_star;
+ImageView img_selet,img_back;
+    Button btn_dh;
+    private ConfirmDialog dialog;
+    Boolean hart=false;
 private boolean isFullScreen = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,71 +49,121 @@ private boolean isFullScreen = false;
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        videoView = findViewById(R.id.videoView);
-        lin_sk = findViewById(R.id.lin_sk);
-        gridView=findViewById(R.id.grid_tj);
+
         setSquare();
 
-        // 设置视频控制器，允许用户控制播放、暂停等
-        MediaController mediaController = new MediaController(this);
-        mediaController.setAnchorView(videoView);
-        videoView.setMediaController(mediaController);
-
-        // 设置网络视频的 URI
-        String videoUrl = "https://media.w3.org/2010/05/sintel/trailer.mp4"; // 替换为实际的视频 URL
-        Uri videoUri = Uri.parse(videoUrl);
-        videoView.setVideoURI(videoUri);
-        lin_sk.setOnClickListener(v -> {
-        // 播放视频
-        videoView.start();});
+        init();
+        btn_dh.setOnClickListener(this);
+        img_back.setOnClickListener(this);
+        img_selet.setOnClickListener(this);
         // 点击事件，切换全屏
 //        videoView.setOnClickListener(v -> toggleFullScreen());
     }
+
+    private void init(){
+        txt_mname=findViewById(R.id.txt_mname);
+        txt_content=findViewById(R.id.txt_content);
+        txt_gdd=findViewById(R.id.txt_gdd);
+        img_selet=findViewById(R.id.img_selet);
+        txt_description=findViewById(R.id.txt_description);
+        txt_star=findViewById(R.id.txt_star);
+        btn_dh=findViewById(R.id.btn_dh);
+        img_back=findViewById(R.id.img_back);
+        img_cover=findViewById(R.id.img_cover);
+
+        Intent intent=getIntent();
+
+        String name = intent.getStringExtra("name");
+        int gdd = intent.getIntExtra("gdd",0);
+        String description=intent.getStringExtra("description");
+        boolean sc=intent.getBooleanExtra("sc",false);
+        String tutorialContent=intent.getStringExtra("tutorialContent");
+        String ratingStr = intent.getStringExtra("rating");
+
+        txt_mname.setText(name);
+        txt_content.setText(tutorialContent);
+        txt_gdd.setText("需功德值："+gdd);
+        //判断是否收藏
+        hart=sc;
+        if (sc) {
+            img_selet.setImageResource(R.drawable.collection_1);
+        } else {
+            img_selet.setImageResource(R.drawable.collection_2);
+        }
+        txt_description.setText(description);
+        if (ratingStr != null) {
+            txt_star.setText(ratingStr);
+        }
+
+        boolean dh=intent.getBooleanExtra("dh",false);
+        btn_dh.setText(dh ? "已拥有" : "兑换");
+        btn_dh.setEnabled(!dh);
+
+        String videoUrl = intent.getStringExtra("videoUrl");
+        if (videoUrl != null && !videoUrl.isEmpty()) {
+            Glide.with(this)
+                    .load(videoUrl)
+                    .placeholder(R.drawable.detail_bg)
+                    .error(R.drawable.detail_bg)
+                    .into(new CustomTarget<Drawable>() {
+                        @Override
+                        public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
+                            img_cover.setBackground(resource);
+                        }
+
+                        @Override
+                        public void onLoadCleared(@Nullable Drawable placeholder) {
+                            img_cover.setBackground(placeholder);
+                        }
+                    });
+
+        }
+    }
     // 切换全屏模式
     private void toggleFullScreen() {
-        if (isFullScreen) {
-            // 恢复原来的 VideoView 大小
-            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-//            getSupportActionBar().show();
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);  // 恢复竖屏
-
-            // 恢复 VideoView 的布局
-            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) videoView.getLayoutParams();
-            params.height = RelativeLayout.LayoutParams.WRAP_CONTENT;  // 恢复原来高度
-            videoView.setLayoutParams(params);
-
-            isFullScreen = false;
-        } else {
-            // 进入全屏
-            getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                    WindowManager.LayoutParams.FLAG_FULLSCREEN);
-//            getSupportActionBar().hide();
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);  // 强制横屏
-
-            // 设置 VideoView 全屏显示
-            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) videoView.getLayoutParams();
-            params.height = RelativeLayout.LayoutParams.MATCH_PARENT;  // 设置为屏幕高度
-            videoView.setLayoutParams(params);
-
-            isFullScreen = true;
-        }
+//        if (isFullScreen) {
+//            // 恢复原来的 VideoView 大小
+//            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+////            getSupportActionBar().show();
+//            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);  // 恢复竖屏
+//
+//            // 恢复 VideoView 的布局
+//            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) videoView.getLayoutParams();
+//            params.height = RelativeLayout.LayoutParams.WRAP_CONTENT;  // 恢复原来高度
+//            videoView.setLayoutParams(params);
+//
+//            isFullScreen = false;
+//        } else {
+//            // 进入全屏
+//            getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+//                    WindowManager.LayoutParams.FLAG_FULLSCREEN);
+////            getSupportActionBar().hide();
+//            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);  // 强制横屏
+//
+//            // 设置 VideoView 全屏显示
+//            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) videoView.getLayoutParams();
+//            params.height = RelativeLayout.LayoutParams.MATCH_PARENT;  // 设置为屏幕高度
+//            videoView.setLayoutParams(params);
+//
+//            isFullScreen = true;
+//        }
     }
 
     private void setSquare() {
         // 准备数据
-        List<Map<String, Object>> data = new ArrayList<>();
-        for (int i = 1; i <= 6; i++) {
-            Map<String, Object> item = new HashMap<>();
-            item.put("name", "教程 " + i);
-            item.put("gdd", "功德值：" + i*100);
-            data.add(item);
-        }
-        gridView.setNumColumns(2);
-        // 创建适配器
-        String[] from = {"name", "gdd"}; // 数据源的键
-        int[] to = {R.id.txt_name, R.id.txt_gdd}; // 布局文件中的视图 ID
-        SimpleAdapter adapter = new SimpleAdapter(this, data, R.layout.item_tutorial, from, to);
-        gridView.setAdapter(adapter);
+//        List<Map<String, Object>> data = new ArrayList<>();
+//        for (int i = 1; i <= 6; i++) {
+//            Map<String, Object> item = new HashMap<>();
+//            item.put("name", "教程 " + i);
+//            item.put("gdd", "功德值：" + i*100);
+//            data.add(item);
+//        }
+//        gridView.setNumColumns(2);
+//        // 创建适配器
+//        String[] from = {"name", "gdd"}; // 数据源的键
+//        int[] to = {R.id.txt_name, R.id.txt_gdd}; // 布局文件中的视图 ID
+//        SimpleAdapter adapter = new SimpleAdapter(this, data, R.layout.item_tutorial, from, to);
+//        gridView.setAdapter(adapter);
 
     }
 
@@ -115,4 +177,63 @@ private boolean isFullScreen = false;
         }
     }
 
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.btn_dh:
+                if (btn_dh.getText().equals("兑换")) {
+                    int requiredGdd = getIntent().getIntExtra("gdd", 0);
+                    int localGdd = DataStorageUtils.getGddCount(this);
+
+                    if (localGdd >= requiredGdd) {
+                        ExchangeHelper.showExchangeDialog(this, requiredGdd,
+                                getIntent().getStringExtra("resourceType"),
+                                getIntent().getIntExtra("tutorialId", 0),
+                                btn_dh);
+                    } else {
+                        Toast.makeText(this, "功德点不足，无法兑换", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                    break;
+            case R.id.img_back:
+                finish();
+                break;
+            case R.id.img_selet:
+                hart = !hart; // 切换收藏状态
+                img_selet.setImageResource(hart ? R.drawable.collection_1 : R.drawable.collection_2);
+
+                int userId = UserInfoUtils.getUserId(TutorialDetail.this);
+                String resourceType = getIntent().getStringExtra("resourceType");;
+                int resourceId = getIntent().getIntExtra("tutorialId", 0);;
+                String token=UserInfoUtils.getToken(this);
+                FavoriteHelper.updateFavoriteStatus(hart,token, userId, resourceType, resourceId, new FavoriteHelper.Callback() {
+                    @Override
+                    public void onSuccess() {
+                        Toast.makeText(TutorialDetail.this, hart ? "收藏成功" : "取消收藏成功", Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onFailure(String errorMsg) {
+                        // 失败，回滚UI和hart状态
+                        hart = !hart;
+                        runOnUiThread(() -> {
+                            img_selet.setImageResource(hart ? R.drawable.collection_1 : R.drawable.collection_2);
+                            Toast.makeText(TutorialDetail.this, "收藏状态更新失败：" + errorMsg, Toast.LENGTH_SHORT).show();
+                        });
+                    }
+                });
+                break;
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        String resourceType = getIntent().getStringExtra("resourceType");
+        int resourceId = getIntent().getIntExtra("tutorialId", 0);
+
+        boolean exchanged = ExchangeHelper.isExchanged(this, resourceType, resourceId);
+        btn_dh.setText(exchanged ? "已拥有" : "兑换");
+        btn_dh.setEnabled(!exchanged);
+    }
 }

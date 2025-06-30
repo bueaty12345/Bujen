@@ -1,6 +1,7 @@
 package com.yunsong.bujen.adapter;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,9 +9,11 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.yunsong.bujen.ConfirmDialog;
 import com.yunsong.bujen.R;
 import com.yunsong.bujen.databean.MusicBean;
+import com.yunsong.bujen.utils.ExchangeHelper;
 
 import java.util.List;
 import java.util.Map;
@@ -46,7 +49,7 @@ public class MusicAdapter extends BaseAdapter {
         if (view == null) {
             holder = new viewHolder();
             view = LayoutInflater.from(context).inflate(R.layout.item_lighting, viewGroup, false);
-            holder.img_tu = view.findViewById(R.id.img_tu);
+            holder.img_tu = view.findViewById(R.id.img_cover);
             holder.img_selet = view.findViewById(R.id.img_selet);
             holder.txt_mname = view.findViewById(R.id.txt_mname);
             holder.txt_gdd = view.findViewById(R.id.txt_gdd);
@@ -72,11 +75,9 @@ public class MusicAdapter extends BaseAdapter {
             holder.txt_star.setText(musicBean.getRating().toString());
         }
         //判断是否兑换
-        if(data.get(i).getDH()){
-            holder.txt_hy.setText("已兑换");
-        }else {
-            holder.txt_hy.setText("待兑换");
-        }
+        boolean dh = ExchangeHelper.isExchanged(context, musicBean.getResourceType(), musicBean.getMusicId());
+        holder.txt_hy.setText(dh ? "已兑换" : "待兑换");
+
         //判断是否收藏
         if(data.get(i).getSC()){
             holder.img_selet.setImageResource(R.drawable.collection_1);
@@ -95,14 +96,18 @@ public class MusicAdapter extends BaseAdapter {
             notifyDataSetChanged(); // 刷新适配器
 
         });
-        holder.txt_hy.setOnClickListener(v -> {
-            if(holder.txt_hy.getText().equals("待兑换")){
-//               showDialog(v.findViewById(R.id.txt_hy));
-                setDialog(holder.txt_hy);
-                notifyDataSetChanged(); // 刷新适配器
-            }
 
-        });
+        //封面
+        String musicCover = musicBean.getMusicCover();
+        Log.d("图片","地址"+musicCover);
+        if (musicCover != null && !musicCover.isEmpty()) {
+            Glide.with(context)
+                    .load(musicCover)
+                    .placeholder(R.drawable.detail_bg)
+                    .error(R.drawable.detail_bg)
+                    .into(holder.img_tu);
+        }
+
         return view;
     }
     private final class viewHolder {

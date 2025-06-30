@@ -1,4 +1,13 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
+buildscript {
+    ext {
+        // UI 业务包版本
+        biz_bom_version = "6.2.16"
+        // Tuya SDK 版本
+        sdk_version = '6.2.2'
+    }
+}
+
 plugins {
 alias(libs.plugins.android.application) apply false
 }

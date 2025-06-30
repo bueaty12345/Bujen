@@ -17,25 +17,27 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.yunsong.bujen.adapter.LightAdapter;
+import com.bumptech.glide.Glide;
+import com.yunsong.bujen.utils.DataStorageUtils;
+import com.yunsong.bujen.utils.ExchangeHelper;
+import com.yunsong.bujen.utils.FavoriteHelper;
+import com.yunsong.bujen.utils.UserInfoUtils;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 
 public class Detail extends AppCompatActivity implements View.OnClickListener{
-TextView txt_name,txt_gdd,txt_author;
-ImageView img_hart,img_back;
-Button btn_dh,btn_again;
-LinearLayout lin_st;
-ListView listView;
-Boolean hart=false;
-private ConfirmDialog dialog;
-private MediaPlayer mediaPlayer;
+    TextView txt_name,txt_gdd,txt_author,txt_time,txt_star,txt_date,txt_description,txt_rating;
+    ImageView img_selet,img_back,img_tu;
+    Button btn_dh,btn_again;
+    LinearLayout lin_st;
+    ListView listView;
+    Boolean hart=false;
+    private ConfirmDialog dialog;
+    private MediaPlayer mediaPlayer;
     String music;
+
+    private final String FAVORITES_INFO_URL = BuildConfig.API_SERVER+"/system/favorites";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,7 +49,7 @@ private MediaPlayer mediaPlayer;
             return insets;
         });
         init();
-        img_hart.setOnClickListener(this);
+        img_selet.setOnClickListener(this);
         img_back.setOnClickListener(this);
         btn_dh.setOnClickListener(this);
         btn_again.setOnClickListener(this);
@@ -57,12 +59,18 @@ private MediaPlayer mediaPlayer;
         txt_name=findViewById(R.id.txt_mname);
         txt_gdd=findViewById(R.id.txt_gdd);
         txt_author=findViewById(R.id.txt_auther);
-        img_hart=findViewById(R.id.img_selet);
+        img_selet=findViewById(R.id.img_selet);
         btn_dh=findViewById(R.id.btn_dh);
         img_back=findViewById(R.id.img_back);
         listView=findViewById(R.id.list_dgyx);
         btn_again=findViewById(R.id.btn_again);
         lin_st=findViewById(R.id.lin_st);
+        img_tu=findViewById(R.id.img_tu);
+        txt_time=findViewById(R.id.txt_time);
+        txt_star=findViewById(R.id.txt_star);
+        txt_date=findViewById(R.id.txt_date);
+        txt_description=findViewById(R.id.txt_description);
+        txt_rating=findViewById(R.id.txt_rating);
         // 初始化 MediaPlayer，指向你要播放的音频文件
 //        mediaPlayer = MediaPlayer.create(this, R.raw.m1); // music_sample.mp3 放在 res/raw 目录下
 
@@ -71,13 +79,48 @@ private MediaPlayer mediaPlayer;
 
         // 接收传递的字符串和整数
         String name = intent.getStringExtra("name");
-        String gdd = intent.getStringExtra("gdd");
-        String auther = intent.getStringExtra("auther");
+        int gdd = intent.getIntExtra("gdd",0);
+        String singer = intent.getStringExtra("singer");
+        String date=intent.getStringExtra("createdAt");
+        String description=intent.getStringExtra("description");
+        long duration=intent.getLongExtra("duration", 0);
+        boolean sc=intent.getBooleanExtra("sc",false);
+        boolean dh=intent.getBooleanExtra("dh",false);
+        btn_dh.setText(dh ? "已拥有" : "兑换");
+        btn_dh.setEnabled(!dh);
         music = intent.getStringExtra("music");
         playMusic(music);
         txt_name.setText(name);
-        txt_gdd.setText(gdd);
-        txt_author.setText(auther);
+        txt_gdd.setText("需功德值："+gdd);
+        txt_author.setText(singer);
+        txt_date.setText(date);
+        txt_description.setText(description);
+        String ratingStr = intent.getStringExtra("rating");
+        if (ratingStr != null) {
+            txt_rating.setText(ratingStr);
+        }
+
+        long minutes = duration / 60;
+        long seconds = duration % 60;
+        txt_time.setText(String.format("%d:%02d", minutes, seconds));
+
+        //判断是否收藏
+        hart = sc;
+        if (sc) {
+            img_selet.setImageResource(R.drawable.collection_1);
+        } else {
+            img_selet.setImageResource(R.drawable.collection_2);
+        }
+
+        //封面
+        String musicCover = intent.getStringExtra("musicCover");
+        if (musicCover != null && !musicCover.isEmpty()) {
+            Glide.with(this)
+                    .load(musicCover)
+                    .placeholder(R.drawable.detail_bg)
+                    .error(R.drawable.detail_bg)
+                    .into(img_tu);
+        }
     }
 
     @Override
@@ -95,50 +138,75 @@ private MediaPlayer mediaPlayer;
                 }
                 break;
             case R.id.img_selet:
-                if (hart){
-                    img_hart.setImageResource(R.drawable.collection_2);
-                    hart=false;
-                }else {
-                    img_hart.setImageResource(R.drawable.collection_1);
-                    hart=true;
-                }
+                hart = !hart; // 切换收藏状态
+                img_selet.setImageResource(hart ? R.drawable.collection_1 : R.drawable.collection_2);
+
+                int userId = UserInfoUtils.getUserId(Detail.this);
+                String resourceType = getIntent().getStringExtra("resourceType");;
+                int resourceId = getIntent().getIntExtra("musicId", 0);;
+                String token=UserInfoUtils.getToken(this);
+                FavoriteHelper.updateFavoriteStatus(hart,token, userId, resourceType, resourceId, new FavoriteHelper.Callback() {
+                    @Override
+                    public void onSuccess() {
+                        Toast.makeText(Detail.this, hart ? "收藏成功" : "取消收藏成功", Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onFailure(String errorMsg) {
+                        // 失败，回滚UI和hart状态
+                        hart = !hart;
+                        runOnUiThread(() -> {
+                            img_selet.setImageResource(hart ? R.drawable.collection_1 : R.drawable.collection_2);
+                            Toast.makeText(Detail.this, "收藏状态更新失败：" + errorMsg, Toast.LENGTH_SHORT).show();
+                        });
+                    }
+                });
                 break;
             case R.id.img_back:
                 finish();break;
             case R.id.btn_dh:
-                if(btn_dh.getText().equals("兑换")) showDialog();
+                if (btn_dh.getText().equals("兑换")) {
+                    int requiredGdd = getIntent().getIntExtra("gdd", 0);
+                    int localGdd = DataStorageUtils.getGddCount(this);
+
+                    if (localGdd >= requiredGdd) {
+                        ExchangeHelper.showExchangeDialog(this, requiredGdd,
+                                getIntent().getStringExtra("resourceType"),
+                                getIntent().getIntExtra("musicId", 0),
+                                btn_dh);
+                    } else {
+                        Toast.makeText(this, "功德点不足，无法兑换", Toast.LENGTH_SHORT).show();
+                    }
+                }
                 break;
         }
     }
-    private void showDialog() {
-        ConfirmDialog.Builder builder = new ConfirmDialog.Builder(this);
-        dialog = builder.cancelTouchout(false)
-                .view(R.layout.dialog_confirm)
-                .style(R.style.Dialog)
-                .addViewOnclick(R.id.txt_confirm, new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        btn_dh.setText("已拥有");
-                        dialog.dismiss();  // 这里添加取消对话框的代码
-                    }
-                })
-                .build();
-        dialog.show();
-    }
-    private void setSound() {
-        // 准备数据
-        List<Map<String, String>> data = new ArrayList<>();
-        for (int i = 1; i <= 3; i++) {
-            Map<String, String> item = new HashMap<>();
-            item.put("name", "音乐曲目 " + i);
-            item.put("auther","作者："+i);
-            item.put("gdd", "需功德点：" + i*1000);
-            item.put("sc","0");
-            data.add(item);
-        }
 
-        LightAdapter adapter = new LightAdapter(this, data);
-        listView.setAdapter(adapter);
+    private void setSound() {
+//        // 准备数据
+//        List<Map<String, String>> data = new ArrayList<>();
+//        for (int i = 1; i <= 3; i++) {
+//            Map<String, String> item = new HashMap<>();
+//            item.put("name", "音乐曲目 " + i);
+//            item.put("auther","作者："+i);
+//            item.put("gdd", "需功德点：" + i*1000);
+//            item.put("sc","0");
+//            data.add(item);
+//        }
+//
+//        LightAdapter adapter = new LightAdapter(this, data);
+//        listView.setAdapter(adapter);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        String resourceType = getIntent().getStringExtra("resourceType");
+        int resourceId = getIntent().getIntExtra("musicId", 0);
+
+        boolean exchanged = ExchangeHelper.isExchanged(this, resourceType, resourceId);
+        btn_dh.setText(exchanged ? "已拥有" : "兑换");
+        btn_dh.setEnabled(!exchanged);
     }
 
 

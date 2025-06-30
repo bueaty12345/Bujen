@@ -1,19 +1,25 @@
 package com.yunsong.bujen.fragment;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.yunsong.bujen.ConfirmDialog;
+import com.bumptech.glide.Glide;
+import com.yunsong.bujen.AvatarUpdateEvent;
 import com.yunsong.bujen.Local;
 import com.yunsong.bujen.MyCollect;
 import com.yunsong.bujen.MyPray;
@@ -21,14 +27,12 @@ import com.yunsong.bujen.MyTutorial;
 import com.yunsong.bujen.setting.Setting;
 import com.yunsong.bujen.ZenbeatSetting;
 import com.yunsong.bujen.device.Devices;
-import com.yunsong.bujen.init.Login;
 import com.yunsong.bujen.R;
-import com.yunsong.bujen.init.Register;
-import com.thingclips.smart.android.user.api.ILogoutCallback;
-import com.thingclips.smart.home.sdk.ThingHomeSdk;
-import com.thingclips.smart.sdk.api.IResultCallback;
-import com.yunsong.bujen.utils.DataStorageUtils;
 import com.yunsong.bujen.utils.UserInfoUtils;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -40,6 +44,8 @@ public class SettingsFragment extends Fragment implements View.OnClickListener{
 
     private   TextView txt_virtuePoints,tv_nickname_info,tv_signature_info;
     private SettingsViewModel sharedViewModel;
+
+    ImageView img_icon_headPortrait;
 
     LinearLayout lin_sound,lin_device,lin_collect,lay_music,lay_Tutorial,lay_pray,service,mySetting;
 
@@ -81,6 +87,7 @@ public class SettingsFragment extends Fragment implements View.OnClickListener{
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+        EventBus.getDefault().register(this); // 注册事件总线
     }
 
     @Override
@@ -99,6 +106,7 @@ public class SettingsFragment extends Fragment implements View.OnClickListener{
         mySetting=view.findViewById(R.id.mySetting);
         tv_signature_info=view.findViewById(R.id.tv_signature_info);
         tv_nickname_info=view.findViewById(R.id.tv_nickname_info);
+        img_icon_headPortrait=view.findViewById(R.id.img_icon_headPortrait);
 
         lin_sound.setOnClickListener(this);
         lin_device.setOnClickListener(this);
@@ -119,8 +127,33 @@ public class SettingsFragment extends Fragment implements View.OnClickListener{
         });
 //        txt_virtuePoints.setText(String.valueOf(DataStorageUtils.getGddCount(requireContext())));
 
+        loadLocalAvatar();
 
         return view;
+    }
+    private void loadLocalAvatar() {
+        SharedPreferences sp = requireContext().getSharedPreferences("user", Context.MODE_PRIVATE);
+        String avatarBase64 = sp.getString("avatar", null);
+        if (avatarBase64 != null) {
+            byte[] decodedBytes = Base64.decode(avatarBase64, Base64.DEFAULT);
+            Bitmap bitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
+            Glide.with(this)
+                    .load(bitmap)
+                    .circleCrop()
+                    .into(img_icon_headPortrait);
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onAvatarUpdate(AvatarUpdateEvent event) {
+        if (event.base64 != null) {
+            byte[] decoded = Base64.decode(event.base64, Base64.DEFAULT);
+            Bitmap bitmap = BitmapFactory.decodeByteArray(decoded, 0, decoded.length);
+            Glide.with(this)
+                    .load(bitmap)
+                    .circleCrop()
+                    .into(img_icon_headPortrait);
+        }
     }
 
     @Override
@@ -150,5 +183,12 @@ public class SettingsFragment extends Fragment implements View.OnClickListener{
                 startActivity(new Intent(getActivity(), Setting.class));
         }
     }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this); // 注销事件总线
+    }
+
 
 }

@@ -157,6 +157,8 @@ public class MyPray extends AppCompatActivity {
                     bean.zen_quote = obj.optString("zenQuote");
                     bean.created_at = obj.optString("createdAt");
                     bean.required_merit_points = obj.optInt("requiredMeritPoints");
+                    bean.blessingMethod= obj.getString("blessingMethod");
+//                    bean.exchangeQuantity=obj.getInt("exchangeQuantity");
                     // 按分类存入Map
                     List<MyPrayBean> list = categoryMap.getOrDefault(bean.blessing_category, new ArrayList<>());
                     list.add(bean);

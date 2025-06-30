@@ -56,10 +56,10 @@ public class MyTutorial extends AppCompatActivity {
             public void onTabSelected(TabLayout.Tab tab) {
                 // 当选项卡被选中时更新 TextView 内容
                 switch (tab.getPosition()) {
-                    case 0: showCategory("1"); break; // 减压
-                    case 1: showCategory("2"); break; // 疗愈
-                    case 2: showCategory("3"); break; // 白噪音
-                    case 3: showCategory("4"); break; // 情绪管理
+                    case 0: showCategory("减压"); break; // 减压
+                    case 1: showCategory("疗愈"); break; // 疗愈
+                    case 2: showCategory("白噪音"); break; // 白噪音
+                    case 3: showCategory("情绪管理"); break; // 情绪管理
                 }
             }
 
@@ -150,7 +150,7 @@ public class MyTutorial extends AppCompatActivity {
                     MyTutorialBean item = new MyTutorialBean();
                     item.tutorialName = obj.optString("tutorialName");
                     item.createdAt = obj.optString("createdAt");
-                    item.sc = obj.optInt("sc");
+                    item.sc = obj.optBoolean("sc");
                     item.requiredMeritPoints = obj.optInt("requiredMeritPoints");
                     item.tutorialCategory=obj.optString("tutorialCategory");
                     // 按分类存入Map
@@ -159,7 +159,7 @@ public class MyTutorial extends AppCompatActivity {
                     categoryMap.put(item.tutorialCategory, list);
                 }
 
-                showCategory("1");
+                showCategory("减压");
             } catch (JSONException e) {
                 e.printStackTrace();
                 Toast.makeText(getApplicationContext(), "解析数据失败", Toast.LENGTH_SHORT).show();
