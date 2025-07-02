@@ -48,7 +48,7 @@ private ConfirmDialog dialog;
 
     void init(){
         message=findViewById(R.id.lin_message);
-        share=findViewById(R.id.lin_share);
+//        share=findViewById(R.id.lin_share);
         upgrade=findViewById(R.id.lin_upgrade);
         remove=findViewById(R.id.lin_remove);
         txt_id=findViewById(R.id.txt_id);
@@ -57,7 +57,7 @@ private ConfirmDialog dialog;
         reset=findViewById(R.id.lin_reset);
 
         message.setOnClickListener(this);
-        share.setOnClickListener(this);
+//        share.setOnClickListener(this);
         upgrade.setOnClickListener(this);
         remove.setOnClickListener(this);
         img_back.setOnClickListener(this);
@@ -80,7 +80,11 @@ private ConfirmDialog dialog;
                 it.putExtra("id",id);
                 startActivity(it);
                 break;
-            case R.id.lin_share:break;
+//            case R.id.lin_share:
+//                Intent it2=new Intent(Device.this,ShareDevice.class);
+//                it2.putExtra("id",id);
+//                startActivity(it2);
+//                break;
             case R.id.lin_upgrade:
                 Intent it1=new Intent(Device.this,Upgrade.class);
                 it1.putExtra("id",id);

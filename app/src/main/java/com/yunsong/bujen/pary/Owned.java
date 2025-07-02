@@ -163,6 +163,7 @@ public class Owned extends AppCompatActivity {
                     bean.created_at = obj.optString("createdAt");
                     bean.required_merit_points = obj.optInt("requiredMeritPoints");
                     bean.blessingMethod = obj.optString("blessingMethod");
+                    bean.exchangeQuantity=obj.getInt("exchangeQuantity");
                     activity.prayList.add(bean);
                 }
 

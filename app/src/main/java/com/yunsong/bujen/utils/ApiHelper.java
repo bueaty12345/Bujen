@@ -1,5 +1,6 @@
 package com.yunsong.bujen.utils;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.AsyncTask;
 
@@ -11,7 +12,9 @@ import com.yunsong.bujen.databean.BlessingBean;
 import com.yunsong.bujen.databean.MusicBean;
 import com.yunsong.bujen.databean.MyLightBean;
 import com.yunsong.bujen.databean.MyTutorialBean;
+import com.yunsong.bujen.databean.TutorialBundleBean;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -19,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 import okhttp3.Call;
@@ -32,6 +36,7 @@ public class ApiHelper {
     private static String MUSIC_INFO_URL = BuildConfig.API_SERVER+"/system/music/app/list"; //获取音乐接口URL
     private static String LIGHT_INFO_URL=BuildConfig.API_SERVER+"/system/background/app/list";//灯光
     private static String TUTORIAL_INFO_URL=BuildConfig.API_SERVER+"/system/tutorial/app/list";
+    private static String TUTORIALRESOUCEBUNDLE_INFO_URL=BuildConfig.API_SERVER+"/system/package/app/list";
     private static String PRAY_INFO_URL=BuildConfig.API_SERVER+"/system/blessing/app/list";
     private static final MediaType MEDIA_TYPE_JSON  = MediaType.parse("application/json; charset=utf-8");
     public static void sendJsonRequest(Context context, String url, JSONObject bodyJson, String token, String method, SimpleCallback callback) {
@@ -246,6 +251,117 @@ public class ApiHelper {
             }
         }.execute();
     }
+
+    public static void fetchTutorialResourceBundleList(Context context, String token, ApiHelper.Callback<TutorialBundleBean> callback) {
+        new AsyncTask<Void, Void, String>() {
+            @Override
+            protected String doInBackground(Void... voids) {
+                try {
+                    URL url = new URL(TUTORIALRESOUCEBUNDLE_INFO_URL);
+                    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                    connection.setRequestMethod("GET");
+                    connection.setRequestProperty("Authorization", "Bearer " + token);
+
+                    int responseCode = connection.getResponseCode();
+                    if (responseCode == HttpURLConnection.HTTP_OK) {
+                        BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                        StringBuilder response = new StringBuilder();
+                        String line;
+                        while ((line = in.readLine()) != null) {
+                            response.append(line);
+                        }
+                        in.close();
+                        return response.toString();
+                    } else {
+                        return "Error: response code " + responseCode;
+                    }
+                } catch (Exception e) {
+                    return "Error: " + e.getMessage();
+                }
+            }
+
+            @Override
+            protected void onPostExecute(String result) {
+                if (result.startsWith("Error:")) {
+                    callback.onError(result);
+                } else {
+                    try {
+                        JSONObject jsonObject = new JSONObject(result);
+                        List<TutorialBundleBean> list = JSON.parseArray(jsonObject.getString("rows"), TutorialBundleBean.class);
+                        callback.onSuccess(list);
+                    } catch (Exception e) {
+                        callback.onError("解析失败：" + e.getMessage());
+                    }
+                }
+            }
+        }.execute();
+    }
+
+    public static void fetchTutorialPackageDetail(Context context, String token, int level, ApiHelper.Callback<MyTutorialBean> callback) {
+        OkHttpClient client = new OkHttpClient();
+        String url = BuildConfig.API_SERVER + "/system/package/app/" + level;
+
+        Request request = new Request.Builder()
+                .url(url)
+                .get()
+                .addHeader("Authorization", token)
+                .build();
+
+        client.newCall(request).enqueue(new okhttp3.Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                e.printStackTrace();
+                ((Activity) context).runOnUiThread(() -> callback.onError("网络异常：" + e.getMessage()));
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    try {
+                        String result = response.body().string();
+                        JSONObject json = new JSONObject(result);
+
+                        JSONArray array = json.optJSONArray("rows");
+                        List<MyTutorialBean> list = new ArrayList<>();
+
+                        if (array != null) {
+                            for (int i = 0; i < array.length(); i++) {
+                                JSONObject obj = array.getJSONObject(i);
+                                MyTutorialBean bean = new MyTutorialBean();
+
+                                bean.tutorialName = obj.optString("tutorialName");
+                                bean.requiredMeritPoints = obj.optInt("requiredMeritPoints");
+                                bean.tutorialContent = obj.optString("tutorialContent");
+                                bean.author = obj.optString("author");
+                                bean.description = obj.optString("description");
+                                bean.rating = obj.optInt("rating");
+                                bean.videoUrl = obj.optString("videoUrl");
+                                bean.backgroundMusicUrl = obj.optString("backgroundMusicUrl");
+                                bean.tutorialId = obj.optInt("tutorialId");
+                                bean.resourceType = obj.optString("resourceType");
+                                bean.createdAt = obj.optString("createdAt");
+                                bean.sc = obj.optBoolean("sc");
+                                bean.dh = obj.optBoolean("dh");
+
+                                list.add(bean);
+                            }
+                        }
+
+                        ((Activity) context).runOnUiThread(() -> callback.onSuccess(list));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        ((Activity) context).runOnUiThread(() -> callback.onError("解析失败：" + e.getMessage()));
+                    }
+                } else {
+                    ((Activity) context).runOnUiThread(() -> callback.onError("请求失败：" + response.code()));
+                }
+            }
+        });
+    }
+
+
+
+
     public interface Callback<T> {
         void onSuccess(List<T> list);
         void onError(String message);

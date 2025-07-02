@@ -37,7 +37,6 @@ public class Detail extends AppCompatActivity implements View.OnClickListener{
     private MediaPlayer mediaPlayer;
     String music;
 
-    private final String FAVORITES_INFO_URL = BuildConfig.API_SERVER+"/system/favorites";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -148,6 +147,10 @@ public class Detail extends AppCompatActivity implements View.OnClickListener{
                 FavoriteHelper.updateFavoriteStatus(hart,token, userId, resourceType, resourceId, new FavoriteHelper.Callback() {
                     @Override
                     public void onSuccess() {
+                        Intent resultIntent = new Intent();
+                        resultIntent.putExtra("position", getIntent().getIntExtra("position", -1));
+                        setResult(RESULT_OK, resultIntent);
+                        finish();
                         Toast.makeText(Detail.this, hart ? "收藏成功" : "取消收藏成功", Toast.LENGTH_SHORT).show();
                     }
 

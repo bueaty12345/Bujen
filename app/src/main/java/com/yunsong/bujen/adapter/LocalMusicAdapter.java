@@ -67,16 +67,7 @@ public class LocalMusicAdapter extends BaseAdapter {
         } else {
             holder.img_selet.setVisibility(View.INVISIBLE);
         }
-        // 设置点击事件
-        view.setOnClickListener(v -> {
-            notifyDataSetChanged(); // 刷新适配器
-            Mi=i;
-            MusicService.MusicControl control = MusicController.getInstance().getMusicControl();
-            if (control != null) {
-                control.play(Mi);
-            }
 
-        });
         return view;
     }
     private final class viewHolder {

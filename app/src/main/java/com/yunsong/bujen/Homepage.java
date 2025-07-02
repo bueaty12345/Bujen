@@ -223,43 +223,43 @@ public class Homepage extends AppCompatActivity implements View.OnClickListener 
         new GetUserInfoTask().execute(token);
         txt_gdd.setText(String.valueOf(com.yunsong.bujen.utils.DataStorageUtils.getGddCount(this)));
 
-        ivMiniApp.setOnTouchListener((v, event) -> {
-            switch (event.getAction()) {
-                case MotionEvent.ACTION_DOWN:
-                    dX = v.getX() - event.getRawX();
-                    dY = v.getY() - event.getRawY();
-                    touchDownX = event.getRawX();
-                    return true;
-                case MotionEvent.ACTION_MOVE:
-                    float newX = event.getRawX() + dX;
-                    float newY = event.getRawY() + dY;
-
-                    // 限制边界（防止滑出屏幕）
-                    View parent = (View) v.getParent();
-                    int parentWidth = parent.getWidth();
-                    int parentHeight = parent.getHeight();
-
-                    newX = Math.max(0, Math.min(newX, parentWidth - v.getWidth()));
-                    newY = Math.max(0, Math.min(newY, parentHeight - v.getHeight() - 100));
-
-                    v.setX(newX);
-                    v.setY(newY);
-                    return true;
-                case MotionEvent.ACTION_UP:
-                    if (Math.abs(event.getRawX() - touchDownX) < 20) {
-                        long now = System.currentTimeMillis();
-                        if (now - lastClickTime > 300) {
-                            lastClickTime = now;
-                            openMiniApp();
-                        }
-                    } else {
-                        // 滑动触发
-                        openMiniApp();
-                    }
-                    return true;
-            }
-            return false;
-        });
+//        ivMiniApp.setOnTouchListener((v, event) -> {
+//            switch (event.getAction()) {
+//                case MotionEvent.ACTION_DOWN:
+//                    dX = v.getX() - event.getRawX();
+//                    dY = v.getY() - event.getRawY();
+//                    touchDownX = event.getRawX();
+//                    return true;
+//                case MotionEvent.ACTION_MOVE:
+//                    float newX = event.getRawX() + dX;
+//                    float newY = event.getRawY() + dY;
+//
+//                    // 限制边界（防止滑出屏幕）
+//                    View parent = (View) v.getParent();
+//                    int parentWidth = parent.getWidth();
+//                    int parentHeight = parent.getHeight();
+//
+//                    newX = Math.max(0, Math.min(newX, parentWidth - v.getWidth()));
+//                    newY = Math.max(0, Math.min(newY, parentHeight - v.getHeight() - 100));
+//
+//                    v.setX(newX);
+//                    v.setY(newY);
+//                    return true;
+//                case MotionEvent.ACTION_UP:
+//                    if (Math.abs(event.getRawX() - touchDownX) < 20) {
+//                        long now = System.currentTimeMillis();
+//                        if (now - lastClickTime > 300) {
+//                            lastClickTime = now;
+//                            openMiniApp();
+//                        }
+//                    } else {
+//                        // 滑动触发
+//                        openMiniApp();
+//                    }
+//                    return true;
+//            }
+//            return false;
+//        });
     }
 
     private void openMiniApp() {

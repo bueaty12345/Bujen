@@ -1,15 +1,18 @@
 package com.yunsong.bujen;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -21,6 +24,7 @@ import com.yunsong.bujen.adapter.MyCollectAdapter;
 import com.yunsong.bujen.adapter.MyPrayAdapter;
 import com.yunsong.bujen.adapter.MyTutorialAdapter;
 import com.yunsong.bujen.databean.BlessingBean;
+import com.yunsong.bujen.databean.MusicBean;
 import com.yunsong.bujen.databean.MyLightBean;
 import com.yunsong.bujen.databean.MyMusicBean;
 import com.yunsong.bujen.databean.MyPrayBean;
@@ -53,6 +57,9 @@ public class MyCollect extends AppCompatActivity {
     private List<MyLightBean> lightList = new ArrayList<>();
     private BaseAdapter currentAdapter;
 
+    private int currentTabIndex = 0;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,8 +74,8 @@ public class MyCollect extends AppCompatActivity {
         tab_local.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                // 当选项卡被选中时更新 TextView 内容
-                switch (tab.getPosition()) {
+                currentTabIndex = tab.getPosition();
+                switch (currentTabIndex) {
                     case 0:
                         setMusic();
                         break;
@@ -97,7 +104,102 @@ public class MyCollect extends AppCompatActivity {
                 finish();
             }
         });
+        listView.setOnItemClickListener((parent, view, position, id) -> {
+            Intent intent;
+
+            switch (currentTabIndex) {
+                case 0:
+                    MyMusicBean musicBean = (MyMusicBean) parent.getAdapter().getItem(position);
+                    intent = new Intent(MyCollect.this, Detail.class);
+                    intent.putExtra("name", musicBean.getMusicName());
+                    intent.putExtra("gdd", musicBean.getRequiredMeritPoints());
+                    intent.putExtra("singer", musicBean.getSinger());
+                    intent.putExtra("music", musicBean.getMusicUrl());
+                    intent.putExtra("createdAt", musicBean.getCreatedAt());
+                    intent.putExtra("rating", String.valueOf(musicBean.getRating()));
+                    intent.putExtra("description", musicBean.getDescription());
+                    intent.putExtra("sc", musicBean.getSc());
+                    intent.putExtra("dh", musicBean.getDh());
+                    intent.putExtra("duration", musicBean.getDuration());
+                    intent.putExtra("resourceType", musicBean.getResourceType());
+                    intent.putExtra("musicId", musicBean.getMusicId());
+                    intent.putExtra("musicCover", musicBean.getMusicCover());
+                    intent.putExtra("position", position);
+                    break;
+
+                case 1:
+                    MyLightBean lightBean = (MyLightBean) parent.getAdapter().getItem(position);
+                    intent = new Intent(MyCollect.this, Detail2.class);
+                    intent.putExtra("backgroundName", lightBean.getBackgroundName());
+                    intent.putExtra("requiredMeritPoints", lightBean.getRequiredMeritPoints());
+                    intent.putExtra("author", lightBean.getAuthor());
+                    intent.putExtra("createdAt", lightBean.getCreatedAt());
+                    intent.putExtra("rating", String.valueOf(lightBean.getRating()));
+                    intent.putExtra("description", lightBean.getDescription());
+                    intent.putExtra("sc", lightBean.isSc());
+                    intent.putExtra("dh", lightBean.isDh());
+                    intent.putExtra("backgroundImageUrl", lightBean.getBackgroundImageUrl());
+                    intent.putExtra("resourceType", lightBean.getResourceType());
+                    intent.putExtra("backgroundId", lightBean.getBackgroundId());
+                    intent.putExtra("position", position);
+                    break;
+
+                case 2:
+                    MyTutorialBean tutorialBean = (MyTutorialBean) parent.getAdapter().getItem(position);
+                    intent = new Intent(MyCollect.this, TutorialDetail.class);
+                    intent.putExtra("name", tutorialBean.getTutorialName());
+                    intent.putExtra("sc", tutorialBean.getSc());
+                    intent.putExtra("dh", tutorialBean.getDh());
+                    intent.putExtra("description", tutorialBean.getDescription());
+                    intent.putExtra("tutorialContent", tutorialBean.getTutorialContent());
+                    intent.putExtra("gdd", tutorialBean.getRequiredMeritPoints());
+                    intent.putExtra("rating", tutorialBean.getRating());
+                    intent.putExtra("resourceType", tutorialBean.getResourceType());
+                    intent.putExtra("tutorialId", tutorialBean.getTutorialId());
+                    intent.putExtra("videoUrl", tutorialBean.getVideoUrl());
+                    intent.putExtra("position", position);
+                    break;
+
+                case 3:
+                    BlessingBean selected = (BlessingBean) parent.getAdapter().getItem(position);
+                    intent = new Intent(MyCollect.this, PraysDetail.class);
+                    intent.putExtra("blessing", selected);
+                    intent.putExtra("resourceType", selected.getResourceType());
+                    intent.putExtra("blessingId", selected.getBlessingId());
+                    intent.putExtra("gdd", selected.getRequiredMeritPoints());
+                    intent.putExtra("blessingBackgroundUrl", selected.getBlessingBackgroundUrl());
+                    intent.putExtra("blessingMethod", selected.getBlessingMethod());
+                    intent.putExtra("position", position);
+                    intent.putExtra("exchangeQuantity",selected.getExchangeQuantity());
+                    intent.putExtra("blessingMethod",selected.getBlessingMethod());
+                    intent.putExtra("blessingCategory",selected.getBlessingCategory());
+                    break;
+
+                default:
+                    return;
+            }
+
+            intent.putExtra("from", "MyCollect");
+            startActivityForResult(intent, 1001);
+        });
+
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == 1001 && resultCode == RESULT_OK && data != null) {
+            int position = data.getIntExtra("position", -1);
+            if (position != -1 && currentAdapter != null) {
+                // 从当前 Adapter 中移除项并刷新
+                if (currentAdapter instanceof MyCollectAdapter) {
+                    ((MyCollectAdapter) currentAdapter).removeItem(position);
+                }
+            }
+        }
+    }
+
 
     private class FetchAllDataTask extends AsyncTask<String, Void, Void> {
         @Override
@@ -132,6 +234,10 @@ public class MyCollect extends AppCompatActivity {
                     item.sc = obj.optBoolean("sc");
                     item.dh = obj.optBoolean("dh");
                     item.rating = obj.optDouble("rating");
+                    item.resourceType=obj.optString("resourceType");
+
+                    Log.d("音乐","音乐==="+obj);
+
                     musicList.add(item);
                 }
             } catch (Exception e) {
@@ -155,6 +261,10 @@ public class MyCollect extends AppCompatActivity {
                     item.dh = obj.optBoolean("dh");
                     item.author=obj.optString("author");
                     item.rating=obj.optInt("rating");
+                    item.resourceType=obj.optString("resourceType");
+                    item.tutorialId=obj.getInt("tutorialId");
+
+                    Log.d("fetchTutorial","fetchTutorial==="+obj);
                     tutorialList.add(item);
                 }
             } catch (Exception e) {
@@ -165,7 +275,9 @@ public class MyCollect extends AppCompatActivity {
         private void fetchPray(String token) {
             try {
                 String result = httpGet(PRAY_INFO_URL, token);
+                Log.d("fetchTutorial","祈福"+result);
                 JSONArray rows = new JSONObject(result).optJSONArray("rows");
+                Log.d("fetchPray", "rows size: " + (rows != null ? rows.length() : -1));
                 if (rows == null) return;
                 for (int i = 0; i < rows.length(); i++) {
                     JSONObject obj = rows.getJSONObject(i);
@@ -178,6 +290,12 @@ public class MyCollect extends AppCompatActivity {
                     bean.zenQuote = obj.optString("zenQuote");
                     bean.createdAt = obj.optString("createdAt");
                     bean.requiredMeritPoints = obj.optInt("requiredMeritPoints");
+                    bean.resourceType=obj.optString("resourceType");
+                    bean.blessingId= obj.optInt("blessingId");
+                    bean.exchangeQuantity= obj.optInt("exchangeQuantity");
+                    bean.blessingMethod= obj.optString("blessingMethod","Text");
+
+                    Log.d("fetchPray","fetchPray==="+obj);
                     prayList.add(bean);
                 }
             } catch (Exception e) {
@@ -201,6 +319,10 @@ public class MyCollect extends AppCompatActivity {
                     item.sc = obj.optBoolean("sc");
                     item.dh = obj.optBoolean("dh");
                     item.rating = obj.optDouble("rating");
+                    item.resourceType=obj.optString("resourceType");
+                    item.backgroundId= obj.getInt("backgroundId");
+
+                    Log.d("fetchLight","fetchLight==="+obj);
                     lightList.add(item);
                 }
             } catch (Exception e) {

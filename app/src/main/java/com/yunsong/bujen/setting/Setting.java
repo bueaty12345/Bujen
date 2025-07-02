@@ -1,10 +1,13 @@
 package com.yunsong.bujen.setting;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -24,10 +27,15 @@ import com.yunsong.bujen.init.Connect;
 import com.yunsong.bujen.init.Login;
 import com.yunsong.bujen.init.Register;
 
+import java.io.File;
+import java.text.DecimalFormat;
+
 public class Setting extends AppCompatActivity implements View.OnClickListener{
 
     LinearLayout log_out,lin_account,lin_edit,lin_about,lin_history,lin_clear_cache;
     ImageView img_back;
+    Switch sw_battery, sw_notice;
+    TextView cacheSizeText;
     private ConfirmDialog dialog;
 
     @Override
@@ -50,6 +58,9 @@ public class Setting extends AppCompatActivity implements View.OnClickListener{
         lin_about=findViewById(R.id.lin_about);
         lin_history=findViewById(R.id.lin_history);
         lin_clear_cache=findViewById(R.id.lin_clear_cache);
+        sw_battery=findViewById(R.id.sw_battery);
+        sw_notice=findViewById(R.id.sw_notice);
+        cacheSizeText=findViewById(R.id.tv_cache_size);
 
         img_back.setOnClickListener(this);
         log_out.setOnClickListener(this);
@@ -58,6 +69,24 @@ public class Setting extends AppCompatActivity implements View.OnClickListener{
         lin_about.setOnClickListener(this);
         lin_history.setOnClickListener(this);
         lin_clear_cache.setOnClickListener(this);
+
+        SharedPreferences prefs = getSharedPreferences("settings", MODE_PRIVATE);
+        sw_battery.setChecked(prefs.getBoolean("battery_reminder", false));
+        sw_notice.setChecked(prefs.getBoolean("notification_reminder", false));
+
+        sw_battery.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            prefs.edit().putBoolean("battery_reminder", isChecked).apply();
+            Toast.makeText(this, isChecked ? "已开启电池提醒" : "已关闭电池提醒", Toast.LENGTH_SHORT).show();
+        });
+
+        sw_notice.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            prefs.edit().putBoolean("notification_reminder", isChecked).apply();
+            Toast.makeText(this, isChecked ? "通知提醒已开启" : "通知提醒已关闭", Toast.LENGTH_SHORT).show();
+        });
+
+        if (cacheSizeText != null) {
+            cacheSizeText.setText(getFormattedSize(getDirSize(getCacheDir())));
+        }
     }
 
 
@@ -82,6 +111,10 @@ public class Setting extends AppCompatActivity implements View.OnClickListener{
                 break;
             case R.id.lin_history:
                 startActivity(new Intent(Setting.this,History.class));
+                break;
+            case R.id.lin_clear_cache:
+                showDialog("清除缓存", "确定清除应用缓存吗？");
+                break;
 
         }
     }
@@ -96,22 +129,19 @@ public class Setting extends AppCompatActivity implements View.OnClickListener{
                 .addViewOnclick(R.id.txt_confirm, new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        // 处理确定按钮点击
-                        if ("注销".equals(title)) {
-//                            toLogout();
-                        } else if ("退出".equals(title)) {
+                        if ("退出".equals(title)) {
                             toQuit();
+                        } else if ("清除缓存".equals(title)) {
+                            clearAppCache();
+                            if (cacheSizeText != null) {
+                                cacheSizeText.setText(getFormattedSize(getDirSize(getCacheDir())));
+                            }
+                            Toast.makeText(Setting.this, "缓存已清除", Toast.LENGTH_SHORT).show();
                         }
                         dialog.dismiss();
                     }
                 })
-                .addViewOnclick(R.id.txt_cancel, new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        // 处理取消按钮点击
-                        dialog.dismiss();
-                    }
-                })
+                .addViewOnclick(R.id.txt_cancel, view -> dialog.dismiss())
                 .build();
         dialog.show();
     }
@@ -135,4 +165,52 @@ public class Setting extends AppCompatActivity implements View.OnClickListener{
         });
     }
 
+    private void clearAppCache() {
+        try {
+            File cacheDir = getCacheDir();
+            deleteDir(cacheDir);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private boolean deleteDir(File dir) {
+        if (dir != null && dir.isDirectory()) {
+            String[] children = dir.list();
+            for (String child : children) {
+                boolean success = deleteDir(new File(dir, child));
+                if (!success) return false;
+            }
+            return dir.delete();
+        } else if (dir != null && dir.isFile()) {
+            return dir.delete();
+        } else {
+            return false;
+        }
+    }
+
+    private long getDirSize(File dir) {
+        long size = 0;
+        if (dir != null && dir.isDirectory()) {
+            for (File file : dir.listFiles()) {
+                if (file.isDirectory()) {
+                    size += getDirSize(file);
+                } else {
+                    size += file.length();
+                }
+            }
+        }
+        return size;
+    }
+
+    private String getFormattedSize(long size) {
+        DecimalFormat df = new DecimalFormat("0.00");
+        float kb = size / 1024f;
+        float mb = kb / 1024f;
+        if (mb >= 1) {
+            return df.format(mb) + "MB";
+        } else {
+            return df.format(kb) + "KB";
+        }
+    }
 }

@@ -32,7 +32,7 @@ public class PraysDetail extends AppCompatActivity implements View.OnClickListen
     private ImageView img_back, img_selet;
     private Button btn_dh, btn_again;
     private RelativeLayout img_cover;
-    private TextView txt_mname, txt_time, txt_date, txt_gdd, txt_zen,txt_blessingMethod;
+    private TextView txt_mname, txt_blessingCategory, txt_date, txt_gdd, txt_zen,txt_blessingMethod;
 
     private boolean hart = false;
 
@@ -63,7 +63,7 @@ public class PraysDetail extends AppCompatActivity implements View.OnClickListen
         img_cover = findViewById(R.id.img_cover);
 
         txt_mname = findViewById(R.id.txt_mname);
-        txt_time = findViewById(R.id.txt_time);
+        txt_blessingCategory = findViewById(R.id.txt_blessingCategory);
         txt_date = findViewById(R.id.txt_date);
         txt_gdd = findViewById(R.id.txt_gdd);
         txt_zen = findViewById(R.id.textView22);
@@ -79,25 +79,30 @@ public class PraysDetail extends AppCompatActivity implements View.OnClickListen
 
     private void bindData(BlessingBean bean) {
         txt_mname.setText(bean.getBlessingTheme());
-        txt_time.setText("6".equals(bean.getBlessingCategory()) ? "6" : "进阶");
+        txt_blessingCategory.setText("基础".equals(bean.getBlessingCategory()) ? "基础" : "进阶");
         txt_date.setText(bean.getCreatedAt());
         txt_gdd.setText("需功德值：" + bean.getRequiredMeritPoints());
         txt_zen.setText(bean.getZenQuote());
         txt_blessingMethod.setText(bean.blessingMethod);
-        switch (bean.blessingMethod) {
-            case "Text":
-                txt_blessingMethod.setText("800字限定");
-                break;
-            case "ImageText":
-                txt_blessingMethod.setText("900字 + 1图限定");
-                break;
-            case "Audio":
-                txt_blessingMethod.setText("6'00\"语音限定");
-                break;
-            default:
-                txt_blessingMethod.setText("800字限定");
-                break;
+        if (bean.blessingMethod == null) {
+            txt_blessingMethod.setText("800字限定");
+        } else {
+            switch (bean.blessingMethod) {
+                case "Text":
+                    txt_blessingMethod.setText("800字限定");
+                    break;
+                case "ImageText":
+                    txt_blessingMethod.setText("900字 + 1图限定");
+                    break;
+                case "Audio":
+                    txt_blessingMethod.setText("6'00\"语音限定");
+                    break;
+                default:
+                    txt_blessingMethod.setText("800字限定");
+                    break;
+            }
         }
+
 
         boolean dh=bean.isDh();
 

@@ -155,7 +155,7 @@ public class ProfileEditor extends AppCompatActivity implements View.OnClickList
         dialog.setOnConfirmListener(signature -> {
             tv_signature_info.setText(signature);
             userInfo.signature = signature;
-//            UserInfoUtils.saveUserSignature(this, signature);
+            UserInfoUtils.saveUserSignature(this, signature);
             updateUserInfoToServer();
         });
         dialog.show();
@@ -176,14 +176,22 @@ public class ProfileEditor extends AppCompatActivity implements View.OnClickList
 
     private void loadAvatar() {
         SharedPreferences sp = getSharedPreferences("user", MODE_PRIVATE);
-        String base64 = sp.getString("avatar", null);
-        if (base64 != null) {
-            byte[] bytes = Base64.decode(base64, Base64.DEFAULT);
-            Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+        String url = sp.getString("avatarUrl", null);
+        if (url != null && !url.isEmpty()) {
             Glide.with(this)
-                    .load(bitmap)
+                    .load(url)
                     .circleCrop()
                     .into(img_icon_headPortrait);
+        } else {
+            String base64 = sp.getString("avatar", null);
+            if (base64 != null) {
+                byte[] bytes = Base64.decode(base64, Base64.DEFAULT);
+                Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                Glide.with(this)
+                        .load(bitmap)
+                        .circleCrop()
+                        .into(img_icon_headPortrait);
+            }
         }
     }
 
@@ -342,6 +350,8 @@ public class ProfileEditor extends AppCompatActivity implements View.OnClickList
                 .addHeader("Authorization", "Bearer " + token)
                 .build();
 
+        Log.d("USER","USER="+json);
+        Log.d("USER","USER="+request);
         OkHttpClient client = new OkHttpClient();
         client.newCall(request).enqueue(new Callback() {
             @Override
@@ -360,7 +370,6 @@ public class ProfileEditor extends AppCompatActivity implements View.OnClickList
                     UserInfoUtils.saveUserGender(ProfileEditor.this, userInfo.gender);
                     UserInfoUtils.saveUserAvatarUrl(ProfileEditor.this, userInfo.avatar);
 
-                    // 如果头像是网络地址，也可以保存
                     if (!TextUtils.isEmpty(userInfo.avatar)) {
                         SharedPreferences sp = getSharedPreferences("user", MODE_PRIVATE);
                         sp.edit().putString("avatarUrl", userInfo.avatar).apply();

@@ -1,9 +1,11 @@
 package com.yunsong.bujen;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -17,6 +19,7 @@ import androidx.core.view.WindowInsetsCompat;
 import com.yunsong.bujen.adapter.LocalLightAdapter;
 import com.yunsong.bujen.adapter.LocalMusicAdapter;
 import com.google.android.material.tabs.TabLayout;
+import com.yunsong.bujen.databean.MusicBean;
 import com.yunsong.bujen.databean.MyLightBean;
 import com.yunsong.bujen.databean.MyMusicBean;
 import com.yunsong.bujen.utils.CommonFetchTask;
@@ -39,6 +42,7 @@ public class Local extends AppCompatActivity {
     TabLayout tab_local;
     ListView listView;
     ImageView img_back;
+    int position=0;
 
     private final String MUSIC_INFO_URL = BuildConfig.API_SERVER+"/system/music/app/myList";
     private final String LIGHT_INFO_URL=BuildConfig.API_SERVER+"/system/background/app/myList";
@@ -61,9 +65,11 @@ public class Local extends AppCompatActivity {
                 switch (tab.getPosition()) {
                     case 0:
                         setMusic();//音乐
+                        position=0;
                         break;
                     case 1:
                         setLamplight();//灯光
+                        position=1;
                         break;
                 }
             }

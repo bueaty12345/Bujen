@@ -50,16 +50,16 @@ public class Account extends AppCompatActivity implements View.OnClickListener{
         img_back=findViewById(R.id.img_back);
         lin_edit=findViewById(R.id.lin_edit);
         lin_account=findViewById(R.id.lin_account);
-        lin_mailEdit=findViewById(R.id.lin_mailEdit);
-        lin_tripartite=findViewById(R.id.lin_tripartite);
+//        lin_mailEdit=findViewById(R.id.lin_mailEdit);
+//        lin_tripartite=findViewById(R.id.lin_tripartite);
         tv_account_number=findViewById(R.id.tv_account_number);
 
         img_back.setOnClickListener(this);
         log_out.setOnClickListener(this);
         lin_edit.setOnClickListener(this);
         lin_account.setOnClickListener(this);
-        lin_mailEdit.setOnClickListener(this);
-        lin_tripartite.setOnClickListener(this);
+//        lin_mailEdit.setOnClickListener(this);
+//        lin_tripartite.setOnClickListener(this);
 
         tv_account_number.setText(UserInfoUtils.getUserPhone(this));
     }
@@ -80,11 +80,11 @@ public class Account extends AppCompatActivity implements View.OnClickListener{
             case R.id.lin_account:
                 startActivity(new Intent(Account.this, PhoneNumber.class));
                 break;
-            case R.id.lin_mailEdit:
-                startActivity(new Intent(Account.this, EditMail.class));
-                break;
-            case R.id.lin_tripartite:
-                startActivity(new Intent(Account.this,Tripartite.class));
+//            case R.id.lin_mailEdit:
+//                startActivity(new Intent(Account.this, EditMail.class));
+//                break;
+//            case R.id.lin_tripartite:
+//                startActivity(new Intent(Account.this,Tripartite.class));
         }
     }
 

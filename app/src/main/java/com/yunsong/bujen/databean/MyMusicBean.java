@@ -10,7 +10,7 @@ public class MyMusicBean implements CollectItem {
     public String updateBy;
     public Date updateTime;
     public String remark;
-    public Long musicId;
+    public Integer musicId;
     public String resourceType;
     public String musicCover;
     public String musicUrl;
@@ -90,16 +90,21 @@ public class MyMusicBean implements CollectItem {
         this.remark = remark;
     }
 
-    public Long getMusicId() {
+    public Integer getMusicId() {
         return musicId;
     }
 
-    public void setMusicId(Long musicId) {
+    public void setMusicId(Integer musicId) {
         this.musicId = musicId;
     }
 
     public String getResourceType() {
         return resourceType;
+    }
+
+    @Override
+    public int getResourceId() {
+        return musicId!=null? musicId:0;
     }
 
     public void setResourceType(String resourceType) {

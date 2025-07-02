@@ -9,6 +9,7 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,10 +24,18 @@ import androidx.core.view.WindowInsetsCompat;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.yunsong.bujen.adapter.TutorialSquareAdapter;
+import com.yunsong.bujen.databean.MyTutorialBean;
+import com.yunsong.bujen.utils.ApiHelper;
 import com.yunsong.bujen.utils.DataStorageUtils;
 import com.yunsong.bujen.utils.ExchangeHelper;
 import com.yunsong.bujen.utils.FavoriteHelper;
 import com.yunsong.bujen.utils.UserInfoUtils;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class TutorialDetail extends AppCompatActivity implements View.OnClickListener {
 LinearLayout lin_sk;
@@ -66,10 +75,10 @@ private boolean isFullScreen = false;
         txt_gdd=findViewById(R.id.txt_gdd);
         img_selet=findViewById(R.id.img_selet);
         txt_description=findViewById(R.id.txt_description);
-        txt_star=findViewById(R.id.txt_star);
         btn_dh=findViewById(R.id.btn_dh);
         img_back=findViewById(R.id.img_back);
         img_cover=findViewById(R.id.img_cover);
+        gridView=findViewById(R.id.grid_tj);
 
         Intent intent=getIntent();
 
@@ -78,7 +87,6 @@ private boolean isFullScreen = false;
         String description=intent.getStringExtra("description");
         boolean sc=intent.getBooleanExtra("sc",false);
         String tutorialContent=intent.getStringExtra("tutorialContent");
-        String ratingStr = intent.getStringExtra("rating");
 
         txt_mname.setText(name);
         txt_content.setText(tutorialContent);
@@ -91,9 +99,7 @@ private boolean isFullScreen = false;
             img_selet.setImageResource(R.drawable.collection_2);
         }
         txt_description.setText(description);
-        if (ratingStr != null) {
-            txt_star.setText(ratingStr);
-        }
+
 
         boolean dh=intent.getBooleanExtra("dh",false);
         btn_dh.setText(dh ? "已拥有" : "兑换");
@@ -150,21 +156,21 @@ private boolean isFullScreen = false;
     }
 
     private void setSquare() {
-        // 准备数据
-//        List<Map<String, Object>> data = new ArrayList<>();
-//        for (int i = 1; i <= 6; i++) {
-//            Map<String, Object> item = new HashMap<>();
-//            item.put("name", "教程 " + i);
-//            item.put("gdd", "功德值：" + i*100);
-//            data.add(item);
-//        }
-//        gridView.setNumColumns(2);
-//        // 创建适配器
-//        String[] from = {"name", "gdd"}; // 数据源的键
-//        int[] to = {R.id.txt_name, R.id.txt_gdd}; // 布局文件中的视图 ID
-//        SimpleAdapter adapter = new SimpleAdapter(this, data, R.layout.item_tutorial, from, to);
-//        gridView.setAdapter(adapter);
+        int level=getIntent().getIntExtra("level",0);
+        String token = UserInfoUtils.getToken(this);
 
+        ApiHelper.fetchTutorialPackageDetail(this, token, level, new ApiHelper.Callback<MyTutorialBean>() {
+            @Override
+            public void onSuccess(List<MyTutorialBean> list) {
+                TutorialSquareAdapter adapter = new TutorialSquareAdapter(TutorialDetail.this, list);
+                gridView.setAdapter(adapter);
+            }
+
+            @Override
+            public void onError(String message) {
+                Toast.makeText(TutorialDetail.this, "加载教程失败：" + message, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override
@@ -204,11 +210,14 @@ private boolean isFullScreen = false;
 
                 int userId = UserInfoUtils.getUserId(TutorialDetail.this);
                 String resourceType = getIntent().getStringExtra("resourceType");;
-                int resourceId = getIntent().getIntExtra("tutorialId", 0);;
+                int resourceId = getIntent().getIntExtra("id", 0);;
                 String token=UserInfoUtils.getToken(this);
-                FavoriteHelper.updateFavoriteStatus(hart,token, userId, resourceType, resourceId, new FavoriteHelper.Callback() {
+                FavoriteHelper.updateFavoriteStatus(hart,token, userId, "package", resourceId, new FavoriteHelper.Callback() {
                     @Override
                     public void onSuccess() {
+                        Intent resultIntent = new Intent();
+                        setResult(RESULT_OK, resultIntent);
+//                        finish();
                         Toast.makeText(TutorialDetail.this, hart ? "收藏成功" : "取消收藏成功", Toast.LENGTH_SHORT).show();
                     }
 
@@ -230,7 +239,7 @@ private boolean isFullScreen = false;
     protected void onResume() {
         super.onResume();
         String resourceType = getIntent().getStringExtra("resourceType");
-        int resourceId = getIntent().getIntExtra("tutorialId", 0);
+        int resourceId = getIntent().getIntExtra("id", 0);
 
         boolean exchanged = ExchangeHelper.isExchanged(this, resourceType, resourceId);
         btn_dh.setText(exchanged ? "已拥有" : "兑换");

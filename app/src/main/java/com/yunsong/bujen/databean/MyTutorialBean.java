@@ -8,7 +8,7 @@ public class MyTutorialBean implements CollectItem {
     public String updateBy;
     public String updateTime;
     public String remark;
-    public int tutorialId;
+    public Integer tutorialId;
     public String resourceType;
     public String tutorialCategory;
     public String videoUrl;
@@ -104,16 +104,21 @@ public class MyTutorialBean implements CollectItem {
         this.remark = remark;
     }
 
-    public int getTutorialId() {
+    public Integer getTutorialId() {
         return tutorialId;
     }
 
-    public void setTutorialId(int tutorialId) {
+    public void setTutorialId(Integer tutorialId) {
         this.tutorialId = tutorialId;
     }
 
     public String getResourceType() {
         return resourceType;
+    }
+
+    @Override
+    public int getResourceId() {
+        return tutorialId!=null?tutorialId:0;
     }
 
     public void setResourceType(String resourceType) {

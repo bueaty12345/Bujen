@@ -22,7 +22,7 @@ public class FavoriteHelper {
         void onSuccess();
         void onFailure(String errorMsg);
     }
-    private static final String FAVORITES_URL = BuildConfig.API_SERVER + "/system/favorites";
+    private static final String FAVORITES_URL = BuildConfig.API_SERVER + "/system/favorites/addRemove";
 
     public static void updateFavoriteStatus(boolean isCollect,String token, int userId, String resourceType, int resourceId, Callback callback) {
         new AsyncTask<Void, Void, Boolean>() {
@@ -44,6 +44,7 @@ public class FavoriteHelper {
                     json.put("resourceType", resourceType);
                     json.put("resourceId", resourceId);
                     json.put("favoriteTime", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(new Date()));
+                    json.put("isFavorite",isCollect);
 
                     Log.d("收藏请求参数", json.toString());
                     try (OutputStream os = conn.getOutputStream()) {

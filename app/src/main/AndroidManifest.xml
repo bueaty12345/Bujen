@@ -165,6 +165,10 @@
             android:exported="false" />
         <activity android:name=".guidance.CircumstanceActivity"
             android:exported="false" />
+        <activity android:name=".device.ShareDevice"
+            android:exported="false" />
+        <activity android:name=".setting.BlessingRecord"
+            android:exported="false" />
 
         <meta-data
             android:name="THING_SMART_APPKEY"

@@ -76,6 +76,7 @@ public class CommonFetchTask<T> extends AsyncTask<String, Void, String> {
             JSONObject jsonObject = new JSONObject(result);
             JSONArray rows = jsonObject.getJSONArray("rows");
             List<T> parsedList = parser.parse(rows);
+            Log.d("data","data==="+rows);
             callback.onFetched(parsedList);
         } catch (JSONException e) {
             e.printStackTrace();

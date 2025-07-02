@@ -9,7 +9,7 @@ public class MyLightBean implements CollectItem {
     public String updateTime;
     public String remark;
 
-    public int backgroundId;
+    public Integer backgroundId;
     public String resourceType;
     public String backgroundImageUrl;
     public String backgroundName;
@@ -85,16 +85,21 @@ public class MyLightBean implements CollectItem {
         this.remark = remark;
     }
 
-    public int getBackgroundId() {
+    public Integer getBackgroundId() {
         return backgroundId;
     }
 
-    public void setBackgroundId(int backgroundId) {
+    public void setBackgroundId(Integer backgroundId) {
         this.backgroundId = backgroundId;
     }
 
     public String getResourceType() {
         return resourceType;
+    }
+
+    @Override
+    public int getResourceId() {
+        return backgroundId != null ? backgroundId : 0;
     }
 
     public void setResourceType(String resourceType) {

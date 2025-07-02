@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F5ECE0"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/btn_back"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/back"
+            android:contentDescription="返回" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#CCCCCC"
+            android:layout_marginTop="8dp" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="8dp">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:id="@+id/tv_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="2024年12月25日 11:45"
+                    android:textColor="#B6A78E"
+                    android:textSize="12sp" />
+
+                <View
+                    android:layout_width="1dp"
+                    android:layout_height="14dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
+                    android:background="#B6A78E" />
+
+                <TextView
+                    android:id="@+id/tv_words"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="900字+图限定"
+                    android:textColor="#B6A78E"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <!-- 第二行，独立一行 -->
+            <TextView
+                android:id="@+id/tv_event"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="2025年7月1日 接福"
+                android:textColor="#B6A78E"
+                android:textSize="12sp"
+                android:layout_marginTop="4dp" />
+        </LinearLayout>
+
+        <!-- 图片部分 -->
+        <FrameLayout
+            android:id="@+id/layout_image_section"
+            android:layout_width="match_parent"
+            android:layout_height="180dp"
+            android:layout_marginTop="8dp">
+
+            <ImageView
+                android:id="@+id/img_main"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="fitCenter"
+                android:src="@drawable/icon_history1" />
+
+            <!-- 右上角“进阶”小标签 -->
+            <TextView
+                android:id="@+id/tv_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="进阶"
+                android:textColor="#FFF"
+                android:textSize="10sp"
+                android:background="#735435"
+                android:paddingLeft="6dp"
+                android:paddingRight="6dp"
+                android:paddingTop="2dp"
+                android:paddingBottom="2dp"
+                android:layout_gravity="top|end"
+                android:layout_margin="8dp"
+                android:gravity="center" />
+
+        </FrameLayout>
+
+        <!-- 文章标题 -->
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="人生何所求，暴富与自由"
+            android:textColor="#442A1C"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_marginTop="12dp" />
+
+        <!-- 文章正文 -->
+        <TextView
+            android:id="@+id/tv_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="我钱，钱爱我，我要要暴富暴富暴富暴富暴富暴富暴富暴富，发财发财发财发财发财发财。\n爱财 爱己 风生 水起，逆风如解意，多赚人民币，吹吹人间发财风，填我十万八千梦。\n源广进，珠宝成山。\n财源滚滚，黄金万两。\n发财致富，人生巅峰。\n财运亨通，富甲天下。\n财源滚滚来，幸福永相伴。\n钞票满满，财源滚滚，数钱数到手抽筋。\n恭喜发财，大吉大利！在这个充满机遇的时代，愿你的财富像滔滔江水一样连绵不断。\n发财了，感觉就像天空中冉冉升起的太阳，光芒万丈，照耀着我的人生！财富的喜悦溢于言表，我忍不住想与全世界分享这份幸"
+            android:textColor="#442A1C"
+            android:textSize="14sp"
+            android:lineSpacingExtra="6dp"
+            android:layout_marginTop="8dp" />
+
+    </LinearLayout>
+</ScrollView>

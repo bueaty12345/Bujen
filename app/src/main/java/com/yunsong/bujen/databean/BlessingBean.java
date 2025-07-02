@@ -8,6 +8,30 @@ public class BlessingBean implements Serializable, CollectItem {
     public String createBy;
     public String createTime;
     public String updateBy;
+
+    @Override
+    public String toString() {
+        return "BlessingBean{" +
+                "createBy='" + createBy + '\'' +
+                ", createTime='" + createTime + '\'' +
+                ", updateBy='" + updateBy + '\'' +
+                ", updateTime='" + updateTime + '\'' +
+                ", remark='" + remark + '\'' +
+                ", blessingId=" + blessingId +
+                ", resourceType='" + resourceType + '\'' +
+                ", blessingCategory='" + blessingCategory + '\'' +
+                ", blessingBackgroundUrl='" + blessingBackgroundUrl + '\'' +
+                ", blessingTheme='" + blessingTheme + '\'' +
+                ", zenQuote='" + zenQuote + '\'' +
+                ", createdAt='" + createdAt + '\'' +
+                ", requiredMeritPoints=" + requiredMeritPoints +
+                ", sc=" + sc +
+                ", dh=" + dh +
+                ", exchangeQuantity=" + exchangeQuantity +
+                ", blessingMethod='" + blessingMethod + '\'' +
+                '}';
+    }
+
     public String updateTime;
     public String remark;                  // 备注信息（可为空）
 
@@ -22,8 +46,16 @@ public class BlessingBean implements Serializable, CollectItem {
     public int requiredMeritPoints;        // 所需功德值
     public boolean sc;                     // 是否收藏
     public boolean dh;                     // 是否兑换
+    public Integer exchangeQuantity;
     public String blessingMethod;
 
+    public Integer getExchangeQuantity() {
+        return exchangeQuantity;
+    }
+
+    public void setExchangeQuantity(Integer exchangeQuantity) {
+        this.exchangeQuantity = exchangeQuantity;
+    }
     public String getCreateBy() {
         return createBy;
     }
@@ -74,6 +106,11 @@ public class BlessingBean implements Serializable, CollectItem {
 
     public String getResourceType() {
         return resourceType;
+    }
+
+    @Override
+    public int getResourceId() {
+        return  blessingId != null ? blessingId : 0;
     }
 
     public void setResourceType(String resourceType) {
@@ -152,27 +189,7 @@ public class BlessingBean implements Serializable, CollectItem {
         this.blessingMethod = blessingMethod;
     }
 
-    @Override
-    public String toString() {
-        return "BlessingBean{" +
-                "createBy='" + createBy + '\'' +
-                ", createTime='" + createTime + '\'' +
-                ", updateBy='" + updateBy + '\'' +
-                ", updateTime='" + updateTime + '\'' +
-                ", remark='" + remark + '\'' +
-                ", blessingId=" + blessingId +
-                ", resourceType='" + resourceType + '\'' +
-                ", blessingCategory='" + blessingCategory + '\'' +
-                ", blessingBackgroundUrl='" + blessingBackgroundUrl + '\'' +
-                ", blessingTheme='" + blessingTheme + '\'' +
-                ", zenQuote='" + zenQuote + '\'' +
-                ", createdAt='" + createdAt + '\'' +
-                ", requiredMeritPoints=" + requiredMeritPoints +
-                ", sc=" + sc +
-                ", dh=" + dh +
-                ", blessingMethod='" + blessingMethod + '\'' +
-                '}';
-    }
+
 
     @Override
     public int getType() {

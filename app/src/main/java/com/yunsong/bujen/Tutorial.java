@@ -26,10 +26,13 @@ import com.yunsong.bujen.adapter.TutorialAdapter;
 import com.yunsong.bujen.databean.MusicBean;
 import com.yunsong.bujen.databean.MyLightBean;
 import com.yunsong.bujen.databean.MyTutorialBean;
+import com.yunsong.bujen.databean.TutorialBundleBean;
 import com.yunsong.bujen.utils.ApiHelper;
 import com.yunsong.bujen.utils.ExchangeHelper;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,32 +52,6 @@ public class Tutorial extends AppCompatActivity {
             return insets;
         });
         init();
-//        tab_tutorial.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-//            @Override
-//            public void onTabSelected(TabLayout.Tab tab) {
-//                // 当选项卡被选中时更新 TextView 内容
-//                switch (tab.getPosition()) {
-//                    case 0:
-//                        setSquare();//广场
-//                        break;
-//                    case 1:
-//                        setRedeemed();//已兑换
-//                        break;
-//                    case 2:
-//                        setCollection();//收藏
-//                        break;
-//                }
-//            }
-//            @Override
-//            public void onTabUnselected(TabLayout.Tab tab) {
-//
-//            }
-//
-//            @Override
-//            public void onTabReselected(TabLayout.Tab tab) {
-//
-//            }
-//        });
         img_back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -92,19 +69,20 @@ public class Tutorial extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Intent intent;
-                MyTutorialBean tutorialBean=(MyTutorialBean) adapterView.getAdapter().getItem(i);
+                TutorialBundleBean tutorialBean=(TutorialBundleBean) adapterView.getAdapter().getItem(i);
                 intent = new Intent(Tutorial.this, TutorialDetail.class);
-                intent.putExtra("name",tutorialBean.getTutorialName());
-                intent.putExtra("sc",tutorialBean.getSc());
-                intent.putExtra("dh",tutorialBean.getDh());
+                intent.putExtra("name",tutorialBean.getName());
+                intent.putExtra("sc",tutorialBean.isSc());
+                intent.putExtra("dh",tutorialBean.isDh());
                 intent.putExtra("description",tutorialBean.getDescription());
                 intent.putExtra("tutorialContent",tutorialBean.getTutorialContent());
                 intent.putExtra("description",tutorialBean.getDescription());
                 intent.putExtra("gdd",tutorialBean.getRequiredMeritPoints());
-                intent.putExtra("rating",tutorialBean.getRating());
                 intent.putExtra("resourceType",tutorialBean.getResourceType());
-                intent.putExtra("tutorialId",tutorialBean.getTutorialId());
-                intent.putExtra("videoUrl",tutorialBean.getVideoUrl());
+                intent.putExtra("id",tutorialBean.getId());
+                intent.putExtra("level",tutorialBean.getLevel());
+                intent.putExtra("priority",tutorialBean.getPriority());
+                intent.putExtra("requiredMeritPoints",tutorialBean.getRequiredMeritPoints());
 
                 startActivityForResult(intent, 1001);
             }
@@ -123,14 +101,24 @@ public class Tutorial extends AppCompatActivity {
     private void setRedeemed() {
         SharedPreferences sharedPreferences = getSharedPreferences("AppPrefs", MODE_PRIVATE);
         String token = sharedPreferences.getString("user_token", null);
-        ApiHelper.fetchTutorialList(this, token, new ApiHelper.Callback<MyTutorialBean>() {
+
+        ApiHelper.fetchTutorialResourceBundleList(this, token, new ApiHelper.Callback<TutorialBundleBean>() {
             @Override
-            public void onSuccess(List<MyTutorialBean> list) {
-                for (MyTutorialBean item : list) {
-                    if (item.getDh()) {
-                        ExchangeHelper.markAsExchanged(getContext(), item.getResourceType(), item.getTutorialId());
+            public void onSuccess(List<TutorialBundleBean> list) {
+
+                Collections.sort(list, new Comparator<TutorialBundleBean>() {
+                    @Override
+                    public int compare(TutorialBundleBean o1, TutorialBundleBean o2) {
+                        return Integer.compare(o1.getLevel(), o2.getLevel());
+                    }
+                });
+
+                for (TutorialBundleBean item : list) {
+                    if (item.isDh()) {
+                        ExchangeHelper.markAsExchanged(getContext(), item.getResourceType(), item.getId());
                     }
                 }
+
                 TutorialAdapter adapter = new TutorialAdapter(Tutorial.this, list, R.layout.item_tutorial2);
                 gridView.setAdapter(adapter);
             }
@@ -140,7 +128,6 @@ public class Tutorial extends AppCompatActivity {
                 Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
             }
         });
-
     }
 
 }

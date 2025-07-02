@@ -84,14 +84,77 @@
                         android:textColor="#49392D"
                         android:layout_marginStart="10dp"/>
 
-                    <CalendarView
-                        android:id="@+id/calendarView"
+                    <LinearLayout
+                        android:id="@+id/calendarContainer"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:orientation="vertical"
                         android:layout_marginTop="12dp"
                         android:layout_marginStart="10dp"
                         android:layout_marginEnd="10dp"
-                        android:layout_marginBottom="12dp" />
+                        android:layout_marginBottom="12dp"
+                        android:background="@drawable/bg_calendar_container"
+                        android:padding="12dp">
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                            <TextView
+                                android:id="@+id/tv_year_month"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="2025年7月"
+                                android:textSize="16sp"
+                                android:textColor="#000000"
+                                android:layout_alignParentStart="true"
+                                android:layout_centerVertical="true" />
+
+                            <ImageView
+                                android:id="@+id/btn_switch_year"
+                                android:layout_width="18dp"
+                                android:layout_height="18dp"
+                                android:layout_centerVertical="true"
+                                android:layout_marginStart="8dp"
+                                android:layout_toEndOf="@id/tv_year_month"
+                                android:src="@drawable/right_arrow" />
+
+                            <ImageView
+                                android:id="@+id/btn_prev_month"
+                                android:layout_width="18dp"
+                                android:layout_height="18dp"
+                                android:src="@drawable/right_arrow"
+                                android:scaleX="-1"
+                                android:layout_alignParentEnd="true"
+                                android:layout_marginEnd="32dp"
+                                android:layout_centerVertical="true" />
+
+                            <ImageView
+                                android:id="@+id/btn_next_month"
+                                android:layout_width="18dp"
+                                android:layout_height="18dp"
+                                android:src="@drawable/right_arrow"
+                                android:layout_alignParentEnd="true"
+                                android:layout_centerVertical="true" />
+                        </RelativeLayout>
+
+                        <!-- 星期栏 -->
+                        <LinearLayout
+                            android:id="@+id/weekHeaderLayout"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_marginTop="12dp"
+                            android:gravity="center" />
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/calendarRecyclerView"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:overScrollMode="never"
+                            android:nestedScrollingEnabled="false" />
+                    </LinearLayout>
 
                     <TextView
                         android:id="@+id/tv_title3"

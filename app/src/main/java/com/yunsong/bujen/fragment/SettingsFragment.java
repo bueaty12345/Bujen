@@ -102,7 +102,7 @@ public class SettingsFragment extends Fragment implements View.OnClickListener{
         lay_music=view.findViewById(R.id.lay_music);
         lay_Tutorial=view.findViewById(R.id.lay_Tutorial);
         lay_pray=view.findViewById(R.id.lay_pray);
-        service=view.findViewById(R.id.lay_service);
+//        service=view.findViewById(R.id .lay_service);
         mySetting=view.findViewById(R.id.mySetting);
         tv_signature_info=view.findViewById(R.id.tv_signature_info);
         tv_nickname_info=view.findViewById(R.id.tv_nickname_info);
@@ -114,7 +114,7 @@ public class SettingsFragment extends Fragment implements View.OnClickListener{
         lay_music.setOnClickListener(this);
         lay_Tutorial.setOnClickListener(this);
         lay_pray.setOnClickListener(this);
-        service.setOnClickListener(this);
+//        service.setOnClickListener(this);
         mySetting.setOnClickListener(this);
 
         tv_nickname_info.setText(UserInfoUtils.getUserNickname(requireContext()));
@@ -133,15 +133,24 @@ public class SettingsFragment extends Fragment implements View.OnClickListener{
     }
     private void loadLocalAvatar() {
         SharedPreferences sp = requireContext().getSharedPreferences("user", Context.MODE_PRIVATE);
-        String avatarBase64 = sp.getString("avatar", null);
-        if (avatarBase64 != null) {
-            byte[] decodedBytes = Base64.decode(avatarBase64, Base64.DEFAULT);
-            Bitmap bitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
+        String url = sp.getString("avatarUrl", null);
+        if (url != null && !url.isEmpty()) {
             Glide.with(this)
-                    .load(bitmap)
+                    .load(url)
                     .circleCrop()
                     .into(img_icon_headPortrait);
+        } else {
+            String base64 = sp.getString("avatar", null);
+            if (base64 != null) {
+                byte[] bytes = Base64.decode(base64, Base64.DEFAULT);
+                Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                Glide.with(this)
+                        .load(bitmap)
+                        .circleCrop()
+                        .into(img_icon_headPortrait);
+            }
         }
+
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -177,7 +186,7 @@ public class SettingsFragment extends Fragment implements View.OnClickListener{
             case R.id.lay_pray:
                 startActivity(new Intent(getActivity(), MyPray.class));
                 break;
-            case R.id.lay_service:
+//            case R.id.lay_service:
 //                startActivity(new Intent(getActivity(),service.class));
             case R.id.mySetting:
                 startActivity(new Intent(getActivity(), Setting.class));

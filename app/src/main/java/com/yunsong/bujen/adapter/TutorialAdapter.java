@@ -9,6 +9,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -20,22 +21,34 @@ import com.yunsong.bujen.ConfirmDialog;
 import com.yunsong.bujen.R;
 import com.yunsong.bujen.databean.MyLightBean;
 import com.yunsong.bujen.databean.MyTutorialBean;
+import com.yunsong.bujen.databean.TutorialBundleBean;
 import com.yunsong.bujen.model.CollectItem;
+import com.yunsong.bujen.utils.FavoriteHelper;
+import com.yunsong.bujen.utils.UserInfoUtils;
 
 import java.util.List;
 
 public class TutorialAdapter extends BaseAdapter {
     private Context context;
-    private List<MyTutorialBean> data;
-    private static int selectedPosition = 0;
+    private List<?> data;
+    private int beanType = 0;
     private ConfirmDialog dialog;
 
     private final int layoutId;
 
-    public TutorialAdapter(Context local, List<MyTutorialBean> data,int layoutId) {
+    public TutorialAdapter(Context local, List<?> data,int layoutId) {
         this.context = local;
         this.data = data;
         this.layoutId=layoutId;
+
+        if (!data.isEmpty()) {
+            Object first = data.get(0);
+            if (first instanceof MyTutorialBean) {
+                beanType = 0;
+            } else if (first instanceof TutorialBundleBean) {
+                beanType = 1;
+            }
+        }
     }
     @Override
     public int getCount() {
@@ -72,59 +85,78 @@ public class TutorialAdapter extends BaseAdapter {
         } else {
             holder = (viewHolder) view.getTag();
         }
-        MyTutorialBean item = data.get(i);
-        if (holder.txt_mname != null) {
-            holder.txt_mname.setText(item.tutorialName);
-        }
+        if (beanType == 0) {
+            MyTutorialBean item = (MyTutorialBean) data.get(i);
+            if (holder.txt_mname != null) holder.txt_mname.setText(item.tutorialName);
+            if (holder.txt_auther != null) holder.txt_auther.setText("作者：" + item.author);
+            if (holder.txt_gdd != null) holder.txt_gdd.setText("功德消耗：" + item.requiredMeritPoints);
+            if (holder.txt_star != null) holder.txt_star.setText(String.format("%.1f", (double) item.rating));
+            if (holder.txt_description != null) holder.txt_description.setText(item.description);
+            if (holder.img_selet != null) holder.img_selet.setImageResource(item.sc ? R.drawable.collection_1 : R.drawable.collection_2);
 
-        if (holder.txt_auther != null) {
-            holder.txt_auther.setText("作者：" + item.author);
-        }
+            holder.img_selet.setOnClickListener(v -> {
+                boolean newStatus = !(item.sc != null && item.sc);
+                String token = UserInfoUtils.getToken(context);
+                int userId = UserInfoUtils.getUserId(context);
+                int resourceId = item.tutorialId;
+                String resourceType=item.resourceType;
 
-        if (holder.txt_gdd != null) {
-            holder.txt_gdd.setText("功德消耗：" + item.requiredMeritPoints);
-        }
+                FavoriteHelper.updateFavoriteStatus(newStatus, token, userId, resourceType, resourceId, new FavoriteHelper.Callback() {
+                    @Override
+                    public void onSuccess() {
+                        item.sc = newStatus;
+                        notifyDataSetChanged();
+                        Toast.makeText(context, newStatus ? "收藏成功" : "取消收藏", Toast.LENGTH_SHORT).show();
+                    }
 
-        if (holder.txt_star != null) {
-            holder.txt_star.setText(String.format("%.1f", (double) item.rating));
-        }
+                    @Override
+                    public void onFailure(String error) {
+                        Toast.makeText(context, "收藏失败：" + error, Toast.LENGTH_SHORT).show();
+                    }
+                });
+            });
+            loadImage(holder.img_cover, item.videoUrl);
 
+        } else if (beanType == 1) {
+            TutorialBundleBean item = (TutorialBundleBean) data.get(i);
+            if (holder.txt_mname != null) holder.txt_mname.setText(item.name);
+            if (holder.txt_auther != null) holder.txt_auther.setText("作者：系统");
+            if (holder.txt_gdd != null) holder.txt_gdd.setText("功德消耗：" + item.requiredMeritPoints);
+            if (holder.txt_description != null) holder.txt_description.setText(item.description);
+            if (holder.img_selet != null) holder.img_selet.setImageResource(item.sc ? R.drawable.collection_1 : R.drawable.collection_2);
 
-        holder.img_selet.setImageResource(item.sc ? R.drawable.collection_1 : R.drawable.collection_2);
-
-
-        if(holder.txt_description!=null){
-            holder.txt_description.setText(item.description);
-        }
-
-        String videoUrl = item.videoUrl;
-        if (videoUrl != null && !videoUrl.isEmpty() && holder.img_cover != null) {
-            Glide.with(context)
-                    .load(videoUrl)
-                    .placeholder(R.drawable.detail_bg)
-                    .error(R.drawable.detail_bg)
-                    .into(new CustomTarget<Drawable>() {
-                        @Override
-                        public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
-                            if (holder.img_cover instanceof ImageView) {
-                                ((ImageView) holder.img_cover).setImageDrawable(resource);
-                            } else {
-                                holder.img_cover.setBackground(resource);
-                            }
-                        }
-
-                        @Override
-                        public void onLoadCleared(@Nullable Drawable placeholder) {
-                            if (holder.img_cover instanceof ImageView) {
-                                ((ImageView) holder.img_cover).setImageDrawable(placeholder);
-                            } else {
-                                holder.img_cover.setBackground(placeholder);
-                            }
-                        }
-                    });
+            // 没有封面图片就跳过
         }
 
         return view;
+    }
+
+    private void loadImage(View view, String url) {
+        if (url == null || url.isEmpty() || view == null) return;
+
+        Glide.with(context)
+                .load(url)
+                .placeholder(R.drawable.detail_bg)
+                .error(R.drawable.detail_bg)
+                .into(new CustomTarget<Drawable>() {
+                    @Override
+                    public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
+                        if (view instanceof ImageView) {
+                            ((ImageView) view).setImageDrawable(resource);
+                        } else {
+                            view.setBackground(resource);
+                        }
+                    }
+
+                    @Override
+                    public void onLoadCleared(@Nullable Drawable placeholder) {
+                        if (view instanceof ImageView) {
+                            ((ImageView) view).setImageDrawable(placeholder);
+                        } else {
+                            view.setBackground(placeholder);
+                        }
+                    }
+                });
     }
     private final class viewHolder {
         ImageView img_tu,img_selet;
