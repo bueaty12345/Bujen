@@ -1,13 +1,15 @@
 package com.yunsong.bujen.databean;
 
-public class TutorialBundleBean {
+import com.yunsong.bujen.model.CollectItem;
+
+public class TutorialBundleBean implements CollectItem {
     public String createBy;
     public String createTime;
     public String updateBy;
     public String updateTime;
     public String remark;
 
-    public int id;
+    public Integer id;
     public String name;
     public int level;
     public String description;
@@ -19,28 +21,7 @@ public class TutorialBundleBean {
     public boolean sc;
     public boolean dh;
     public String resourceType;
-
-    @Override
-    public String toString() {
-        return "TutorialBundleBean{" +
-                "createBy='" + createBy + '\'' +
-                ", createTime='" + createTime + '\'' +
-                ", updateBy='" + updateBy + '\'' +
-                ", updateTime='" + updateTime + '\'' +
-                ", remark='" + remark + '\'' +
-                ", id=" + id +
-                ", name='" + name + '\'' +
-                ", level=" + level +
-                ", description='" + description + '\'' +
-                ", tutorialContent='" + tutorialContent + '\'' +
-                ", requiredMeritPoints=" + requiredMeritPoints +
-                ", priority=" + priority +
-                ", deleted=" + deleted +
-                ", sc=" + sc +
-                ", dh=" + dh +
-                ", resourceType='" + resourceType + '\'' +
-                '}';
-    }
+    public String packageUrl;
 
     public String getCreateBy() {
         return createBy;
@@ -82,11 +63,11 @@ public class TutorialBundleBean {
         this.remark = remark;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -162,8 +143,49 @@ public class TutorialBundleBean {
         this.dh = dh;
     }
 
+    public String getPackageUrl() {
+        return packageUrl;
+    }
+
+    public void setPackageUrl(String packageUrl) {
+        this.packageUrl = packageUrl;
+    }
+
+    @Override
+    public String toString() {
+        return "TutorialBundleBean{" +
+                "createBy='" + createBy + '\'' +
+                ", createTime='" + createTime + '\'' +
+                ", updateBy='" + updateBy + '\'' +
+                ", updateTime='" + updateTime + '\'' +
+                ", remark='" + remark + '\'' +
+                ", id=" + id +
+                ", name='" + name + '\'' +
+                ", level=" + level +
+                ", description='" + description + '\'' +
+                ", tutorialContent='" + tutorialContent + '\'' +
+                ", requiredMeritPoints=" + requiredMeritPoints +
+                ", priority=" + priority +
+                ", deleted=" + deleted +
+                ", sc=" + sc +
+                ", dh=" + dh +
+                ", resourceType='" + resourceType + '\'' +
+                ", packageUrl='" + packageUrl + '\'' +
+                '}';
+    }
+
+    @Override
+    public int getType() {
+        return 2;
+    }
+
     public String getResourceType() {
         return resourceType;
+    }
+
+    @Override
+    public int getResourceId() {
+        return id!=null?id:0;
     }
 
     public void setResourceType(String resourceType) {

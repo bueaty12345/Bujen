@@ -86,14 +86,15 @@
                         android:layout_height="match_parent"
                         android:orientation="vertical">
 
-                        <RelativeLayout
+                        <ImageView
                             android:id="@+id/img_cover"
                             android:layout_width="match_parent"
                             android:layout_height="193dp"
-                            android:background="@drawable/recommend1">
+                            android:scaleType="centerCrop"
+                            android:adjustViewBounds="true"
+                            android:src="@drawable/recommend1" />
 
 
-                        </RelativeLayout>
 
                     </LinearLayout>
 

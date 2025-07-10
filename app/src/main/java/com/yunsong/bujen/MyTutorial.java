@@ -23,9 +23,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -80,6 +84,7 @@ public class MyTutorial extends AppCompatActivity {
                 finish();
             }
         });
+        showCategory("减压");
     }
 
 
@@ -87,25 +92,46 @@ public class MyTutorial extends AppCompatActivity {
         tab_local=findViewById(R.id.tab_local);
         listView=findViewById(R.id.list_local);
         img_back=findViewById(R.id.img_back);
-        String token = UserInfoUtils.getToken(this);
-        new FetchTutorialTask().execute(token);
+
+        tab_local.getTabAt(0).select();
     }
 
-    private void showCategory(String categoryId) {
-        List<MyTutorialBean> list = categoryMap.getOrDefault(categoryId, new ArrayList<>());
-        listView.setAdapter(new MyTutorialAdapter(this, list));
+    private void showCategory(String category) {
+        String token = UserInfoUtils.getToken(this);
+        new FetchTutorialTask(category).execute(token);
     }
+
 
     private class FetchTutorialTask extends AsyncTask<String, Void, String> {
+        private String category;
+
+        public FetchTutorialTask(String category) {
+            this.category = category;
+        }
+
         @Override
         protected String doInBackground(String... params) {
             String token = params[0];
+            HttpURLConnection connection = null;
             try {
-                URL url = new URL(TUTORIAL_URL);
-                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                connection.setRequestMethod("GET");
+                URL url = new URL(TUTORIAL_URL);  // 不拼接参数到 URL
+                connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestMethod("POST");
                 connection.setRequestProperty("Authorization", "Bearer " + token);
-                connection.connect();
+                connection.setRequestProperty("Content-Type", "application/json");
+                connection.setDoOutput(true);
+                connection.setConnectTimeout(5000);
+                connection.setReadTimeout(5000);
+
+                JSONObject json = new JSONObject();
+                json.put("tutorialCategory", category);
+
+                OutputStream os = connection.getOutputStream();
+                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
+                writer.write(json.toString());
+                writer.flush();
+                writer.close();
+                os.close();
 
                 int responseCode = connection.getResponseCode();
                 if (responseCode == HttpURLConnection.HTTP_OK) {
@@ -113,7 +139,6 @@ public class MyTutorial extends AppCompatActivity {
                             new InputStreamReader(connection.getInputStream(), "UTF-8"));
                     StringBuilder response = new StringBuilder();
                     String line;
-
                     while ((line = reader.readLine()) != null) {
                         response.append(line);
                     }
@@ -122,10 +147,13 @@ public class MyTutorial extends AppCompatActivity {
                 } else {
                     return "Error: Request failed with code: " + responseCode;
                 }
-
             } catch (Exception e) {
                 e.printStackTrace();
                 return "Error: " + e.getMessage();
+            } finally {
+                if (connection != null) {
+                    connection.disconnect();
+                }
             }
         }
 
@@ -133,17 +161,16 @@ public class MyTutorial extends AppCompatActivity {
         protected void onPostExecute(String result) {
             if (result.startsWith("Error:")) {
                 Toast.makeText(getApplicationContext(), result, Toast.LENGTH_SHORT).show();
-                Log.e("FetchMusicTask", result);
+                Log.e("TutorialDebug", "请求失败：" + result);
                 return;
             }
 
             try {
-                Log.d("FetchMusicTask", "我的教程Raw result: " + result);
+                Log.d("TutorialDebug", "开始解析JSON: " + result);
                 JSONObject jsonObject = new JSONObject(result);
                 JSONArray rows = jsonObject.getJSONArray("rows");
 
-                // 清空旧数据
-                categoryMap.clear();
+                List<MyTutorialBean> list = new ArrayList<>();
 
                 for (int i = 0; i < rows.length(); i++) {
                     JSONObject obj = rows.getJSONObject(i);
@@ -152,16 +179,16 @@ public class MyTutorial extends AppCompatActivity {
                     item.createdAt = obj.optString("createdAt");
                     item.sc = obj.optBoolean("sc");
                     item.requiredMeritPoints = obj.optInt("requiredMeritPoints");
-                    item.tutorialCategory=obj.optString("tutorialCategory");
-                    // 按分类存入Map
-                    List<MyTutorialBean> list = categoryMap.getOrDefault(item.tutorialCategory, new ArrayList<>());
+                    item.tutorialCategory = obj.optString("tutorialCategory");
+                    item.backgroundMusicUrl= obj.getString("backgroundMusicUrl");
+
                     list.add(item);
-                    categoryMap.put(item.tutorialCategory, list);
                 }
 
-                showCategory("减压");
+                listView.setAdapter(new MyTutorialAdapter(MyTutorial.this, list));
             } catch (JSONException e) {
                 e.printStackTrace();
+                Log.e("TutorialDebug", "解析失败，原始数据: " + result);
                 Toast.makeText(getApplicationContext(), "解析数据失败", Toast.LENGTH_SHORT).show();
             }
 

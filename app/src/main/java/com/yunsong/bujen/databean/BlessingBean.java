@@ -9,6 +9,24 @@ public class BlessingBean implements Serializable, CollectItem {
     public String createTime;
     public String updateBy;
 
+
+    public String updateTime;
+    public String remark;                  // 备注信息（可为空）
+
+    public Integer blessingId;                 // 祝福 ID
+    public String resourceType;            // 资源类型（例如 "Blessing"）
+    public String blessingCategory;        // 分类标识（如 "6"）
+    public String blessingBackgroundUrl;   // 背景图片地址或编号
+    public String blessingTheme;           // 主题文字
+    public String zenQuote;                // 禅语内容
+    public String createdAt;               // 创建时间（yyyy-MM-dd）
+
+    public int requiredMeritPoints;        // 所需功德值
+    public boolean sc;                     // 是否收藏
+    public boolean dh;                     // 是否兑换
+    public Integer exchangeQuantity;
+    public String blessingMethod;
+
     @Override
     public String toString() {
         return "BlessingBean{" +
@@ -31,23 +49,6 @@ public class BlessingBean implements Serializable, CollectItem {
                 ", blessingMethod='" + blessingMethod + '\'' +
                 '}';
     }
-
-    public String updateTime;
-    public String remark;                  // 备注信息（可为空）
-
-    public Integer blessingId;                 // 祝福 ID
-    public String resourceType;            // 资源类型（例如 "Blessing"）
-    public String blessingCategory;        // 分类标识（如 "6"）
-    public String blessingBackgroundUrl;   // 背景图片地址或编号
-    public String blessingTheme;           // 主题文字
-    public String zenQuote;                // 禅语内容
-    public String createdAt;               // 创建时间（yyyy-MM-dd）
-
-    public int requiredMeritPoints;        // 所需功德值
-    public boolean sc;                     // 是否收藏
-    public boolean dh;                     // 是否兑换
-    public Integer exchangeQuantity;
-    public String blessingMethod;
 
     public Integer getExchangeQuantity() {
         return exchangeQuantity;

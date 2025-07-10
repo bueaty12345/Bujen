@@ -54,10 +54,10 @@ public class MyTutorialAdapter extends BaseAdapter {
         }
         MyTutorialBean item = data.get(i);
         holder.txt_mname.setText(item.tutorialName);
-//        Glide.with(context)
-//                .load(item.musicCover)
-//                .placeholder(R.drawable.recommend1)
-//                .into(holder.img_tu);
+        Glide.with(context)
+                .load(item.backgroundMusicUrl)
+                .placeholder(R.drawable.recommend1)
+                .into(holder.img_tu);
         holder.second_line.setText(String.valueOf(item.createdAt));
 
         holder.love.setImageResource(item.sc ? R.drawable.collection_1 : R.drawable.collection_2);

@@ -40,10 +40,9 @@ import java.util.Map;
 public class TutorialDetail extends AppCompatActivity implements View.OnClickListener {
 LinearLayout lin_sk;
 GridView gridView;
-    RelativeLayout img_cover;
 
 TextView txt_mname,txt_content,txt_gdd,txt_description,txt_star;
-ImageView img_selet,img_back;
+ImageView img_selet,img_back,img_cover;
     Button btn_dh;
     private ConfirmDialog dialog;
     Boolean hart=false;
@@ -105,25 +104,26 @@ private boolean isFullScreen = false;
         btn_dh.setText(dh ? "已拥有" : "兑换");
         btn_dh.setEnabled(!dh);
 
-        String videoUrl = intent.getStringExtra("videoUrl");
-        if (videoUrl != null && !videoUrl.isEmpty()) {
-            Glide.with(this)
-                    .load(videoUrl)
-                    .placeholder(R.drawable.detail_bg)
-                    .error(R.drawable.detail_bg)
-                    .into(new CustomTarget<Drawable>() {
-                        @Override
-                        public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
-                            img_cover.setBackground(resource);
-                        }
-
-                        @Override
-                        public void onLoadCleared(@Nullable Drawable placeholder) {
-                            img_cover.setBackground(placeholder);
-                        }
-                    });
-
-        }
+        String packageUrl = intent.getStringExtra("packageUrl");
+        Glide.with(this).load(packageUrl).placeholder(R.drawable.recommend1).into(img_cover);
+//        if (packageUrl != null && !packageUrl.isEmpty()) {
+//            Glide.with(this)
+//                    .load(packageUrl)
+//                    .placeholder(R.drawable.detail_bg)
+//                    .error(R.drawable.detail_bg)
+//                    .into(new CustomTarget<Drawable>() {
+//                        @Override
+//                        public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
+//                            img_cover.setBackground(resource);
+//                        }
+//
+//                        @Override
+//                        public void onLoadCleared(@Nullable Drawable placeholder) {
+//                            img_cover.setBackground(placeholder);
+//                        }
+//                    });
+//
+//        }
     }
     // 切换全屏模式
     private void toggleFullScreen() {
@@ -190,11 +190,10 @@ private boolean isFullScreen = false;
                 if (btn_dh.getText().equals("兑换")) {
                     int requiredGdd = getIntent().getIntExtra("gdd", 0);
                     int localGdd = DataStorageUtils.getGddCount(this);
-
                     if (localGdd >= requiredGdd) {
                         ExchangeHelper.showExchangeDialog(this, requiredGdd,
                                 getIntent().getStringExtra("resourceType"),
-                                getIntent().getIntExtra("tutorialId", 0),
+                                getIntent().getIntExtra("id", 0),
                                 btn_dh);
                     } else {
                         Toast.makeText(this, "功德点不足，无法兑换", Toast.LENGTH_SHORT).show();

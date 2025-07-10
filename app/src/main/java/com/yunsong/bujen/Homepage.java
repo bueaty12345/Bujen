@@ -23,6 +23,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomTarget;
@@ -37,7 +38,9 @@ import com.thingclips.smart.home.sdk.callback.IThingGetHomeListCallback;
 import com.thingclips.smart.home.sdk.callback.IThingHomeResultCallback;
 import com.thingclips.smart.sdk.api.IDevListener;
 import com.thingclips.smart.sdk.api.IThingDevice;
+import com.yunsong.bujen.fragment.SettingsViewModel;
 import com.yunsong.bujen.utils.DataStorageUtils;
+import com.yunsong.bujen.utils.GddManager;
 import com.yunsong.bujen.utils.UserInfoUtils;
 
 import org.json.JSONException;
@@ -68,6 +71,9 @@ public class Homepage extends AppCompatActivity implements View.OnClickListener 
     private float dX, dY;
     private float touchDownX;
     private long lastClickTime = 0;
+
+    private SettingsViewModel sharedViewModel;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -79,12 +85,17 @@ public class Homepage extends AppCompatActivity implements View.OnClickListener 
         txt_home.setOnClickListener(this);
         txt_center.setOnClickListener(this);
         txt_setting.setOnClickListener(this);
-        gdd_cont = DataStorageUtils.getGddCount(Homepage.this);
-        Log.d("TokenCheck", "当前本地token: " + UserInfoUtils.getToken(this));
+
+        sharedViewModel = new ViewModelProvider(this).get(SettingsViewModel.class);
+        GddManager.init(this, sharedViewModel);
+
+        // 监听功德点 ViewModel 更新 txt_gdd
+        sharedViewModel.getGddCont().observe(this, gddCount -> {
+            txt_gdd.setText(String.valueOf(gddCount));
+        });
 
         loadBgFromPrefs();
     }
-
 
 
     private void getDeviceMessage() {
@@ -103,24 +114,13 @@ public class Homepage extends AppCompatActivity implements View.OnClickListener 
                          */
                         @Override
                         public void onDpUpdate(String devId, String dpStr){//表示功能点的数据更新
-                            Toast.makeText(Homepage.this, "00"+dpStr, Toast.LENGTH_SHORT).show();
-                            JSONObject jsonObject = null;
                             try {
-                                jsonObject = new JSONObject(dpStr);
+                                JSONObject jsonObject = new JSONObject(dpStr);
+                                if (jsonObject.optBoolean("101")) {
+                                    GddManager.onDeviceKnock(Homepage.this);
+                                }
                             } catch (JSONException e) {
-                                throw new RuntimeException(e);
-                            }
-
-                            // 提取值
-                            boolean value101;
-                            try {
-                                value101 = jsonObject.getBoolean("101");
-                            } catch (JSONException e) {
-                                throw new RuntimeException(e);
-                            }
-                            if (value101){
-                                gdd_cont++;//gdd_cont是全局变量
-                                com.yunsong.bujen.utils.DataStorageUtils.saveGddCount(Homepage.this,gdd_cont);
+                                e.printStackTrace();
                             }
                         };
 
@@ -221,7 +221,7 @@ public class Homepage extends AppCompatActivity implements View.OnClickListener 
         String token = UserInfoUtils.getToken(this);
 
         new GetUserInfoTask().execute(token);
-        txt_gdd.setText(String.valueOf(com.yunsong.bujen.utils.DataStorageUtils.getGddCount(this)));
+//        txt_gdd.setText(String.valueOf(DataStorageUtils.getGddCount(this)));
 
 //        ivMiniApp.setOnTouchListener((v, event) -> {
 //            switch (event.getAction()) {
@@ -376,6 +376,7 @@ public class Homepage extends AppCompatActivity implements View.OnClickListener 
                     String gender = dataObject.optString("gender");
                     String avatar = dataObject.optString("avatar");
                     Integer id = dataObject.optInt("id");
+                    Integer virtuePoints=dataObject.optInt("virtuePoints");
 
                     // 保存用户信息到 SharedPreferences,本地
                     SharedPreferences sharedPreferences = getSharedPreferences("AppPrefs", MODE_PRIVATE);
@@ -386,6 +387,7 @@ public class Homepage extends AppCompatActivity implements View.OnClickListener 
                     editor.putString("user_gender",gender);
                     editor.putString("user_avatar",avatar);
                     editor.putInt("id",id);
+                    initGddCountFromServerOrLocal(virtuePoints);
                     editor.apply();  // 使用 apply() 异步保存
 
                     // 在 UI 上显示用户信息
@@ -401,6 +403,25 @@ public class Homepage extends AppCompatActivity implements View.OnClickListener 
             // 更新 UI 显示用户信息
 
         }
+    }
+
+    private void initGddCountFromServerOrLocal(int serverValue) {
+        int localValue = DataStorageUtils.getGddCount(this);
+        int finalValue = Math.max(serverValue, localValue); // 取最大值
+
+        // 更新缓存（两边都更新）
+        DataStorageUtils.saveGddCount(this, finalValue);
+        getSharedPreferences("AppPrefs", MODE_PRIVATE).edit()
+                .putInt("user_virtuePoints", finalValue)
+                .apply();
+
+        // 更新 UI（ViewModel）
+        sharedViewModel.setGddCont(finalValue);
+    }
+
+    private int getServerVirtuePoints() {
+        SharedPreferences prefs = getSharedPreferences("AppPrefs", MODE_PRIVATE);
+        return prefs.getInt("user_virtuePoints", 0);
     }
 
     private void loadBgFromPrefs() {
@@ -429,9 +450,6 @@ public class Homepage extends AppCompatActivity implements View.OnClickListener 
     @Override
     protected void onResume() {
         super.onResume();
-        int gdd = com.yunsong.bujen.utils.DataStorageUtils.getGddCount(this);
-        txt_gdd.setText(String.valueOf(gdd));
-
         loadBgFromPrefs();
     }
 

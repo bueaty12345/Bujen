@@ -18,6 +18,7 @@ import com.yunsong.bujen.databean.BlessingBean;
 import com.yunsong.bujen.databean.MyLightBean;
 import com.yunsong.bujen.databean.MyMusicBean;
 import com.yunsong.bujen.databean.MyTutorialBean;
+import com.yunsong.bujen.databean.TutorialBundleBean;
 import com.yunsong.bujen.model.CollectItem;
 import com.yunsong.bujen.utils.FavoriteHelper;
 import com.yunsong.bujen.utils.UserInfoUtils;
@@ -80,6 +81,7 @@ public class MyCollectAdapter extends BaseAdapter {
                     holder.txt_gdd = view.findViewById(R.id.txt_gdd);
                     holder.txt_auther = view.findViewById(R.id.txt_auther);
                     holder.txt_star = view.findViewById(R.id.txt_star);
+                    holder.img_hart=view.findViewById(R.id.img_hart);
                     break;
                 case 3: // 祈福
                     view = inflater.inflate(R.layout.item_mypray, viewGroup, false);
@@ -89,6 +91,7 @@ public class MyCollectAdapter extends BaseAdapter {
                     holder.txt_alreadyHave = view.findViewById(R.id.txt_alreadyHave);
                     holder.txt_hy = view.findViewById(R.id.txt_alreadyHave);
                     holder.second_line=view.findViewById(R.id.second_line);
+                    holder.love=view.findViewById(R.id.love);
                     break;
             }
             view.setTag(holder);
@@ -112,11 +115,17 @@ public class MyCollectAdapter extends BaseAdapter {
                 holder.txt_auther.setText("作者：" + music.singer);
                 holder.txt_gdd.setText("需功德点：" + music.requiredMeritPoints);
                 holder.txt_hy.setText(music.dh ? "已拥有" : "待兑换");
-                holder.txt_star.setText(String.format("%.1f", music.rating));
+                Double musicRating = music.getRating();
+                if (musicRating == null || musicRating.isNaN()) {
+                    holder.txt_star.setText("0.0");
+                } else {
+                    holder.txt_star.setText(String.format("%.1f", musicRating));
+                }
                 if (holder.txt_time != null) {
                     holder.txt_time.setText(String.format("%d:%02d", music.duration / 60, music.duration % 60));
                 }
                 Glide.with(context).load(music.musicCover).placeholder(R.drawable.recommend1).into(holder.img_tu);
+                holder.img_selet.setImageResource(music.sc?R.drawable.collection_1:R.drawable.collection_2);
                 break;
             case 1:
                 MyLightBean light = (MyLightBean) item;
@@ -124,16 +133,18 @@ public class MyCollectAdapter extends BaseAdapter {
                 holder.txt_auther.setText("作者：" + light.author);
                 holder.txt_gdd.setText("需功德点：" + light.requiredMeritPoints);
                 holder.txt_hy.setText(light.dh ? "已拥有" : "待兑换");
-                holder.txt_star.setText(String.format("%.1f", light.rating));
+                Double lightRating = light.getRating();
+                holder.txt_star.setText(String.format("%.1f", lightRating != null ? lightRating : 0.0));
                 Glide.with(context).load(light.backgroundImageUrl).placeholder(R.drawable.recommend1).into(holder.img_tu);
+                holder.img_selet.setImageResource(light.sc?R.drawable.collection_1:R.drawable.collection_2);
                 break;
             case 2:
-                MyTutorialBean tutorial = (MyTutorialBean) item;
-                holder.txt_mname.setText(tutorial.tutorialName);
-                holder.txt_auther.setText("作者：" + tutorial.author);
+                TutorialBundleBean tutorial = (TutorialBundleBean) item;
+                holder.txt_mname.setText(tutorial.name);
+                holder.txt_auther.setText(tutorial.description);
                 holder.txt_gdd.setText("需功德点：" + tutorial.requiredMeritPoints);
-                holder.txt_star.setText(String.format("%.1f", (double) tutorial.rating));
-                Glide.with(context).load(tutorial.videoUrl).placeholder(R.drawable.recommend1).into(holder.img_tu);
+                Glide.with(context).load(tutorial.packageUrl).placeholder(R.drawable.recommend1).into(holder.img_tu);
+                holder.img_hart.setImageResource(tutorial.sc?R.drawable.collection_1:R.drawable.collection_2);
                 break;
             case 3:
                 BlessingBean blessing = (BlessingBean) item;
@@ -163,6 +174,7 @@ public class MyCollectAdapter extends BaseAdapter {
                     }
                 }
                 Glide.with(context).load(blessing.blessingBackgroundUrl).placeholder(R.drawable.recommend1).into(holder.img_tu);
+                holder.love.setImageResource(blessing.sc?R.drawable.collection_1:R.drawable.collection_2);
                 break;
         }
     }
@@ -200,7 +212,7 @@ public class MyCollectAdapter extends BaseAdapter {
     }
 
     private final class viewHolder {
-        ImageView img_tu,img_selet;
+        ImageView img_tu,img_selet,img_hart,love;
         TextView txt_mname,txt_gdd,txt_hy,txt_auther,txt_star,txt_time,txt_alreadyHave,second_line;
     }
 

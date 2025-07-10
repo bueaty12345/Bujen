@@ -28,6 +28,7 @@ import com.yunsong.bujen.setting.Setting;
 import com.yunsong.bujen.ZenbeatSetting;
 import com.yunsong.bujen.device.Devices;
 import com.yunsong.bujen.R;
+import com.yunsong.bujen.utils.DataStorageUtils;
 import com.yunsong.bujen.utils.UserInfoUtils;
 
 import org.greenrobot.eventbus.EventBus;
@@ -120,10 +121,9 @@ public class SettingsFragment extends Fragment implements View.OnClickListener{
         tv_nickname_info.setText(UserInfoUtils.getUserNickname(requireContext()));
         tv_signature_info.setText(UserInfoUtils.getUserSignature(requireContext()));
 
-        // 初始化 ViewModel
         sharedViewModel = new ViewModelProvider(requireActivity()).get(SettingsViewModel.class);
-        sharedViewModel.getGddCont().observe(getViewLifecycleOwner(), value -> {
-            txt_virtuePoints.setText(String.valueOf(value));
+        sharedViewModel.getGddCont().observe(getViewLifecycleOwner(), gddCount -> {
+            txt_virtuePoints.setText(String.valueOf(gddCount));
         });
 //        txt_virtuePoints.setText(String.valueOf(DataStorageUtils.getGddCount(requireContext())));
 

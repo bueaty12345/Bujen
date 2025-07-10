@@ -2,7 +2,7 @@ package com.yunsong.bujen.databean;
 
 import com.yunsong.bujen.model.CollectItem;
 
-public class MyTutorialBean implements CollectItem {
+public class MyTutorialBean {
     public String createBy;
     public String createTime;
     public String updateBy;
@@ -116,11 +116,6 @@ public class MyTutorialBean implements CollectItem {
         return resourceType;
     }
 
-    @Override
-    public int getResourceId() {
-        return tutorialId!=null?tutorialId:0;
-    }
-
     public void setResourceType(String resourceType) {
         this.resourceType = resourceType;
     }
@@ -206,8 +201,5 @@ public class MyTutorialBean implements CollectItem {
     }
 
 
-    @Override
-    public int getType() {
-        return 2;
-    }
+
 }

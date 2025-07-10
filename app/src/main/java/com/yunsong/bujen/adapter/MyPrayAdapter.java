@@ -14,6 +14,7 @@ import com.bumptech.glide.Glide;
 import com.yunsong.bujen.MyPray;
 import com.yunsong.bujen.MyTutorial;
 import com.yunsong.bujen.R;
+import com.yunsong.bujen.databean.BlessingBean;
 import com.yunsong.bujen.databean.MyPrayBean;
 import com.yunsong.bujen.fragment.MusicController;
 import com.yunsong.bujen.fragment.MusicService;
@@ -23,9 +24,9 @@ import java.util.Map;
 
 public class MyPrayAdapter extends BaseAdapter {
     private Context context;
-    private List<MyPrayBean> data;
+    private List<BlessingBean> data;
 
-    public MyPrayAdapter(Context context, List<MyPrayBean> data) {
+    public MyPrayAdapter(Context context, List<BlessingBean> data) {
         this.context = context;
         this.data = data;
     }
@@ -54,14 +55,15 @@ public class MyPrayAdapter extends BaseAdapter {
             holder.txt_mname = view.findViewById(R.id.txt_mname);
             holder.second_line=view.findViewById(R.id.second_line);
             holder.txt_alreadyHave=view.findViewById(R.id.txt_alreadyHave);
+            holder.love=view.findViewById(R.id.love);
             view.setTag(holder);
         }else {
             holder = (MyPrayAdapter.viewHolder) view.getTag();
         }
-        MyPrayBean item = data.get(i);
-        holder.txt_mname.setText(item.blessing_theme);
+        BlessingBean item = data.get(i);
+        holder.txt_mname.setText(item.blessingTheme);
         Glide.with(context)
-                .load(item.blessing_background_url)
+                .load(item.blessingBackgroundUrl)
                 .placeholder(R.drawable.recommend1)
                 .into(holder.img_tu);
 
@@ -82,11 +84,12 @@ public class MyPrayAdapter extends BaseAdapter {
         }
 
         holder.txt_alreadyHave.setText("已有"+item.exchangeQuantity);
+        holder.love.setImageResource(item.sc?R.drawable.collection_1 :R.drawable.collection_2);
 
         return view;
     }
     private final class viewHolder {
-        ImageView img_tu,img_selet;
+        ImageView img_tu,img_selet,love;
         TextView txt_mname,second_line,txt_alreadyHave;
     }
 

@@ -17,6 +17,7 @@ import androidx.core.view.WindowInsetsCompat;
 import com.google.android.material.tabs.TabLayout;
 import com.yunsong.bujen.adapter.MyPrayAdapter;
 import com.yunsong.bujen.adapter.MyTutorialAdapter;
+import com.yunsong.bujen.databean.BlessingBean;
 import com.yunsong.bujen.databean.MyPrayBean;
 import com.yunsong.bujen.databean.MyTutorialBean;
 import com.yunsong.bujen.utils.UserInfoUtils;
@@ -40,7 +41,7 @@ public class MyPray extends AppCompatActivity {
     ImageView img_back;
     private final String PRAY_INFO_URL=BuildConfig.API_SERVER+"/system/blessing/app/myList";
 
-    private final Map<String, List<MyPrayBean>> categoryMap = new HashMap<>();
+    private final Map<String, List<BlessingBean>> categoryMap = new HashMap<>();
 
 
     @Override
@@ -84,7 +85,7 @@ public class MyPray extends AppCompatActivity {
     }
 
     private void showCategory(String categoryName) {
-        List<MyPrayBean> list = categoryMap.getOrDefault(categoryName, new ArrayList<>());
+        List<BlessingBean> list = categoryMap.getOrDefault(categoryName, new ArrayList<>());
         MyPrayAdapter adapter = new MyPrayAdapter(this, list);
         listView.setAdapter(adapter);
     }
@@ -148,21 +149,24 @@ public class MyPray extends AppCompatActivity {
 
                 for (int i = 0; i < rows.length(); i++) {
                     JSONObject obj = rows.getJSONObject(i);
-                    MyPrayBean bean = new MyPrayBean();
-                    bean.blessing_id = obj.optInt("blessingId");
-                    bean.resource_type = obj.optString("resourceType");
-                    bean.blessing_category = obj.optString("blessingCategory");
-                    bean.blessing_background_url = obj.optString("blessingBackgroundUrl");
-                    bean.blessing_theme = obj.optString("blessingTheme");
-                    bean.zen_quote = obj.optString("zenQuote");
-                    bean.created_at = obj.optString("createdAt");
-                    bean.required_merit_points = obj.optInt("requiredMeritPoints");
+                    BlessingBean bean = new BlessingBean();
+                    bean.blessingId = obj.optInt("blessingId");
+                    bean.resourceType = obj.optString("resourceType");
+                    bean.blessingCategory = obj.optString("blessingCategory");
+                    bean.blessingBackgroundUrl = obj.optString("blessingBackgroundUrl");
+                    bean.blessingTheme = obj.optString("blessingTheme");
+                    bean.zenQuote = obj.optString("zenQuote");
+                    bean.createdAt = obj.optString("createdAt");
+                    bean.requiredMeritPoints = obj.optInt("requiredMeritPoints");
                     bean.blessingMethod= obj.getString("blessingMethod");
                     bean.exchangeQuantity=obj.getInt("exchangeQuantity");
+                    bean.sc= obj.getBoolean("sc");
+                    bean.dh= obj.getBoolean("dh");
+
                     // 按分类存入Map
-                    List<MyPrayBean> list = categoryMap.getOrDefault(bean.blessing_category, new ArrayList<>());
+                    List<BlessingBean> list = categoryMap.getOrDefault(bean.blessingCategory, new ArrayList<>());
                     list.add(bean);
-                    categoryMap.put(bean.blessing_category, list);
+                    categoryMap.put(bean.blessingCategory, list);
                 }
 
                 showCategory("基础");

@@ -5,7 +5,7 @@ import android.content.SharedPreferences;
 
 public class DataStorageUtils {
 
-    public static void  saveGddCount(Context context, int count) {
+    public static void saveGddCount(Context context, int count) {
         SharedPreferences sharedPreferences = context.getSharedPreferences("AppPrefs", Context.MODE_PRIVATE);
         sharedPreferences.edit().putInt("gdd_cont", count).apply();
     }

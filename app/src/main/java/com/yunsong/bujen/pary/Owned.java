@@ -19,6 +19,7 @@ import com.yunsong.bujen.BuildConfig;
 import com.yunsong.bujen.MyPray;
 import com.yunsong.bujen.R;
 import com.yunsong.bujen.adapter.MyPrayAdapter;
+import com.yunsong.bujen.databean.BlessingBean;
 import com.yunsong.bujen.databean.MyPrayBean;
 import com.yunsong.bujen.utils.UserInfoUtils;
 
@@ -43,7 +44,7 @@ public class Owned extends AppCompatActivity {
     TextView new_date;
 
     private final String PRAY_INFO_URL = BuildConfig.API_SERVER + "/system/blessing/app/myList";
-    private List<MyPrayBean> prayList = new ArrayList<>();
+    private List<BlessingBean> prayList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,7 +69,7 @@ public class Owned extends AppCompatActivity {
         fetchAllPrays();
 
         listView.setOnItemClickListener((parent, view, position, id) -> {
-            MyPrayBean selected = prayList.get(position);
+            BlessingBean selected = prayList.get(position);
             Intent intent = new Intent(Owned.this, ParyWrite.class);
 
             switch (selected.blessingMethod) {
@@ -87,10 +88,10 @@ public class Owned extends AppCompatActivity {
             }
 
             // 可选：传 blessingId 到目标页
-            intent.putExtra("blessingId", selected.blessing_id);
+            intent.putExtra("blessingId", selected.blessingId);
             intent.putExtra("blessingMethod",selected.blessingMethod);
             startActivity(intent);
-            Log.d("ListItemClick", "点击了：" + selected.blessing_theme);
+            Log.d("ListItemClick", "点击了：" + selected.blessingTheme);
 
         });
 
@@ -153,17 +154,19 @@ public class Owned extends AppCompatActivity {
 
                 for (int i = 0; i < rows.length(); i++) {
                     JSONObject obj = rows.getJSONObject(i);
-                    MyPrayBean bean = new MyPrayBean();
-                    bean.blessing_id = obj.optInt("blessingId");
-                    bean.resource_type = obj.optString("resourceType");
-                    bean.blessing_category = obj.optString("blessingCategory");
-                    bean.blessing_background_url = obj.optString("blessingBackgroundUrl");
-                    bean.blessing_theme = obj.optString("blessingTheme");
-                    bean.zen_quote = obj.optString("zenQuote");
-                    bean.created_at = obj.optString("createdAt");
-                    bean.required_merit_points = obj.optInt("requiredMeritPoints");
-                    bean.blessingMethod = obj.optString("blessingMethod");
+                    BlessingBean bean = new BlessingBean();
+                    bean.blessingId = obj.optInt("blessingId");
+                    bean.resourceType = obj.optString("resourceType");
+                    bean.blessingCategory = obj.optString("blessingCategory");
+                    bean.blessingBackgroundUrl = obj.optString("blessingBackgroundUrl");
+                    bean.blessingTheme = obj.optString("blessingTheme");
+                    bean.zenQuote = obj.optString("zenQuote");
+                    bean.createdAt = obj.optString("createdAt");
+                    bean.requiredMeritPoints = obj.optInt("requiredMeritPoints");
+                    bean.blessingMethod= obj.getString("blessingMethod");
                     bean.exchangeQuantity=obj.getInt("exchangeQuantity");
+                    bean.sc= obj.getBoolean("sc");
+                    bean.dh= obj.getBoolean("dh");
                     activity.prayList.add(bean);
                 }
 

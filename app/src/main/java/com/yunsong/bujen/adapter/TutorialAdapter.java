@@ -125,7 +125,24 @@ public class TutorialAdapter extends BaseAdapter {
             if (holder.txt_description != null) holder.txt_description.setText(item.description);
             if (holder.img_selet != null) holder.img_selet.setImageResource(item.sc ? R.drawable.collection_1 : R.drawable.collection_2);
 
-            // 没有封面图片就跳过
+            if (holder.img_cover instanceof ImageView) {
+                Glide.with(context).load(item.packageUrl).placeholder(R.drawable.recommend1).into((ImageView) holder.img_cover);
+            } else if (holder.img_cover instanceof View) {
+                Glide.with(context)
+                        .load(item.packageUrl)
+                        .placeholder(R.drawable.recommend1)
+                        .into(new CustomTarget<Drawable>() {
+                            @Override
+                            public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
+                                holder.img_cover.setBackground(resource);
+                            }
+
+                            @Override
+                            public void onLoadCleared(@Nullable Drawable placeholder) {
+                                holder.img_cover.setBackground(placeholder);
+                            }
+                        });
+            }
         }
 
         return view;

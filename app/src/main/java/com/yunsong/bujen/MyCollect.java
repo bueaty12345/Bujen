@@ -29,6 +29,7 @@ import com.yunsong.bujen.databean.MyLightBean;
 import com.yunsong.bujen.databean.MyMusicBean;
 import com.yunsong.bujen.databean.MyPrayBean;
 import com.yunsong.bujen.databean.MyTutorialBean;
+import com.yunsong.bujen.databean.TutorialBundleBean;
 import com.yunsong.bujen.utils.UserInfoUtils;
 
 import org.json.JSONArray;
@@ -52,7 +53,7 @@ public class MyCollect extends AppCompatActivity {
     private final String PRAY_INFO_URL=BuildConfig.API_SERVER+"/system/favorites/app/myBlessing";
 
     private List<MyMusicBean> musicList = new ArrayList<>();
-    private List<MyTutorialBean> tutorialList = new ArrayList<>();
+    private List<TutorialBundleBean> tutorialList = new ArrayList<>();
     private List<BlessingBean> prayList = new ArrayList<>();
     private List<MyLightBean> lightList = new ArrayList<>();
     private BaseAdapter currentAdapter;
@@ -145,18 +146,17 @@ public class MyCollect extends AppCompatActivity {
                     break;
 
                 case 2:
-                    MyTutorialBean tutorialBean = (MyTutorialBean) parent.getAdapter().getItem(position);
+                    TutorialBundleBean tutorialBean = (TutorialBundleBean) parent.getAdapter().getItem(position);
                     intent = new Intent(MyCollect.this, TutorialDetail.class);
-                    intent.putExtra("name", tutorialBean.getTutorialName());
-                    intent.putExtra("sc", tutorialBean.getSc());
-                    intent.putExtra("dh", tutorialBean.getDh());
+                    intent.putExtra("name", tutorialBean.getName());
+                    intent.putExtra("sc", tutorialBean.isSc());
+                    intent.putExtra("dh", tutorialBean.isDh());
                     intent.putExtra("description", tutorialBean.getDescription());
                     intent.putExtra("tutorialContent", tutorialBean.getTutorialContent());
                     intent.putExtra("gdd", tutorialBean.getRequiredMeritPoints());
-                    intent.putExtra("rating", tutorialBean.getRating());
                     intent.putExtra("resourceType", tutorialBean.getResourceType());
-                    intent.putExtra("tutorialId", tutorialBean.getTutorialId());
-                    intent.putExtra("videoUrl", tutorialBean.getVideoUrl());
+                    intent.putExtra("tutorialId", tutorialBean.getId());
+                    intent.putExtra("packageUrl",tutorialBean.getPackageUrl());
                     intent.putExtra("position", position);
                     break;
 
@@ -253,16 +253,19 @@ public class MyCollect extends AppCompatActivity {
                 if (rows == null) return;
                 for (int i = 0; i < rows.length(); i++) {
                     JSONObject obj = rows.getJSONObject(i);
-                    MyTutorialBean item = new MyTutorialBean();
-                    item.tutorialName = obj.optString("tutorialName");
-                    item.createdAt = obj.optString("createdAt");
+                    TutorialBundleBean item = new TutorialBundleBean();
+                    item.name = obj.optString("name");
+                    item.createTime = obj.optString("createTime");
                     item.requiredMeritPoints = obj.optInt("requiredMeritPoints");
                     item.sc = obj.optBoolean("sc");
                     item.dh = obj.optBoolean("dh");
-                    item.author=obj.optString("author");
-                    item.rating=obj.optInt("rating");
+                    item.description= obj.getString("description");
+                    item.tutorialContent= obj.getString("tutorialContent");
+//                    item.author=obj.optString("author");
+//                    item.rating=obj.optInt("rating");
                     item.resourceType=obj.optString("resourceType");
-                    item.tutorialId=obj.getInt("tutorialId");
+                    item.packageUrl= obj.getString("packageUrl");
+                    item.id=obj.getInt("id");
 
                     Log.d("fetchTutorial","fetchTutorial==="+obj);
                     tutorialList.add(item);

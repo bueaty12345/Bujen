@@ -56,7 +56,7 @@ public class TutorialSquareAdapter extends BaseAdapter {
             holder.txt_name = convertView.findViewById(R.id.txt_name);
             holder.txt_gdd = convertView.findViewById(R.id.txt_gdd);
             holder.txt_auther = convertView.findViewById(R.id.txt_auther);
-            holder.txt_star = convertView.findViewById(R.id.txt_star);
+//            holder.txt_star = convertView.findViewById(R.id.txt_star);
             holder.img_hart = convertView.findViewById(R.id.img_hart);
             convertView.setTag(holder);
         } else {
@@ -67,7 +67,7 @@ public class TutorialSquareAdapter extends BaseAdapter {
         holder.txt_name.setText(bean.tutorialName);
         holder.txt_gdd.setText("功德值：" + bean.requiredMeritPoints);
         holder.txt_auther.setText("作者：" + bean.author);
-        holder.txt_star.setText(String.format("%.1f", (double) bean.rating));
+//        holder.txt_star.setText(String.format("%.1f", (double) bean.rating));
 
         if (bean.sc != null && bean.sc) {
             holder.img_hart.setImageResource(R.drawable.collection_1);

@@ -121,7 +121,7 @@ public class ExchangeHelper {
                         ApiHelper.sendJsonRequest(activity, BuildConfig.API_SERVER + "/system/record", recordBody, token, "POST", new ApiHelper.SimpleCallback() {
                             @Override
                             public void onSuccess() {
-                                int newGdd = com.yunsong.bujen.utils.DataStorageUtils.getGddCount(activity) - requiredGdd;
+                                int newGdd = DataStorageUtils.getGddCount(activity) - requiredGdd;
                                 com.yunsong.bujen.utils.DataStorageUtils.saveGddCount(activity, newGdd);
 
                                 JSONObject userBody = new JSONObject();

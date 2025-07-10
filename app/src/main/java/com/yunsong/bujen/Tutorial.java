@@ -83,6 +83,7 @@ public class Tutorial extends AppCompatActivity {
                 intent.putExtra("level",tutorialBean.getLevel());
                 intent.putExtra("priority",tutorialBean.getPriority());
                 intent.putExtra("requiredMeritPoints",tutorialBean.getRequiredMeritPoints());
+                intent.putExtra("packageUrl",tutorialBean.getPackageUrl());
 
                 startActivityForResult(intent, 1001);
             }
