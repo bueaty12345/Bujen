@@ -73,6 +73,7 @@ public class Homepage extends AppCompatActivity implements View.OnClickListener 
     private long lastClickTime = 0;
 
     private SettingsViewModel sharedViewModel;
+    private HFragment homeFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,6 +86,11 @@ public class Homepage extends AppCompatActivity implements View.OnClickListener 
         txt_home.setOnClickListener(this);
         txt_center.setOnClickListener(this);
         txt_setting.setOnClickListener(this);
+
+        homeFragment = new HFragment();
+        fManager.beginTransaction()
+                .replace(R.id.ly_content, homeFragment)
+                .commit();
 
         sharedViewModel = new ViewModelProvider(this).get(SettingsViewModel.class);
         GddManager.init(this, sharedViewModel);
@@ -286,11 +292,12 @@ public class Homepage extends AppCompatActivity implements View.OnClickListener 
         switch (view.getId()){
             case R.id.txt_home:
                 txt_home.setSelected(true);
-
-                    HFragment homeFragment=new HFragment();
-                    fManager.beginTransaction()
-                            .replace(R.id.ly_content, homeFragment)
-                            .commit();
+                if (homeFragment == null) {
+                    homeFragment = new HFragment();
+                }
+                fManager.beginTransaction()
+                        .replace(R.id.ly_content, homeFragment)
+                        .commit();
                 rl_bg.setBackgroundResource(homebg);
                 break;
             case R.id.txt_centre:
@@ -377,6 +384,7 @@ public class Homepage extends AppCompatActivity implements View.OnClickListener 
                     String avatar = dataObject.optString("avatar");
                     Integer id = dataObject.optInt("id");
                     Integer virtuePoints=dataObject.optInt("virtuePoints");
+                    String registerTime=dataObject.optString("createdAt");
 
                     // 保存用户信息到 SharedPreferences,本地
                     SharedPreferences sharedPreferences = getSharedPreferences("AppPrefs", MODE_PRIVATE);
@@ -387,6 +395,7 @@ public class Homepage extends AppCompatActivity implements View.OnClickListener 
                     editor.putString("user_gender",gender);
                     editor.putString("user_avatar",avatar);
                     editor.putInt("id",id);
+                    editor.putString("user_registerTime",registerTime);
                     initGddCountFromServerOrLocal(virtuePoints);
                     editor.apply();  // 使用 apply() 异步保存
 

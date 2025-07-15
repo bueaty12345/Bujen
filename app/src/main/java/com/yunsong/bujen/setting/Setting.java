@@ -20,12 +20,12 @@ import com.thingclips.smart.android.user.api.ILogoutCallback;
 import com.thingclips.smart.bizbundle.initializer.BizBundleInitializer;
 import com.thingclips.smart.home.sdk.ThingHomeSdk;
 import com.thingclips.smart.sdk.api.IResultCallback;
+import com.yunsong.bujen.BuildConfig;
 import com.yunsong.bujen.ConfirmDialog;
 import com.yunsong.bujen.R;
 import com.yunsong.bujen.device.Devices;
 import com.yunsong.bujen.init.Connect;
 import com.yunsong.bujen.init.Login;
-import com.yunsong.bujen.init.Register;
 
 import java.io.File;
 import java.text.DecimalFormat;
@@ -37,6 +37,7 @@ public class Setting extends AppCompatActivity implements View.OnClickListener{
     Switch sw_battery, sw_notice;
     TextView cacheSizeText;
     private ConfirmDialog dialog;
+    private final String NOTICE_RECEIVE= BuildConfig.API_SERVER+"/system/recordb/app/receive";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

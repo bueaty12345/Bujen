@@ -2,6 +2,7 @@ package com.yunsong.bujen.fragment;
 
 import static android.content.Context.BIND_AUTO_CREATE;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -21,8 +22,10 @@ import android.content.ComponentName;
 
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -36,10 +39,12 @@ import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.yunsong.bujen.Local;
 import com.yunsong.bujen.R;
 import com.bumptech.glide.Glide;
+import com.yunsong.bujen.databean.MyMusicBean;
 import com.yunsong.bujen.utils.DataStorageUtils;
 
 /**
@@ -48,9 +53,7 @@ import com.yunsong.bujen.utils.DataStorageUtils;
  * create an instance of this fragment.
  */
 public class HomeFragment extends Fragment implements View.OnClickListener{
-    TextView txt_yyqm;
-    TextView txt_dx;
-    TextView txt_111;
+    TextView txt_musicName,txt_siger;
     static ImageView img_bf;
     ImageView img_dg,img_list,img_qiao,img_y_setting;
     View view;
@@ -76,6 +79,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
     private String mParam2;
 
     private SettingsViewModel sharedViewModel;
+    private static final int REQUEST_CODE_LOCAL = 1001;
+    private MyMusicBean restoredMusic = null;
 
 
     public HomeFragment() {
@@ -143,9 +148,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
         // Inflate the layout for this fragment
 
         view=inflater.inflate(R.layout.fragment_home, container, false);
-        txt_yyqm=view.findViewById(R.id.txt_yyqm);
-        txt_dx=view.findViewById(R.id.txt_dx);
-        img_dg=view.findViewById(R.id.img_deng);
+        txt_musicName=view.findViewById(R.id.txt_musicName);
+        txt_siger=view.findViewById(R.id.txt_siger);
+        img_dg=view.findViewById(R.id.img_musicImg);
         img_bf=view.findViewById(R.id.img_bofang);
         img_list=view.findViewById(R.id.img_list);
         img_y_setting=view.findViewById(R.id.img_y_setting);
@@ -155,10 +160,10 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
 //        lin_dg.setBackgroundResource(dg_bg);
         txt_gdd.setText(gdd_cont+"");
         //创建一个意图对象，是从当前的Activity跳转到Service
-        intent2=new Intent(getContext(),MusicService.class);
-        conn=new MyServiceConn();//创建服务连接对象
-        getContext().bindService(intent2,conn,BIND_AUTO_CREATE);//绑定服务
-
+        intent2 = new Intent(getContext(), MusicService.class);
+        getContext().startService(intent2); // 先启动服务，防止首次 bind 失败
+        conn = new MyServiceConn();         // 初始化连接对象
+        getContext().bindService(intent2, conn, Context.BIND_AUTO_CREATE); // 再绑定
 
         // 播放按钮
         img_bf.setOnClickListener(this);
@@ -178,7 +183,35 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
         // 开始更新
         handler.post(runnable);
 
+        restoreAndPlayMusicIfNeeded();
+
         return view;
+    }
+
+    private void restoreAndPlayMusicIfNeeded() {
+        SharedPreferences prefs = requireContext().getSharedPreferences("music_prefs", Context.MODE_PRIVATE);
+        String name = prefs.getString("musicName", null);
+        String singer = prefs.getString("singer", null);
+        String cover = prefs.getString("cover", null);
+        String url = prefs.getString("url", null);
+
+        if (name != null && url != null) {
+            MyMusicBean music = new MyMusicBean();
+            music.musicName = name;
+            music.singer = singer;
+            music.musicCover = cover;
+            music.musicUrl = url;
+
+            restoredMusic = music;
+            updateMusicUI(music);
+//            playMusic(music);//重进后自动播放
+
+            // 绑定成功后才可以播放
+//            if (musicControl != null) {
+//                musicControl.playFromUrl(music.musicUrl);
+//                img_bf.setImageResource(R.drawable.home_start);
+//            }
+        }
     }
 
 
@@ -227,37 +260,85 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.img_bofang:
-                if (musicControl.isPlay()) {
-                    // 音频正在播放
-                    isPaused = true;
-                    musicControl.pausePlay();
-                    img_bf.setImageResource(R.drawable.home_stop);
-                } else if (isPaused) {
-                    // 音频处于暂停状态
-                    // 继续播放
-                    isPaused = false;
-                    musicControl.continuePlay();
-                    img_bf.setImageResource(R.drawable.home_start);
-                } else {
-                    //第一次点击
-                    musicControl.play(Mi);
-                    img_bf.setImageResource(R.drawable.home_start);
+                if (musicControl != null) {
+                    if (musicControl.isPlay()) {
+                        musicControl.pausePlay();
+                        img_bf.setImageResource(R.drawable.home_stop);
+                    } else {
+                        if (musicControl.hasPrepared()) {
+                            // 如果之前已经设置过播放源，直接继续播放
+                            musicControl.continuePlay();
+                        } else if (restoredMusic != null) {
+                            // 没有准备，重新设置播放源
+                            musicControl.playFromUrl(restoredMusic.musicUrl);
+                        } else {
+                            Toast.makeText(getContext(), "未选择音乐", Toast.LENGTH_SHORT).show();
+                        }
+                        img_bf.setImageResource(R.drawable.home_start);
+                    }
                 }
                 break;
             case R.id.img_qiao: incrementScore();break;
-            case R.id.img_list: startActivity(new Intent(getContext(), Local.class));break;
+            case R.id.img_list:
+                startActivityForResult(new Intent(getContext(), Local.class), REQUEST_CODE_LOCAL);
+                break;
             case R.id.img_y_setting: case R.id.lin_setting:
-                startActivity(new Intent(getContext(), Music.class));
-                getActivity().overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_down);//入场/出场动画
+//                startActivity(new Intent(getContext(), Music.class));
+//                getActivity().overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_down);//入场/出场动画
                 break;
         }
     }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_CODE_LOCAL && resultCode == Activity.RESULT_OK && data != null) {
+            MyMusicBean music = (MyMusicBean) data.getSerializableExtra("selectedMusic");
+            if (music != null) {
+                updateMusicUI(music);
+                playMusic(music);
+            }
+        }
+    }
+
+    private void updateMusicUI(MyMusicBean music) {
+        TextView txtMusicName = view.findViewById(R.id.txt_musicName);
+        TextView txtSiger = view.findViewById(R.id.txt_siger);
+        ImageView imgMusicImg = view.findViewById(R.id.img_musicImg);
+
+        txtMusicName.setText(music.musicName);
+        txtSiger.setText(music.singer);
+        Glide.with(this).load(music.musicCover).into(imgMusicImg);
+    }
+
+    private void playMusic(MyMusicBean music) {
+        if (musicControl != null) {
+            musicControl.playFromUrl(music.musicUrl);
+            img_bf.setImageResource(R.drawable.home_start);
+
+            // 保存当前播放音乐信息
+            saveCurrentMusicToPrefs(music);
+        }
+    }
+
+    private void saveCurrentMusicToPrefs(MyMusicBean music) {
+        SharedPreferences prefs = requireContext().getSharedPreferences("music_prefs", Context.MODE_PRIVATE);
+        prefs.edit()
+                .putString("musicName", music.musicName)
+                .putString("singer", music.singer)
+                .putString("cover", music.musicCover)
+                .putString("url", music.musicUrl)
+                .apply();
+    }
+
     //用于实现连接服务，比较模板化，不需要详细知道内容,用来连接和管理后台音乐播放的 MusicService 服务
     class MyServiceConn implements ServiceConnection {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service){
             musicControl = (MusicService.MusicControl) service;//绑定到后台的音乐服务（MusicService），然后通过获取到的 MusicControl 对象，实现了对音乐的控制功能
             MusicController.getInstance().setMusicControl(musicControl);
+
+            restoreAndPlayMusicIfNeeded();
         }
         @Override
         public void onServiceDisconnected(ComponentName name){

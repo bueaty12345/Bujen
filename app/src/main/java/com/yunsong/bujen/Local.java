@@ -3,6 +3,8 @@ package com.yunsong.bujen;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -156,8 +158,11 @@ public class Local extends AppCompatActivity {
                     data.add(item);
                 }
 
-                LocalMusicAdapter adapter = new LocalMusicAdapter(Local.this, data);
-                listView.setAdapter(adapter);
+//                LocalMusicAdapter adapter = new LocalMusicAdapter(Local.this, data);
+//                listView.setAdapter(adapter);
+                new Handler(Looper.getMainLooper()).post(() -> {
+                    listView.setAdapter(new LocalMusicAdapter(Local.this, data));
+                });
             } catch (JSONException e) {
                 e.printStackTrace();
                 Toast.makeText(getApplicationContext(), "解析音乐数据错", Toast.LENGTH_SHORT).show();

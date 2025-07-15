@@ -3,6 +3,7 @@ package com.yunsong.bujen;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.GridView;
@@ -46,6 +47,8 @@ ImageView img_selet,img_back,img_cover;
     Button btn_dh;
     private ConfirmDialog dialog;
     Boolean hart=false;
+
+    private final static String TAG="TutorialDetail";
 private boolean isFullScreen = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,29 +104,13 @@ private boolean isFullScreen = false;
 
 
         boolean dh=intent.getBooleanExtra("dh",false);
+        Log.d(TAG,"是否兑换"+dh);
         btn_dh.setText(dh ? "已拥有" : "兑换");
         btn_dh.setEnabled(!dh);
 
         String packageUrl = intent.getStringExtra("packageUrl");
         Glide.with(this).load(packageUrl).placeholder(R.drawable.recommend1).into(img_cover);
-//        if (packageUrl != null && !packageUrl.isEmpty()) {
-//            Glide.with(this)
-//                    .load(packageUrl)
-//                    .placeholder(R.drawable.detail_bg)
-//                    .error(R.drawable.detail_bg)
-//                    .into(new CustomTarget<Drawable>() {
-//                        @Override
-//                        public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
-//                            img_cover.setBackground(resource);
-//                        }
-//
-//                        @Override
-//                        public void onLoadCleared(@Nullable Drawable placeholder) {
-//                            img_cover.setBackground(placeholder);
-//                        }
-//                    });
-//
-//        }
+
     }
     // 切换全屏模式
     private void toggleFullScreen() {
@@ -237,11 +224,11 @@ private boolean isFullScreen = false;
     @Override
     protected void onResume() {
         super.onResume();
-        String resourceType = getIntent().getStringExtra("resourceType");
-        int resourceId = getIntent().getIntExtra("id", 0);
-
-        boolean exchanged = ExchangeHelper.isExchanged(this, resourceType, resourceId);
-        btn_dh.setText(exchanged ? "已拥有" : "兑换");
-        btn_dh.setEnabled(!exchanged);
+//        String resourceType = getIntent().getStringExtra("resourceType");
+//        int resourceId = getIntent().getIntExtra("id", 0);
+//
+//        boolean exchanged = ExchangeHelper.isExchanged(this, resourceType, resourceId);
+//        btn_dh.setText(exchanged ? "已拥有" : "兑换");
+//        btn_dh.setEnabled(!exchanged);
     }
 }

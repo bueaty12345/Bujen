@@ -108,7 +108,7 @@
                 android:padding="5dp">
 
                 <ImageView
-                    android:id="@+id/img_deng"
+                    android:id="@+id/img_musicImg"
                     android:layout_width="46dp"
                     android:layout_height="47dp"
                     android:src="@drawable/home_tu" />
@@ -121,7 +121,7 @@
                     android:orientation="vertical">
 
                     <TextView
-                        android:id="@+id/txt_yyqm"
+                        android:id="@+id/txt_musicName"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="音乐曲目"
@@ -129,7 +129,7 @@
                         android:textSize="16sp" />
 
                     <TextView
-                        android:id="@+id/txt_dx"
+                        android:id="@+id/txt_siger"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="灯效"

@@ -84,6 +84,11 @@
                 android:scaleType="fitCenter"
                 android:src="@drawable/icon_history1" />
 
+            <include
+                android:id="@+id/audio_card"
+                layout="@layout/item_voiceinfo"
+                android:visibility="gone"/>
+
             <!-- 右上角“进阶”小标签 -->
             <TextView
                 android:id="@+id/tv_label"

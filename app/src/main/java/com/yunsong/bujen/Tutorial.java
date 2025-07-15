@@ -34,8 +34,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class Tutorial extends AppCompatActivity {
     TabLayout tab_tutorial;
@@ -118,6 +120,28 @@ public class Tutorial extends AppCompatActivity {
                     if (item.isDh()) {
                         ExchangeHelper.markAsExchanged(getContext(), item.getResourceType(), item.getId());
                     }
+                }
+
+                Map<Integer, Integer> levelUnexchangedCount = new HashMap<>();
+                for (TutorialBundleBean item : list) {
+                    if (!item.isDh()) {
+                        int level = item.getLevel();
+                        levelUnexchangedCount.put(level, levelUnexchangedCount.getOrDefault(level, 0) + 1);
+                    }
+                }
+
+                Set<Integer> unlockedLevels = new HashSet<>();
+                unlockedLevels.add(1);
+                for (int i = 1; i <= 10; i++) {
+                    if (!levelUnexchangedCount.containsKey(i)) {
+                        unlockedLevels.add(i + 1);
+                    } else {
+                        break;
+                    }
+                }
+
+                for (TutorialBundleBean item : list) {
+                    item.setLocked(!unlockedLevels.contains(item.getLevel()) && !item.isDh());
                 }
 
                 TutorialAdapter adapter = new TutorialAdapter(Tutorial.this, list, R.layout.item_tutorial2);

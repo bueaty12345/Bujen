@@ -43,6 +43,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.yunsong.bujen.BuildConfig;
 import com.yunsong.bujen.ConfirmDialog;
 import com.yunsong.bujen.R;
+import com.yunsong.bujen.ui.DatePickerDialog;
 import com.yunsong.bujen.utils.FileUploadUtils;
 import com.yunsong.bujen.utils.FileUtils;
 import com.yunsong.bujen.utils.UserInfoUtils;
@@ -71,7 +72,7 @@ public class ParyWrite extends AppCompatActivity implements View.OnClickListener
     private ImageView img_main, img_zp, img_xj,img_play,img_stop;
     private ImageView img_back,img_chehui,img_huifu,img_ok;
     private LinearLayout lin_write,lin_high;
-    private TextView txt_cancel,txt_duration,txt_sort ,txt_date ;
+    private TextView txt_cancel,txt_duration,txt_sort ,txt_date ,achieveTime;
     private EditText edtxt_content,edtxt_title;
 
     private static final int PERMISSION_REQUEST_CODE = 0;
@@ -114,8 +115,6 @@ public class ParyWrite extends AppCompatActivity implements View.OnClickListener
         });
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-
-
         img_main = findViewById(R.id.img_main);
         img_zp = findViewById(R.id.img_zp);
         img_xj = findViewById(R.id.img_xj);
@@ -127,6 +126,7 @@ public class ParyWrite extends AppCompatActivity implements View.OnClickListener
         img_ok = findViewById(R.id.img_ok);
         edtxt_content = findViewById(R.id.edtxt_content);
         edtxt_title = findViewById(R.id.edtxt_title);
+        achieveTime=findViewById(R.id.achieveTime);
 
         Intent intent=getIntent();
         type=intent.getStringExtra("type");
@@ -160,6 +160,7 @@ public class ParyWrite extends AppCompatActivity implements View.OnClickListener
         img_chehui.setOnClickListener(this);
         img_huifu.setOnClickListener(this);
         img_ok.setOnClickListener(this);
+        achieveTime.setOnClickListener(this);
 
         updateButtonStates();
 
@@ -184,6 +185,17 @@ public class ParyWrite extends AppCompatActivity implements View.OnClickListener
             }
         });
 
+
+        new Handler().postDelayed(() -> {
+            showSelectDateDialog();
+        }, 300);
+    }
+
+    private void showSelectDateDialog() {
+        DatePickerDialog.show(this, (year, month, day) -> {
+            String dateStr = String.format(Locale.getDefault(), "%d-%02d-%02d", year, month, day);
+            achieveTime.setText(dateStr);
+        });
     }
 
     // 申请存储权限
@@ -442,6 +454,10 @@ public class ParyWrite extends AppCompatActivity implements View.OnClickListener
 //                    playRecording(recordedFilePath);
 //                }
 //                break;
+
+            case R.id.achieveTime:
+                showSelectDateDialog();
+                break;
         }
     }
 
@@ -611,7 +627,7 @@ public class ParyWrite extends AppCompatActivity implements View.OnClickListener
             json.put("blessingAudioUrl", audioUrl);
             json.put("blessingImageUrl", imageUrl);
             json.put("wishTime", "");
-            json.put("achieveTime", "");
+            json.put("achieveTime",  achieveTime.getText().toString());
         } catch (JSONException e) {
             e.printStackTrace();
             return;

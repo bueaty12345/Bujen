@@ -178,6 +178,7 @@ public class MyTutorial extends AppCompatActivity {
                     item.tutorialName = obj.optString("tutorialName");
                     item.createdAt = obj.optString("createdAt");
                     item.sc = obj.optBoolean("sc");
+                    item.dh=obj.optBoolean("dh");
                     item.requiredMeritPoints = obj.optInt("requiredMeritPoints");
                     item.tutorialCategory = obj.optString("tutorialCategory");
                     item.backgroundMusicUrl= obj.getString("backgroundMusicUrl");

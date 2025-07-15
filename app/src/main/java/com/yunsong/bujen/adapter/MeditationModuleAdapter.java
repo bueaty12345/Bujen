@@ -1,5 +1,6 @@
 package com.yunsong.bujen.adapter;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
@@ -80,20 +81,24 @@ public class MeditationModuleAdapter extends RecyclerView.Adapter<MeditationModu
         }
 
         holder.img1.setOnClickListener(v -> {
-            Intent intent = new Intent(context, MeditationActivity.class);
-            intent.putExtra("tutorialName", item.tutorials.get(0).tutorialName);
-            intent.putExtra("videoUrl", item.tutorials.get(0).videoUrl);
-            intent.putExtra("backgroundMusicUrl", item.tutorials.get(1).backgroundMusicUrl);
-            context.startActivity(intent);
+            if (context instanceof Activity) {
+                Intent result = new Intent();
+                result.putExtra("tutorialName", item.tutorials.get(0).tutorialName);
+                result.putExtra("videoUrl", item.tutorials.get(0).videoUrl);
+                result.putExtra("backgroundMusicUrl", item.tutorials.get(0).backgroundMusicUrl);
+                ((Activity) context).setResult(Activity.RESULT_OK, result);
+                ((Activity) context).finish(); // 回传数据并关闭 MedLocad
+            }
         });
 
         holder.img2.setOnClickListener(v -> {
-            if (item.tutorials.size() > 1) {
-                Intent intent = new Intent(context, MeditationActivity.class);
-                intent.putExtra("tutorialName", item.tutorials.get(1).tutorialName);
-                intent.putExtra("videoUrl", item.tutorials.get(1).videoUrl);
-                intent.putExtra("backgroundMusicUrl", item.tutorials.get(1).backgroundMusicUrl);
-                context.startActivity(intent);
+            if (item.tutorials.size() > 1 && context instanceof Activity) {
+                Intent result = new Intent();
+                result.putExtra("tutorialName", item.tutorials.get(1).tutorialName);
+                result.putExtra("videoUrl", item.tutorials.get(1).videoUrl);
+                result.putExtra("backgroundMusicUrl", item.tutorials.get(1).backgroundMusicUrl);
+                ((Activity) context).setResult(Activity.RESULT_OK, result);
+                ((Activity) context).finish(); // 回传数据并关闭 MedLocad
             }
         });
     }

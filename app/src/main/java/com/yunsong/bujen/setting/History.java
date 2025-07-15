@@ -41,11 +41,13 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -56,7 +58,7 @@ import okhttp3.Response;
 public class History extends AppCompatActivity implements View.OnClickListener{
 
     private LinearLayout pray_history, weekHeaderLayout;
-    private TextView tvYearMonth;
+    private TextView tvYearMonth,tvUnAchievedCount;
     private ImageView img_back, btnPrevMonth, btnNextMonth, btnSwitchYear;
     private RecyclerView calendarRecyclerView;
     private CalendarAdapter adapter;
@@ -91,6 +93,7 @@ public class History extends AppCompatActivity implements View.OnClickListener{
         btnSwitchYear = findViewById(R.id.btn_switch_year);
         weekHeaderLayout = findViewById(R.id.weekHeaderLayout);
         calendarRecyclerView = findViewById(R.id.calendarRecyclerView);
+        tvUnAchievedCount=findViewById(R.id.tv_title3);
 
         img_back.setOnClickListener(this);
         pray_history.setOnClickListener(this);
@@ -98,7 +101,37 @@ public class History extends AppCompatActivity implements View.OnClickListener{
         btnNextMonth.setOnClickListener(v -> changeMonth(1));
         btnSwitchYear.setOnClickListener(v -> showBottomYearMonthPickerDialog());
 
+        updateRegisterTimeText();
     }
+
+    private void updateRegisterTimeText() {
+        TextView tvRegisterTime = findViewById(R.id.registerTime);
+        String registerTimeStr = UserInfoUtils.getUserRegisterTime(this);
+
+        if (!TextUtils.isEmpty(registerTimeStr)) {
+            try {
+                LocalDate registerDate;
+                if (registerTimeStr.contains("T")) {
+                    registerDate = LocalDate.parse(registerTimeStr.split("T")[0]);
+                } else {
+                    registerDate = LocalDate.parse(registerTimeStr);
+                }
+
+                LocalDate today = LocalDate.now();
+                long daysBetween = ChronoUnit.DAYS.between(registerDate, today) + 1;
+
+                String text = "今天是使用不卷的第 " + daysBetween + " 天";
+                tvRegisterTime.setText(text);
+
+            } catch (Exception e) {
+                tvRegisterTime.setText("使用时间计算失败");
+                e.printStackTrace();
+            }
+        } else {
+            tvRegisterTime.setText("未获取到注册时间");
+        }
+    }
+
 
     private void setupCalendar() {
         calendarRecyclerView.setLayoutManager(new GridLayoutManager(this, 7));
@@ -198,6 +231,10 @@ public class History extends AppCompatActivity implements View.OnClickListener{
                         prayDateSet.clear();
                         fullBlessingList.clear();
 
+                        AtomicInteger unAchievedCount = new AtomicInteger(0);
+
+                        LocalDate today = LocalDate.now();
+
                         for (int i = 0; i < array.length(); i++) {
                             JSONObject obj = array.getJSONObject(i);
 
@@ -221,13 +258,24 @@ public class History extends AppCompatActivity implements View.OnClickListener{
                                 try {
                                     LocalDate date = LocalDate.parse(dateStr);
                                     prayDateSet.add(date);
+
+                                    if (date.isAfter(today)) {
+                                        unAchievedCount.incrementAndGet();
+                                    }
                                 } catch (Exception ex) {
                                     Log.e("fetchPrayHistory", "日期解析失败：" + dateStr);
                                 }
+                            }else{
+                                unAchievedCount.incrementAndGet();
                             }
                         }
 
-                        runOnUiThread(() -> updateCalendarView());
+                        runOnUiThread(() -> {
+                            updateCalendarView();
+
+                            String text = "您有 " + unAchievedCount.get() + " 个许愿签未实现";
+                            tvUnAchievedCount.setText(text);
+                        });
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

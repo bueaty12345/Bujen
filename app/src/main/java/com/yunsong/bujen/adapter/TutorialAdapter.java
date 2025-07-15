@@ -81,6 +81,7 @@ public class TutorialAdapter extends BaseAdapter {
             try { holder.img_selet = view.findViewById(R.id.img_selet); } catch (Exception ignored) {}
             try {holder.txt_description=view.findViewById(R.id.txt_description);} catch (Exception e) {}
             holder.img_cover=view.findViewById(R.id.img_cover);
+            holder.lockOverlay = view.findViewById(R.id.lock_overlay);
             view.setTag(holder);
         } else {
             holder = (viewHolder) view.getTag();
@@ -143,6 +144,14 @@ public class TutorialAdapter extends BaseAdapter {
                             }
                         });
             }
+            // 显示或隐藏锁蒙版
+            if (item.isLocked()) {
+                holder.lockOverlay.setVisibility(View.VISIBLE);
+                view.setEnabled(false);
+            } else {
+                holder.lockOverlay.setVisibility(View.GONE);
+                view.setEnabled(true);
+            }
         }
 
         return view;
@@ -178,7 +187,7 @@ public class TutorialAdapter extends BaseAdapter {
     private final class viewHolder {
         ImageView img_tu,img_selet;
         TextView txt_mname,txt_gdd,txt_hy,txt_auther,txt_star,txt_time,txt_description;
-        View img_cover;
+        View img_cover,lockOverlay;
     }
     private void setDialog(TextView v) {
         ConfirmDialog.Builder builder = new ConfirmDialog.Builder(context);

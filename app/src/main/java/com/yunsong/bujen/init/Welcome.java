@@ -43,7 +43,7 @@ public class Welcome extends AppCompatActivity {
     Button btn_login;
     ImageView img_hs,imgShu1,imgShu2;
 //    LottieAnimationView imgShu2;
-private final String REGISTER_URL = BuildConfig.API_SERVER+"/app/login"; //登录接口URL
+private final String LOGIN_URL = BuildConfig.API_SERVER+"/app/login"; //登录接口URL
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -213,6 +213,8 @@ private final String REGISTER_URL = BuildConfig.API_SERVER+"/app/login"; //登�
             finish();
         }
     }
+
+
     private void LoginUser(String phone, String password, String uid) {
         // 使用异步任务执行网络请求
         new LoginTask().execute(phone, password,uid);
@@ -232,7 +234,7 @@ private final String REGISTER_URL = BuildConfig.API_SERVER+"/app/login"; //登�
 
             try {
                 // 创建URL对象
-                URL url = new URL(REGISTER_URL);
+                URL url = new URL(LOGIN_URL);
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                 connection.setRequestMethod("POST");//设置请求方式为 POST
                 connection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");//设置内容类型为 JSON

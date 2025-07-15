@@ -74,15 +74,15 @@
                         android:layout_marginStart="10dp"
                         android:textColor="#000000" />
 
-                    <TextView
-                        android:id="@+id/tv_title2"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="今天是使用不卷的第326天"
-                        android:layout_marginTop="12dp"
-                        android:textSize="12sp"
-                        android:textColor="#49392D"
-                        android:layout_marginStart="10dp"/>
+                        <TextView
+                            android:id="@+id/registerTime"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="今天是使用不卷的第326天"
+                            android:layout_marginTop="12dp"
+                            android:textSize="12sp"
+                            android:textColor="#49392D"
+                            android:layout_marginStart="10dp"/>
 
                     <LinearLayout
                         android:id="@+id/calendarContainer"

@@ -43,7 +43,7 @@ public class PassLogin extends AppCompatActivity implements View.OnClickListener
     EditText edit_phone,edit_password;
     String phone=null;
     private boolean isPasswordVisible = false;
-    private final String REGISTER_URL = BuildConfig.API_SERVER+"/app/login"; //登录接口URL
+    private final String LOGIN_URL = BuildConfig.API_SERVER+"/app/login"; //登录接口URL
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -126,7 +126,7 @@ public class PassLogin extends AppCompatActivity implements View.OnClickListener
             public void onSuccess(User user) {
                 //注登录成功跳首页
                 BizBundleInitializer.onLogin();
-                startActivity(new Intent(PassLogin.this, AgeActivity.class));
+                startActivity(new Intent(PassLogin.this, Connect.class));
                 Toast.makeText(PassLogin.this, getResources().getString(R.string.login_success), Toast.LENGTH_SHORT).show();
                 Log.d("RegisterTask", "uid: " + user.getUid());
                 LoginUser(phone,password,user.getUid());
@@ -154,7 +154,7 @@ public class PassLogin extends AppCompatActivity implements View.OnClickListener
 
             try {
                 // 创建URL对象
-                URL url = new URL(REGISTER_URL);
+                URL url = new URL(LOGIN_URL);
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                 connection.setRequestMethod("POST");
                 connection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");

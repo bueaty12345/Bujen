@@ -22,6 +22,15 @@ public class TutorialBundleBean implements CollectItem {
     public boolean dh;
     public String resourceType;
     public String packageUrl;
+    public boolean locked;
+
+    public boolean isLocked() {
+        return locked;
+    }
+
+    public void setLocked(boolean locked) {
+        this.locked = locked;
+    }
 
     public String getCreateBy() {
         return createBy;

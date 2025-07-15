@@ -62,6 +62,52 @@ public class MusicService extends Service {
     }
     //Binder是一种跨进程的通信方式
     public class MusicControl extends Binder {
+        private boolean isPrepared = false;
+        public void playFromUrl(String url) {
+            try {
+                if (player == null) player = new MediaPlayer();
+                player.reset();
+                player.setDataSource(url);
+                player.prepareAsync();
+                player.setOnPreparedListener(mp -> {
+                    mp.start();
+                    isPrepared = true;
+                    isPlaying = true;
+                    updatePlaybackStatus();
+                });
+//                player.setLooping(true);
+
+                player.setOnCompletionListener(mp -> {
+                    isPlaying = false;
+                    updatePlaybackStatus();
+                });
+                player.start();
+                isPlaying = true;
+                addTimer();
+                updatePlaybackStatus();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        public boolean hasPrepared() {
+            return isPrepared;
+        }
+
+        public int getDuration() {
+            if (player != null && isPrepared) {
+                return player.getDuration();
+            }
+            return 0;
+        }
+
+        public int getCurrentPosition() {
+            if (player != null && isPrepared) {
+                return player.getCurrentPosition();
+            }
+            return 0;
+        }
+
         public void play(int i){//String path
             String[] m={"m1","m2","m3","m4","m5"};
             Uri uri=Uri.parse("android.resource://"+getPackageName()+"/raw/"+m[i]);

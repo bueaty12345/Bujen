@@ -28,6 +28,8 @@ import com.thingclips.smart.android.user.bean.User;
 import com.thingclips.smart.home.sdk.ThingHomeSdk;
 import com.thingclips.smart.home.sdk.bean.HomeBean;
 import com.thingclips.smart.home.sdk.callback.IThingHomeResultCallback;
+import com.yunsong.bujen.guidance.AgeActivity;
+import com.yunsong.bujen.utils.UserAuthManager;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -42,9 +44,11 @@ public class Register extends AppCompatActivity implements View.OnClickListener{
     LinearLayout lin_code;
     Button btn_add;
     EditText edit_phone,edit_password;
-    String phone=null,code="0";
+    String phone=null,uid,code;
     private boolean isPasswordVisible = false;
     private final String REGISTER_URL = BuildConfig.API_SERVER+"/app/register"; //注册接口URL
+    private final String LOGIN_URL = BuildConfig.API_SERVER + "/app/login"; // 登录接口
+    private UserAuthManager userAuthManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,23 +97,13 @@ public class Register extends AppCompatActivity implements View.OnClickListener{
         switch (view.getId()){
             case R.id.btn_add:
                 if(isValidPassword(password)){
-                    //涂鸦注册
-                    toRegister(phone,password,code);
-                }else Toast.makeText(this, getResources().getString(R.string.no_password), Toast.LENGTH_SHORT).show();
+                    doRegisterFlow(phone, password, code);
+                }else{
+                    Toast.makeText(this, getResources().getString(R.string.no_password), Toast.LENGTH_SHORT).show();
+                }
                 break;
             case R.id.img_eye:
-                if (isPasswordVisible) {
-                    // 隐藏密码
-                    edit_password.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-                    img_eye.setImageResource(R.drawable.icon_eye_slash);
-                } else {
-                    // 显示密码
-                    edit_password.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
-                    img_eye.setImageResource(R.drawable.icon_eye);
-                }
-                // 移动光标到文本末尾
-                edit_password.setSelection(edit_password.getText().length());
-                isPasswordVisible = !isPasswordVisible;
+                togglePasswordVisibility();
                 break;
             case R.id.img_back:
                 finish();
@@ -119,43 +113,43 @@ public class Register extends AppCompatActivity implements View.OnClickListener{
                 break;
 
 
-    }
-    }
-
-    private void toRegister(String Phone, String password, String code) {
-        //电话号码注册
-        ThingHomeSdk.getUserInstance().registerAccountWithPhone("86",phone,password,code, new IRegisterCallback() {
-            @Override
-            public void onSuccess(User user) {
-                Toast.makeText(getApplicationContext(), getResources().getString(R.string.reg_succes), Toast.LENGTH_SHORT).show();
-
-                //后台注册
-                registerUser(phone,password,user.getUid());
-                //登录
-                login(Phone,password);
-            }
-            @Override
-            public void onError(String code, String error) {
-                Toast.makeText(getApplicationContext(),  "1error:" + error, Toast.LENGTH_SHORT).show();
-            }
-        });
+        }
     }
 
-    private void login(String phone, String password) {
-        ThingHomeSdk.getUserInstance().loginWithPhonePassword("86", phone, password, new ILoginCallback() {
+    //判断密码是否合格
+    public boolean isValidPassword(String password) {
+        String passwordPattern = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,}$";
+        return password.matches(passwordPattern);
+    }
+    private void togglePasswordVisibility() {
+        if (isPasswordVisible) {
+            edit_password.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+            img_eye.setImageResource(R.drawable.icon_eye_slash);
+        } else {
+            edit_password.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+            img_eye.setImageResource(R.drawable.icon_eye);
+        }
+        edit_password.setSelection(edit_password.getText().length());
+        isPasswordVisible = !isPasswordVisible;
+    }
+
+    private void doRegisterFlow(String phone, String password, String code) {
+        userAuthManager.registerAndLogin(phone, password, code, new UserAuthManager.ResultCallback() {
             @Override
-            public void onSuccess(User user) {
-                LoginUser(phone,password,user.getUid());
-                //注册成功后默认创建一个家庭
+            public void onSuccess() {
+                Toast.makeText(Register.this, "注册并登录成功", Toast.LENGTH_SHORT).show();
                 creHome();
+                startActivity(new Intent(Register.this, AgeActivity.class));
+                finish();
             }
 
             @Override
-            public void onError(String code, String error) {
-                Toast.makeText(getApplicationContext(), "code: " + code + "error:" + error, Toast.LENGTH_SHORT).show();
+            public void onFailure(String errorMessage) {
+                Toast.makeText(Register.this, errorMessage, Toast.LENGTH_LONG).show();
             }
         });
     }
+
 
     private void creHome() {
         List<String> rooms=new ArrayList<>();
@@ -168,187 +162,10 @@ public class Register extends AppCompatActivity implements View.OnClickListener{
             }
             @Override
             public void onError(String errorCode, String errorMsg) {
-                // do something
+                Toast.makeText(Register.this, "创建家庭失败: " + errorMsg, Toast.LENGTH_SHORT).show();
             }
         });
     }
 
-    //判断密码是否合格
-    public boolean isValidPassword(String password) {
-        String passwordPattern = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,}$";
-        return password.matches(passwordPattern);
-    }
-    private void registerUser(String phone, String password, String uid) {
-        // 使用异步任务执行网络请求
-        new RegisterTask().execute(phone, password,uid);
-    }
-
-    // 异步任务进行网络请求
-    private class RegisterTask extends AsyncTask<String, Void, String> {
-
-        @Override
-        protected String doInBackground(String... params) {
-            String phone = params[0];
-            String password = params[1];
-            String uid = params[2];
-
-            try {
-                // 创建URL对象
-                URL url = new URL(REGISTER_URL);
-                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                connection.setRequestMethod("POST");
-                connection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
-                connection.setDoOutput(true);
-
-                // 创建JSON请求体
-                String jsonInputString = "{\"username\": \"" + phone + "\", \"password\": \"" + password + "\", \"uuid\": \"" + uid + "\"}";
-
-                // 发送请求体
-                try (DataOutputStream outputStream = new DataOutputStream(connection.getOutputStream())) {
-                    byte[] input = jsonInputString.getBytes("utf-8");
-                    outputStream.write(input, 0, input.length);
-                }
-
-                // 读取响应
-                int responseCode = connection.getResponseCode();
-                if (responseCode == HttpURLConnection.HTTP_OK) {
-                    BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                    String inputLine;
-                    StringBuilder response = new StringBuilder();
-                    while ((inputLine = in.readLine()) != null) {
-                        response.append(inputLine);
-                    }
-                    in.close();
-                    return response.toString(); // 返回响应内容
-                } else {
-                    return "Request failed with response code: " + responseCode;
-                }
-
-
-            } catch (Exception e) {
-                e.printStackTrace();
-                return "Error: " + e.getMessage();
-            }
-
-
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            super.onPostExecute(result);
-            // 在UI线程中处理返回的结果
-            if (result.startsWith("Error:")) {
-                // 处理错误情况
-                Toast.makeText(getApplicationContext(), result, Toast.LENGTH_SHORT).show();
-            } else {
-                try {
-                    // 使用 Fastjson 解析 JSON 响应
-                    JSONObject jsonResponse = JSONObject.parseObject(result);
-                    String msg = jsonResponse.getString("msg"); // 假设返回的数据中有 token 字段
-                    Log.d("RegisterTask", "msg: " + msg);
-                    Toast.makeText(Register.this, ""+msg, Toast.LENGTH_SHORT).show();
-//                    // 获取 SharedPreferences 实例
-//                    SharedPreferences sharedPreferences = getSharedPreferences("AppPrefs", MODE_PRIVATE);
-//
-//// 存储 Token
-//                    SharedPreferences.Editor editor = sharedPreferences.edit();
-//                    editor.putString("push_token", token);  // "push_token" 为存储 token 的键
-//                    editor.apply();  // 使用 apply() 异步保存
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-            Log.d("RegisterTask", "Response: " + result);
-
-
-        }
-    }
-
-    private void LoginUser(String phone, String password, String uid) {
-        // 使用异步任务执行网络请求
-        new LoginTask().execute(phone, password,uid);
-    }
-
-    // 异步任务进行网络请求
-    private class LoginTask extends AsyncTask<String, Void, String> {
-
-        @Override
-        protected String doInBackground(String... params) {
-            String phone = params[0];
-            String password = params[1];
-            String uid = params[2];
-
-            try {
-                // 创建URL对象
-                URL url = new URL(REGISTER_URL);
-                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                connection.setRequestMethod("POST");
-                connection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
-                connection.setDoOutput(true);
-
-                // 创建JSON请求体
-                String jsonInputString = "{\"username\": \"" + phone + "\", \"password\": \"" + password + "\", \"uuid\": \"" + uid + "\"}";
-
-                // 发送请求体
-                try (DataOutputStream outputStream = new DataOutputStream(connection.getOutputStream())) {
-                    byte[] input = jsonInputString.getBytes("utf-8");
-                    outputStream.write(input, 0, input.length);
-                }
-
-                // 读取响应
-                int responseCode = connection.getResponseCode();
-                if (responseCode == HttpURLConnection.HTTP_OK) {
-                    BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                    String inputLine;
-                    StringBuilder response = new StringBuilder();
-                    while ((inputLine = in.readLine()) != null) {
-                        response.append(inputLine);
-                    }
-                    in.close();
-                    return response.toString(); // 返回响应内容
-                } else {
-                    return "Request failed with response code: " + responseCode;
-                }
-
-
-            } catch (Exception e) {
-                e.printStackTrace();
-                return "Error: " + e.getMessage();
-            }
-
-
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            super.onPostExecute(result);
-            // 在UI线程中处理返回的结果
-            if (result.startsWith("Error:")) {
-                // 处理错误情况
-                Toast.makeText(getApplicationContext(), result, Toast.LENGTH_SHORT).show();
-            } else {
-                try {
-                    // 使用 Fastjson 解析 JSON 响应
-                    JSONObject jsonResponse = JSONObject.parseObject(result);
-                    String token = jsonResponse.getString("token"); // 假设返回的数据中有 token 字段
-                    Log.d("RegisterTask", "Token: " + token);
-                    // 获取 SharedPreferences 实例
-                    SharedPreferences sharedPreferences = getSharedPreferences("AppPrefs", MODE_PRIVATE);
-
-// 存储 Token
-                    SharedPreferences.Editor editor = sharedPreferences.edit();
-                    editor.putString("user_token", token);  // "push_token" 为存储 token 的键
-                    editor.apply();  // 使用 apply() 异步保存
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-            Log.d("RegisterTask", "Response: " + result);
-
-
-        }
-    }
 
 }

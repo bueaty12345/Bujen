@@ -1,5 +1,6 @@
 package com.yunsong.bujen.adapter;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
@@ -49,11 +50,12 @@ public class MedHistoryAdapter  extends RecyclerView.Adapter<MedHistoryAdapter.H
             holder.img_bg.setImageResource(R.drawable.jc_bg1);
         }
         holder.btnGo.setOnClickListener(v -> {
-            Intent intent = new Intent(context, MeditationActivity.class);
-            intent.putExtra("tutorialName", item.tutorialName);
-            intent.putExtra("videoUrl", item.videoUrl);
-            intent.putExtra("backgroundMusicUrl", item.backgroundMusicUrl);
-            context.startActivity(intent);
+            Intent result = new Intent();
+            result.putExtra("tutorialName", item.tutorialName);
+            result.putExtra("videoUrl", item.videoUrl);
+            result.putExtra("backgroundMusicUrl", item.backgroundMusicUrl);
+            ((Activity) context).setResult(Activity.RESULT_OK, result);
+            ((Activity) context).finish(); // 回传数据并关闭 MedLocad
         });
 
     }

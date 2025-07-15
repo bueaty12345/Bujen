@@ -24,13 +24,22 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="left|center_vertical"
-            android:orientation="vertical">
+            android:orientation="horizontal">
 
             <ImageView
                 android:id="@+id/imageView9"
                 android:layout_width="28dp"
                 android:layout_height="29dp"
-                app:srcCompat="@drawable/icon_ss" />
+                app:srcCompat="@drawable/icon_logo"
+                android:layout_marginEnd="8dp" />
+
+            <TextView
+                android:id="@+id/txt_logo_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="要和我聊天嘛~"
+                android:textColor="#000000"
+                android:textSize="16sp" />
         </LinearLayout>
 
         <LinearLayout

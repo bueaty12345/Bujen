@@ -2,7 +2,9 @@ package com.yunsong.bujen.adapter;
 
 import static com.yunsong.bujen.fragment.HomeFragment.Mi;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +24,7 @@ import java.util.List;
 public class LocalMusicAdapter extends BaseAdapter {
     private Context context;
     private List<MyMusicBean> data;
+
 
     public LocalMusicAdapter(Local local, List<MyMusicBean> data) {
         this.context = local;
@@ -59,7 +62,7 @@ public class LocalMusicAdapter extends BaseAdapter {
         holder.txt_mname.setText(item.musicName);
         Glide.with(context)
                 .load(item.musicCover)
-                .placeholder(R.drawable.recommend1) // 可选占位图
+                .placeholder(R.drawable.recommend1)
                 .into(holder.img_tu);
         // 设置背景颜色
         if (i == Mi) {
@@ -67,6 +70,15 @@ public class LocalMusicAdapter extends BaseAdapter {
         } else {
             holder.img_selet.setVisibility(View.INVISIBLE);
         }
+
+        view.setOnClickListener(v -> {
+            Mi = i; // 设置当前点击项为选中项
+            notifyDataSetChanged(); // 刷新列表，触发 getView() 再次设置 img_selet
+            Intent result = new Intent();
+            result.putExtra("selectedMusic", item);
+            ((Activity) context).setResult(Activity.RESULT_OK, result);
+            ((Activity) context).finish(); // 关闭 Local 页面
+        });
 
         return view;
     }

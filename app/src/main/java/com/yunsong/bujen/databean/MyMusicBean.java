@@ -2,9 +2,10 @@ package com.yunsong.bujen.databean;
 
 import com.yunsong.bujen.model.CollectItem;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class MyMusicBean implements CollectItem {
+public class MyMusicBean implements CollectItem, Serializable {
     public String createBy;
     public Date createTime;
     public String updateBy;

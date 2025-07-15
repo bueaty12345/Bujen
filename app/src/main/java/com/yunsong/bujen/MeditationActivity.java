@@ -1,8 +1,10 @@
 
 package com.yunsong.bujen;
 
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
@@ -10,6 +12,11 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.Handler;
+import android.os.IBinder;
+import android.os.Looper;
+import android.os.Message;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -17,6 +24,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,6 +45,8 @@ import com.bumptech.glide.request.target.ViewTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.yunsong.bujen.adapter.TimerAdapter;
+import com.yunsong.bujen.fragment.MusicController;
+import com.yunsong.bujen.fragment.MusicService;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -50,14 +60,56 @@ public class MeditationActivity extends AppCompatActivity implements View.OnClic
     private static final String EXTRA_IMAGE_URL = "backgroundMusicUrl";
     ConstraintLayout main;
     LinearLayout lin_kz;
-    ImageView img_circle,img_bf,img_timing,img_next,img_previous,img_reset;
+    ImageView img_circle,img_play,img_timing,img_next,img_previous,img_reset;
     TextView txt_stateTime,txt_endTime,txt_name;
+    SeekBar seekBar;
     private MediaPlayer mediaPlayer;
+    private MusicService.MusicControl musicControl;
+
     private boolean isPlaying = false;
     private String videoUrl;
     private String backgroundImage;
     private GestureDetector gestureDetector;
     private CountDownTimer countDownTimer;
+
+    private static MeditationActivity currentActivity;
+    private final Handler handler = new Handler(Looper.getMainLooper());
+
+    private final Runnable updateRunnable = new Runnable() {
+        @Override
+        public void run() {
+            if (musicControl != null) {
+                int duration = musicControl.getDuration();
+                int current = musicControl.getCurrentPosition();
+                txt_stateTime.setText(formatTime(current));
+                txt_endTime.setText(formatTime(duration));
+                seekBar.setMax(duration);
+                seekBar.setProgress(current);
+                img_play.setImageResource(musicControl.isPlay() ? R.drawable.home_start : R.drawable.med_stop);
+            }
+            handler.postDelayed(this, 1000);
+        }
+    };
+    private final ServiceConnection connection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            musicControl = (MusicService.MusicControl) service;
+            MusicController.getInstance().setMusicControl(musicControl);
+            if (videoUrl != null && !videoUrl.isEmpty()) {
+                musicControl.playFromUrl(videoUrl);
+                handler.postDelayed(() -> {
+                    int duration = musicControl.getDuration();
+                    txt_endTime.setText(formatTime(duration));
+                    seekBar.setMax(duration);
+                }, 500);
+            }
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            musicControl = null;
+        }
+    };
 
 
     @Override
@@ -74,13 +126,18 @@ public class MeditationActivity extends AppCompatActivity implements View.OnClic
         initGesture();
         loadIntentData();
         setupUI();
+
+        Intent intent = new Intent(this, MusicService.class);
+        bindService(intent, connection, BIND_AUTO_CREATE);
+
+        currentActivity = this;
     }
 
     private void intView() {
         main = findViewById(R.id.main);
         lin_kz = findViewById(R.id.lin_kz);
         img_circle = findViewById(R.id.img_circle);
-        img_bf = findViewById(R.id.img_bf);
+        img_play = findViewById(R.id.img_play);
         img_timing = findViewById(R.id.img_timing);
         img_next = findViewById(R.id.img_next);
         img_previous = findViewById(R.id.img_previous);
@@ -88,14 +145,30 @@ public class MeditationActivity extends AppCompatActivity implements View.OnClic
         txt_stateTime = findViewById(R.id.txt_stateTime);
         txt_endTime = findViewById(R.id.txt_endTime);
         txt_name=findViewById(R.id.txt_name);
+        seekBar = findViewById(R.id.seekBar);
 
-        img_bf.setOnClickListener(this);
+        img_play.setOnClickListener(this);
         img_timing.setOnClickListener(this);
         img_next.setOnClickListener(this);
         img_previous.setOnClickListener(this);
         img_reset.setOnClickListener(this);
         img_circle.setOnClickListener(this);
         main.setOnClickListener(this);
+
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {}
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {}
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                if (musicControl != null) {
+                    musicControl.seekTo(seekBar.getProgress());
+                }
+            }
+        });
     }
 
     private void loadIntentData() {
@@ -153,7 +226,7 @@ public class MeditationActivity extends AppCompatActivity implements View.OnClic
             @Override
             public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
                 if (e1.getY() - e2.getY() > 100 && Math.abs(velocityY) > 800) {
-                    startActivity(new Intent(MeditationActivity.this, MedLocad.class));
+                    startActivityForResult(new Intent(MeditationActivity.this, MedLocad.class), 1001);
                     overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_down);
                     return true;
                 }
@@ -165,7 +238,6 @@ public class MeditationActivity extends AppCompatActivity implements View.OnClic
     }
 
     private void setupUI() {
-        // 可选初始化播放时间等
         txt_stateTime.setText("00:00");
         txt_endTime.setText("00:00");
     }
@@ -181,7 +253,7 @@ public class MeditationActivity extends AppCompatActivity implements View.OnClic
                     lin_kz.setVisibility(View.VISIBLE);
                 }
                 break;
-            case R.id.img_bf:
+            case R.id.img_play:
                 toggleMusic();
                 break;
             case R.id.img_reset:
@@ -197,15 +269,12 @@ public class MeditationActivity extends AppCompatActivity implements View.OnClic
         BottomSheetDialog dialog = new BottomSheetDialog(this);
         View view = LayoutInflater.from(this).inflate(R.layout.dialog_timer_select, null);
 
-
-
-
         RecyclerView recyclerView = view.findViewById(R.id.recyclerView_timer);
 
-        List<Integer> timeList = Arrays.asList(5, 10, 15, 30, 45, 60, 90, 120); // 单位：分钟
+        List<Integer> timeList = Arrays.asList(5, 10, 15, 30, 45, 60, 90, 120);
         TimerAdapter adapter = new TimerAdapter(timeList, selected -> {
             dialog.dismiss();
-            startCountdown(selected * 60); // 单位换成秒
+            startCountdown(selected * 60);
             Toast.makeText(this, "定时 " + selected + " 分钟", Toast.LENGTH_SHORT).show();
         });
 
@@ -214,6 +283,11 @@ public class MeditationActivity extends AppCompatActivity implements View.OnClic
 
         dialog.setContentView(view);
         dialog.show();
+
+        View bottomSheet = dialog.getWindow().findViewById(com.google.android.material.R.id.design_bottom_sheet);
+        if (bottomSheet != null) {
+            bottomSheet.setBackgroundResource(android.R.color.transparent);
+        }
     }
 
     private void startCountdown(int seconds) {
@@ -236,61 +310,74 @@ public class MeditationActivity extends AppCompatActivity implements View.OnClic
     }
 
 
+
     private void toggleMusic() {
-        if (mediaPlayer == null) {
-            mediaPlayer = new MediaPlayer();
-            try {
-                mediaPlayer.setDataSource(videoUrl);
-                mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                mediaPlayer.prepareAsync();
-                mediaPlayer.setOnPreparedListener(mp -> {
-                    mediaPlayer.start();
-                    isPlaying = true;
-                    img_bf.setImageResource(R.drawable.home_start);
-                });
-                mediaPlayer.setOnCompletionListener(mp -> {
-                    isPlaying = false;
-                    img_bf.setImageResource(R.drawable.med_stop);
-                });
-            } catch (IOException e) {
-                e.printStackTrace();
-                Toast.makeText(this, "播放失败", Toast.LENGTH_SHORT).show();
+        if (musicControl != null) {
+            if (musicControl.isPlay()) {
+                musicControl.pausePlay();
+                img_play.setImageResource(R.drawable.med_stop); // 主动更新暂停图标
+            } else {
+                musicControl.continuePlay();
+                img_play.setImageResource(R.drawable.home_start); // 主动更新播放图标
             }
-        } else if (mediaPlayer.isPlaying()) {
-            mediaPlayer.pause();
-            isPlaying = false;
-            img_bf.setImageResource(R.drawable.med_stop);
-        } else {
-            mediaPlayer.start();
-            isPlaying = true;
-            img_bf.setImageResource(R.drawable.home_start);
         }
     }
 
     private void stopMusic() {
-        if (mediaPlayer != null) {
-            mediaPlayer.stop();
-            mediaPlayer.release();
-            mediaPlayer = null;
-            isPlaying = false;
-            img_bf.setImageResource(R.drawable.med_stop);
+        if (musicControl != null && musicControl.isPlay()) {
+            musicControl.pausePlay();
         }
+    }
+
+    private static String formatTime(int ms) {
+        int seconds = ms / 1000;
+        return String.format("%02d:%02d", seconds / 60, seconds % 60);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        if (mediaPlayer != null && mediaPlayer.isPlaying()) {
-            mediaPlayer.pause();
-            isPlaying = false;
-            img_bf.setImageResource(R.drawable.med_stop);
+        handler.removeCallbacks(updateRunnable);
+        if (musicControl != null && musicControl.isPlay()) {
+            musicControl.pausePlay();
+            img_play.setImageResource(R.drawable.med_stop);
         }
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        stopMusic();
+        unbindService(connection);
+        handler.removeCallbacks(updateRunnable);
+        currentActivity = null;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1001 && resultCode == RESULT_OK && data != null) {
+            String title = data.getStringExtra("tutorialName");
+            String newVideoUrl = data.getStringExtra("videoUrl");
+            String newBackground = data.getStringExtra("backgroundMusicUrl");
+
+            if (newVideoUrl != null && !newVideoUrl.isEmpty()) {
+                this.videoUrl = newVideoUrl;
+                this.backgroundImage = newBackground;
+                txt_name.setText(title);
+
+                if (musicControl != null) {
+                    musicControl.playFromUrl(videoUrl);
+                    handler.removeCallbacks(updateRunnable);
+                    handler.post(updateRunnable);
+
+                    // 主动更新播放图标
+                    img_play.setImageResource(R.drawable.home_start);
+                }
+
+                setBackgroundWithBlur(backgroundImage);
+                Glide.with(this).load(backgroundImage).into(img_circle);
+            }
+        }
     }
 
     public static void start(Context context, String title, String videoUrl, String imageUrl) {
@@ -298,6 +385,39 @@ public class MeditationActivity extends AppCompatActivity implements View.OnClic
         intent.putExtra(EXTRA_TITLE, title);
         intent.putExtra(EXTRA_VIDEO_URL, videoUrl);
         intent.putExtra(EXTRA_IMAGE_URL, imageUrl);
+        intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         context.startActivity(intent);
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        String newTitle = intent.getStringExtra(EXTRA_TITLE);
+        String newVideoUrl = intent.getStringExtra(EXTRA_VIDEO_URL);
+        String newImageUrl = intent.getStringExtra(EXTRA_IMAGE_URL);
+
+        // 如果 URL 相同，则什么都不做（避免重复播放）
+        if (videoUrl != null && videoUrl.equals(newVideoUrl)) {
+            return;
+        }
+
+        // 更新数据
+        this.videoUrl = newVideoUrl;
+        this.backgroundImage = newImageUrl;
+
+        txt_name.setText(newTitle != null ? newTitle : "");
+
+        // 替换背景图与圆图
+        setBackgroundWithBlur(backgroundImage);
+        Glide.with(this).load(backgroundImage).into(img_circle);
+
+        // 播放新音乐
+        if (musicControl != null) {
+            musicControl.playFromUrl(videoUrl);
+            handler.removeCallbacks(updateRunnable);
+            handler.post(updateRunnable);
+            img_play.setImageResource(R.drawable.home_start); // 播放图标
+        }
     }
 }

@@ -12,6 +12,12 @@ public class UserInfoUtils {
         return sharedPreferences.getString("user_nickname", "未设置昵称");
     }
 
+    //注册时间
+    public static String getUserRegisterTime(Context context) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences("AppPrefs", Context.MODE_PRIVATE);
+        return sharedPreferences.getString("user_registerTime", "");
+    }
+
     // 读取用户签名
     public static String getUserSignature(Context context) {
         SharedPreferences sharedPreferences = context.getSharedPreferences("AppPrefs", Context.MODE_PRIVATE);

@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -21,6 +22,8 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.alibaba.fastjson.JSONObject;
+import com.thingclips.smart.android.user.api.IWhiteListCallback;
+import com.thingclips.smart.android.user.bean.WhiteList;
 import com.yunsong.bujen.BuildConfig;
 import com.yunsong.bujen.Homepage;
 import com.yunsong.bujen.R;
@@ -44,10 +47,13 @@ public class CaptchaLogin extends AppCompatActivity implements View.OnClickListe
     EditText edit_phone,edit_code;
     String phone=null;
     boolean isL=true;
+    boolean isRegistered = true; // 用于判断是否首次注册
+    String uid = ""; // 涂鸦返回的 UID
     private CountDownTimer countdownTimer;
     private boolean isCountingDown = false;
     private static final long COUNTDOWN_TIME_IN_MILLIS = 60000; // 60秒
-    private final String REGISTER_URL = BuildConfig.API_SERVER+"/app/login"; //登录接口URL
+    private final String LOGIN_URL = BuildConfig.API_SERVER+"/app/login"; //登录接口URL
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -92,8 +98,9 @@ public class CaptchaLogin extends AppCompatActivity implements View.OnClickListe
         switch (view.getId()){
             case R.id.btn_add:
                 //判断是否为登录
-                if(isL)  isCode(phone,edit_code.getText().toString(),2);
-                else isCode(phone,edit_code.getText().toString(),1);
+                checkCodeAndProceed(phone, edit_code.getText().toString());
+//                if(isL)  isCode(phone,edit_code.getText().toString(),2);
+//                else isCode(phone,edit_code.getText().toString(),1);
                 break;
             case R.id.txt_pass:
                 Intent it=new Intent(CaptchaLogin.this, PassLogin.class);
@@ -104,7 +111,8 @@ public class CaptchaLogin extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.txt_code:
                 if (!isCountingDown) {
-                    setCode(phone, 2);
+//                    setCode(phone, 2);
+                    checkPhoneRegisteredAndSendCode(phone);
                 }
                 break;
             case R.id.img_back:
@@ -116,137 +124,146 @@ public class CaptchaLogin extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    private void setCode(String phone, int type) {
-
-        // 获取手机验证码
-        ThingHomeSdk.getUserInstance().sendVerifyCodeWithUserName(phone, "", "86", type, new IResultCallback() {
+    private void checkPhoneRegisteredAndSendCode(String phone) {
+        ThingHomeSdk.getUserInstance().getWhiteListWhoCanSendMobileCodeSuccess(new IWhiteListCallback() {
             @Override
-            public void onError(String code, String error) {
-                if (error.equals("用户不存在")){
-                    Toast.makeText(CaptchaLogin.this, getResources().getString(R.string.login_reg), Toast.LENGTH_SHORT).show();
-                    //获取登录验证码跳登录
-                    isL=false;
-                    setCode(phone,1);
-//                    login(phone,code);
-                }else {
-                    Toast.makeText(CaptchaLogin.this, "error:" + error, Toast.LENGTH_SHORT).show();
+            public void onSuccess(WhiteList whiteList) {
+                if (whiteList.getCountryCodes().contains("86")) {
+                    verifyPhoneRegistered(phone);
+                } else {
+                    Toast.makeText(CaptchaLogin.this, "当前地区不支持验证码服务", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
-            public void onSuccess() {
-                Toast.makeText(CaptchaLogin.this, getResources().getString(R.string.code_success), Toast.LENGTH_SHORT).show();
-                //验证码倒计时
-                isCountingDown = true;
-                txt_code.setEnabled(false);
-                txt_code.setAlpha(0.5f);
-
-                countdownTimer = new CountDownTimer(COUNTDOWN_TIME_IN_MILLIS, 1000) {
-                    @Override
-                    public void onTick(long millisUntilFinished) {
-                        int secondsLeft = (int) (millisUntilFinished / 1000);
-                        txt_code.setText(secondsLeft + "s");
-                    }
-
-                    @Override
-                    public void onFinish() {
-                        txt_code.setText(getResources().getString(R.string.hq_code));
-                        txt_code.setEnabled(true);
-                        isCountingDown = false;
-                        txt_code.setAlpha(1f);
-                    }
-                }.start();
-            }
-        });
-    }
-
-    private void toRegister(String Phone1, String password, String code) {
-
-        ThingHomeSdk.getUserInstance().registerAccountWithPhone("86",Phone1,password,code, new IRegisterCallback() {
-            @Override
-            public void onSuccess(User user) {
-                //注册成功后创建家庭跳设置页面
-            }
-            @Override
-            public void onError(String code1, String error) {
-                Toast.makeText(getApplicationContext(), "code: " + code1 + "error:" + error, Toast.LENGTH_SHORT).show();
-                //注册失败转登录
-                if(error.equals("密码为空")){
-
-                }else if (error.equals("提示用户已存在")){
-                    //跳登录
-                    login(phone,code);
-                }
-            }
-        });
-    }
-    private void login(String phone, String code) {
-        // 手机验证码登录
-        ThingHomeSdk.getUserInstance().loginWithPhone("86", phone, code, new ILoginCallback() {
-            @Override
-            public void onSuccess(User user) {
-                //注登录成功跳首页
-                startActivity(new Intent(CaptchaLogin.this, Homepage.class));
-//                Toast.makeText(getApplicationContext(), "登录成功，用户名：" +ThingHomeSdk.getUserInstance().getUser().getUsername(), Toast.LENGTH_SHORT).show();
-                Toast.makeText(getApplicationContext(), getResources().getString(R.string.login_success), Toast.LENGTH_SHORT).show();
-                LoginUser(phone,"",user.getUid());
-            }
-            @Override
-            public void onError(String code1, String error) {
-                Toast.makeText(getApplicationContext(), error, Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-    void isCode(String phone,String code1,int type){
-        //校验验证码
-        ThingHomeSdk.getUserInstance().checkCodeWithUserName(phone,"","86",code1,type, new IResultCallback() {
-            @Override
             public void onError(String code, String error) {
-                Toast.makeText(CaptchaLogin.this, "error:"+error, Toast.LENGTH_SHORT).show();
+                Toast.makeText(CaptchaLogin.this, "可用地区查询失败：" + error, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void verifyPhoneRegistered(String phone) {
+        ThingHomeSdk.getUserInstance().sendVerifyCodeWithUserName(
+                phone, "", "86", 2, new IResultCallback() {
+                    @Override
+                    public void onError(String code, String error) {
+                        if ("用户不存在".equals(error)) {
+                            isRegistered = false;
+                            sendCode(phone, 1); // 注册验证码
+                        } else {
+                            Toast.makeText(CaptchaLogin.this, "发送失败: " + error, Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onSuccess() {
+                        isRegistered = true;
+                        startCountdown();
+                        Toast.makeText(CaptchaLogin.this, "验证码已发送", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    private void sendCode(String phone, int type) {
+        ThingHomeSdk.getUserInstance().sendVerifyCodeWithUserName(
+                phone, "", "86", type, new IResultCallback() {
+                    @Override
+                    public void onError(String code, String error) {
+                        Toast.makeText(CaptchaLogin.this, "发送失败: " + error, Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onSuccess() {
+                        startCountdown();
+                        Toast.makeText(CaptchaLogin.this, getResources().getString(R.string.code_success), Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    private void startCountdown() {
+        isCountingDown = true;
+        txt_code.setEnabled(false);
+        txt_code.setAlpha(0.5f);
+        countdownTimer = new CountDownTimer(COUNTDOWN_TIME_IN_MILLIS, 1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                txt_code.setText((millisUntilFinished / 1000) + "s");
+            }
+
+            @Override
+            public void onFinish() {
+                txt_code.setText(getResources().getString(R.string.hq_code));
+                txt_code.setEnabled(true);
+                txt_code.setAlpha(1f);
+                isCountingDown = false;
+            }
+        }.start();
+    }
+
+    private void checkCodeAndProceed(String phone, String code) {
+        int type = isRegistered ? 2 : 1;
+        ThingHomeSdk.getUserInstance().checkCodeWithUserName(phone, "", "86", code, type, new IResultCallback() {
+            @Override
+            public void onError(String errCode, String error) {
+                Toast.makeText(CaptchaLogin.this, "验证失败：" + error, Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onSuccess() {
-                //判断是否为登录
-                if(isL)  login(phone,code1);
-                else {
-                    //跳设置密码页面
-                    Intent it=new Intent(CaptchaLogin.this, Register.class);
-                    it.putExtra("phone",phone);
-                    it.putExtra("code",code1);
+                if (isRegistered) {
+                    // 已注册直接调用后台登录接口
+                    loginWithCode(phone, code);
+                } else {
+                    Intent it = new Intent(CaptchaLogin.this, Register.class);
+                    it.putExtra("phone", phone);
+                    it.putExtra("code", code);
                     startActivity(it);
                 }
             }
         });
     }
-    private void LoginUser(String phone, String password, String uid) {
-        // 使用异步任务执行网络请求
-        new LoginTask().execute(phone, password,uid);
+
+    private void loginWithCode(String phone, String code) {
+        ThingHomeSdk.getUserInstance().loginWithPhone("86", phone, code, new ILoginCallback() {
+            @Override
+            public void onSuccess(User user) {
+                new LoginTask().execute(phone, "",code, user.getUid());
+            }
+
+            @Override
+            public void onError(String code, String error) {
+                Toast.makeText(getApplicationContext(), "登录失败：" + error, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
-    // 异步任务进行网络请求
     private class LoginTask extends AsyncTask<String, Void, String> {
 
         @Override
         protected String doInBackground(String... params) {
             String phone = params[0];
             String password = params[1];
-            String uid = params[2];
+            String code = params[2];
+            String uid = params[3];
 
             try {
                 // 创建URL对象
-                URL url = new URL(REGISTER_URL);
+                URL url = new URL(LOGIN_URL);
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                 connection.setRequestMethod("POST");
                 connection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
                 connection.setDoOutput(true);
 
                 // 创建JSON请求体
-                String jsonInputString = "{\"username\": \"" + phone + "\", \"password\": \"" + password + "\", \"uuid\": \"" + uid + "\"}";
+                JSONObject json = new JSONObject();
+                json.put("username", phone);
+                json.put("password", password);
+                json.put("code", code);
+                json.put("uuid", uid);
 
                 // 发送请求体
                 try (DataOutputStream outputStream = new DataOutputStream(connection.getOutputStream())) {
-                    byte[] input = jsonInputString.getBytes("utf-8");
+                    byte[] input = json.toString().getBytes("utf-8");
                     outputStream.write(input, 0, input.length);
                 }
 
@@ -285,15 +302,18 @@ public class CaptchaLogin extends AppCompatActivity implements View.OnClickListe
                 try {
                     // 使用 Fastjson 解析 JSON 响应
                     JSONObject jsonResponse = JSONObject.parseObject(result);
-                    String token = jsonResponse.getString("token"); // 假设返回的数据中有 token 字段
-                    Log.d("RegisterTask", "Token: " + token);
+                    String token = jsonResponse.getString("token");
                     // 获取 SharedPreferences 实例
                     SharedPreferences sharedPreferences = getSharedPreferences("AppPrefs", MODE_PRIVATE);
-
-// 存储 Token
                     SharedPreferences.Editor editor = sharedPreferences.edit();
                     editor.putString("user_token", token);  // "push_token" 为存储 token 的键
                     editor.apply();  // 使用 apply() 异步保存
+
+                    runOnUiThread(() -> {
+                        Toast.makeText(getApplicationContext(), getResources().getString(R.string.login_success), Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(CaptchaLogin.this, Connect.class));
+                        finish(); // 可选：关闭当前页面
+                    });
 
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -304,4 +324,81 @@ public class CaptchaLogin extends AppCompatActivity implements View.OnClickListe
 
         }
     }
+
+    private void toRegister(String Phone1, String password, String code) {
+
+        ThingHomeSdk.getUserInstance().registerAccountWithPhone("86",Phone1,password,code, new IRegisterCallback() {
+            @Override
+            public void onSuccess(User user) {
+                //注册成功后创建家庭跳设置页面
+            }
+            @Override
+            public void onError(String code1, String error) {
+                Toast.makeText(getApplicationContext(), "code: " + code1 + "error:" + error, Toast.LENGTH_SHORT).show();
+                //注册失败转登录
+                if(error.equals("密码为空")){
+
+                }else if (error.equals("提示用户已存在")){
+                    //跳登录
+                    login(phone,code);
+                }
+            }
+        });
+    }
+
+    private void login(String phone, String code) {
+        // 手机验证码登录
+        ThingHomeSdk.getUserInstance().loginWithPhone("86", phone, code, new ILoginCallback() {
+            @Override
+            public void onSuccess(User user) {
+                //注登录成功跳首页
+                startActivity(new Intent(CaptchaLogin.this, Homepage.class));
+                Toast.makeText(getApplicationContext(), "登录成功，用户名：" +ThingHomeSdk.getUserInstance().getUser().getUsername(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), getResources().getString(R.string.login_success), Toast.LENGTH_SHORT).show();
+//                LoginUser(phone,"",user.getUid());
+            }
+            @Override
+            public void onError(String code1, String error) {
+                Toast.makeText(getApplicationContext(), error, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+    void isCode(String phone,String code1,int type){
+        //校验验证码
+        ThingHomeSdk.getUserInstance().checkCodeWithUserName(phone,"","86",code1,type, new IResultCallback() {
+            @Override
+            public void onError(String code, String error) {
+                Toast.makeText(CaptchaLogin.this, "error:"+error, Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onSuccess() {
+                // 检查是否是注册流程（首次登录）
+                if (!isL) {
+                    // 注册流程：先调用涂鸦注册接口（不设置密码），获取 UID 后跳转 Register 页面
+                    ThingHomeSdk.getUserInstance().registerAccountWithPhone("86", phone, "", code1, new IRegisterCallback() {
+                        @Override
+                        public void onSuccess(User user) {
+                            String uid = user.getUid();
+                            Intent it = new Intent(CaptchaLogin.this, Register.class);
+                            it.putExtra("phone", phone);
+                            it.putExtra("code", code1);
+                            it.putExtra("uid", uid);
+                            startActivity(it);
+                            finish();
+                        }
+
+                        @Override
+                        public void onError(String code, String error) {
+                            Toast.makeText(CaptchaLogin.this, "注册失败：" + error, Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                } else {
+                    // 登录流程
+                    login(phone, code1);
+                }
+            }
+        });
+    }
+
 }

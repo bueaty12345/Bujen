@@ -78,15 +78,15 @@ public class LocalLightAdapter extends BaseAdapter {
         } else {
             holder.img_selet.setVisibility(View.INVISIBLE);
         }
-//        // 设置点击事件
-//        view.setOnClickListener(v -> {
-//            selectedPosition = i; // 更新选中的项
-//            notifyDataSetChanged(); // 刷新适配器
+        // 设置点击事件
+        view.setOnClickListener(v -> {
+            selectedPosition = i; // 更新选中的项
+            notifyDataSetChanged(); // 刷新适配器
 //            Homepage.rl_bg.setBackgroundResource(dg[i]);
 //            Homepage.homebg=dg[i];
 //            Homepage.ly_tab.setBackgroundColor(Color.parseColor(bar[i]));
 //            Homepage.homeColor=bar[i];
-//        });
+        });
         return view;
     }
     private final class viewHolder {

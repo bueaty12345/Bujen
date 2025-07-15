@@ -46,8 +46,8 @@ public class Login extends AppCompatActivity implements View.OnClickListener{
     void init() {
         txt_phone = findViewById(R.id.txt_phone);
         txt_toast = findViewById(R.id.txt_toast);
-        btn_add = findViewById(R.id.btn_add);
-        btn_else = findViewById(R.id.btn_elseAdd);
+        btn_add = findViewById(R.id.btn_loginregister);
+        btn_else = findViewById(R.id.btn_login);
 
         // 动态获取手机号权限
 //        if (checkPermissions()) {
@@ -178,13 +178,13 @@ public class Login extends AppCompatActivity implements View.OnClickListener{
     @Override
     public void onClick(View view) {
         switch (view.getId()){
-            case R.id.btn_add:
+            case R.id.btn_loginregister:
                 Intent it=new Intent(Login.this, CaptchaLogin.class);
                 if(phoneNumber!=null&&!(phoneNumber.equals("")))
                     it.putExtra("phone",phoneNumber.substring(3, phoneNumber.length()));
                 startActivity(it);
                 break;
-            case R.id.btn_elseAdd:
+            case R.id.btn_login:
                 startActivity(new Intent(Login.this, PassLogin.class));
                 break;
         }

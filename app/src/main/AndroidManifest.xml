@@ -39,7 +39,8 @@
             android:exported="false" />
         <activity
             android:name=".MeditationActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:launchMode="singleTop"/>
         <activity
             android:name=".pary.Owned"
             android:exported="false" />
