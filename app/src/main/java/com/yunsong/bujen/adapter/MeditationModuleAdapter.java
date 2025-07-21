@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -14,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.yunsong.bujen.MeditationActivity;
+import com.yunsong.bujen.MyTutorial;
 import com.yunsong.bujen.R;
 import com.yunsong.bujen.databean.ModuleItem;
 import com.yunsong.bujen.databean.MyTutorialBean;
@@ -33,6 +35,7 @@ public class MeditationModuleAdapter extends RecyclerView.Adapter<MeditationModu
         TextView tvTitle, tvSubtitle;
         ImageView img1, img2;
         TextView title1, author1, title2, author2;
+        LinearLayout item1,item2,more_data;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -45,6 +48,9 @@ public class MeditationModuleAdapter extends RecyclerView.Adapter<MeditationModu
             author1 = itemView.findViewById(R.id.tv_item_author1);
             title2 = itemView.findViewById(R.id.tv_item_title2);
             author2 = itemView.findViewById(R.id.tv_item_author2);
+            item1=itemView.findViewById(R.id.item1);
+            item2=itemView.findViewById(R.id.item2);
+            more_data=itemView.findViewById(R.id.more_data);
         }
     }
 
@@ -80,7 +86,7 @@ public class MeditationModuleAdapter extends RecyclerView.Adapter<MeditationModu
             holder.img2.setImageDrawable(null);
         }
 
-        holder.img1.setOnClickListener(v -> {
+        holder.item1.setOnClickListener(v -> {
             if (context instanceof Activity) {
                 Intent result = new Intent();
                 result.putExtra("tutorialName", item.tutorials.get(0).tutorialName);
@@ -91,7 +97,7 @@ public class MeditationModuleAdapter extends RecyclerView.Adapter<MeditationModu
             }
         });
 
-        holder.img2.setOnClickListener(v -> {
+        holder.item2.setOnClickListener(v -> {
             if (item.tutorials.size() > 1 && context instanceof Activity) {
                 Intent result = new Intent();
                 result.putExtra("tutorialName", item.tutorials.get(1).tutorialName);
@@ -100,6 +106,12 @@ public class MeditationModuleAdapter extends RecyclerView.Adapter<MeditationModu
                 ((Activity) context).setResult(Activity.RESULT_OK, result);
                 ((Activity) context).finish(); // 回传数据并关闭 MedLocad
             }
+        });
+
+        holder.more_data.setOnClickListener(v->{
+            Context context = v.getContext();
+            Intent intent = new Intent(context, MyTutorial.class);
+            context.startActivity(intent);
         });
     }
 

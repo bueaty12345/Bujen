@@ -114,7 +114,10 @@ public class MedLocad extends AppCompatActivity implements View.OnClickListener{
                         list.add(bean);
                     }
 
-                    runOnUiThread(() -> recyclerView.setAdapter(new MedHistoryAdapter(MedLocad.this, list)));
+                    runOnUiThread(() -> {
+                        recyclerView.setLayoutManager(new LinearLayoutManager(MedLocad.this, LinearLayoutManager.VERTICAL, false));
+                        recyclerView.setAdapter(new MedHistoryAdapter(MedLocad.this, list));
+                    });
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

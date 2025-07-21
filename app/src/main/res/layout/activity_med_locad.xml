@@ -141,40 +141,39 @@
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/med_history_recycler"
                         android:layout_width="match_parent"
-                        android:layout_height="214dp"
+                        android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
-                        android:orientation="horizontal"
                         android:paddingStart="4dp"
                         android:paddingEnd="4dp"
                         />
 
                 </LinearLayout>
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginTop="28dp"
-                    android:orientation="vertical">
+<!--                <LinearLayout-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="match_parent"-->
+<!--                    android:layout_marginTop="28dp"-->
+<!--                    android:orientation="vertical">-->
 
-                    <TextView
-                        android:id="@+id/textView23"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="相关推荐"
-                        android:textColor="#1C1B1F"
-                        android:textSize="18sp" />
+<!--                    <TextView-->
+<!--                        android:id="@+id/textView23"-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:text="相关推荐"-->
+<!--                        android:textColor="#1C1B1F"-->
+<!--                        android:textSize="18sp" />-->
 
-                    <ListView
-                        android:id="@+id/list_dgyx"
-                        android:layout_width="match_parent"
-                        android:layout_height="300dp"
-                        android:layout_marginTop="16dp"
-                        android:divider="@android:color/transparent"
-                        android:listSelector="@android:color/transparent"
-                        android:nestedScrollingEnabled="true"
-                        android:scrollbars="none" />
+<!--                    <ListView-->
+<!--                        android:id="@+id/list_dgyx"-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="300dp"-->
+<!--                        android:layout_marginTop="16dp"-->
+<!--                        android:divider="@android:color/transparent"-->
+<!--                        android:listSelector="@android:color/transparent"-->
+<!--                        android:nestedScrollingEnabled="true"-->
+<!--                        android:scrollbars="none" />-->
 
-                </LinearLayout>
+<!--                </LinearLayout>-->
             </LinearLayout>
         </ScrollView>
 

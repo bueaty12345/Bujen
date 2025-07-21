@@ -16,18 +16,21 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
+import com.yunsong.bujen.fragment.SettingsViewModel;
 import com.yunsong.bujen.utils.DataStorageUtils;
 import com.yunsong.bujen.utils.ExchangeHelper;
 import com.yunsong.bujen.utils.FavoriteHelper;
+import com.yunsong.bujen.utils.GddManager;
 import com.yunsong.bujen.utils.UserInfoUtils;
 
 import java.io.IOException;
 
 
 public class Detail extends AppCompatActivity implements View.OnClickListener{
-    TextView txt_name,txt_gdd,txt_author,txt_time,txt_star,txt_date,txt_description,txt_rating;
+    TextView txt_name,txt_gdd,txt_author,txt_time,txt_star,txt_date,txt_description,txt_rating,txt_virtuePoints;
     ImageView img_selet,img_back,img_tu;
     Button btn_dh,btn_again;
     LinearLayout lin_st;
@@ -36,6 +39,7 @@ public class Detail extends AppCompatActivity implements View.OnClickListener{
     private ConfirmDialog dialog;
     private MediaPlayer mediaPlayer;
     String music;
+    private SettingsViewModel sharedViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,8 +74,18 @@ public class Detail extends AppCompatActivity implements View.OnClickListener{
         txt_date=findViewById(R.id.txt_date);
         txt_description=findViewById(R.id.txt_description);
         txt_rating=findViewById(R.id.txt_rating);
+        txt_virtuePoints=findViewById(R.id.virtuePoints);
         // 初始化 MediaPlayer，指向你要播放的音频文件
 //        mediaPlayer = MediaPlayer.create(this, R.raw.m1); // music_sample.mp3 放在 res/raw 目录下
+
+
+        sharedViewModel = new ViewModelProvider(this).get(SettingsViewModel.class);
+        GddManager.init(this, sharedViewModel);
+
+        // 监听功德点 ViewModel 更新 txt_gdd
+        sharedViewModel.getGddCont().observe(this, gddCount -> {
+            txt_virtuePoints.setText(String.valueOf(gddCount));
+        });
 
         setSound();
         Intent intent = getIntent();

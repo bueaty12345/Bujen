@@ -36,6 +36,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/more_data"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
@@ -65,6 +66,7 @@
         android:layout_height="wrap_content">
 
         <LinearLayout
+            android:id="@+id/item1"
             android:orientation="horizontal"
             android:layout_marginBottom="12dp"
             android:layout_width="match_parent"
@@ -114,6 +116,7 @@
             android:background="#CCCCCC" />
 
         <LinearLayout
+            android:id="@+id/item2"
             android:orientation="horizontal"
             android:layout_marginTop="12dp"
             android:layout_width="match_parent"

@@ -17,14 +17,17 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.yunsong.bujen.databean.BlessingBean;
+import com.yunsong.bujen.fragment.SettingsViewModel;
 import com.yunsong.bujen.utils.DataStorageUtils;
 import com.yunsong.bujen.utils.ExchangeHelper;
 import com.yunsong.bujen.utils.FavoriteHelper;
+import com.yunsong.bujen.utils.GddManager;
 import com.yunsong.bujen.utils.UserInfoUtils;
 
 public class PraysDetail extends AppCompatActivity implements View.OnClickListener{
@@ -32,9 +35,10 @@ public class PraysDetail extends AppCompatActivity implements View.OnClickListen
     private ImageView img_back, img_selet;
     private Button btn_dh, btn_again;
     private RelativeLayout img_cover;
-    private TextView txt_mname, txt_blessingCategory, txt_date, txt_gdd, txt_zen,txt_blessingMethod;
+    private TextView txt_mname, txt_blessingCategory, txt_date, txt_gdd, txt_zen,txt_blessingMethod,txt_virtuePoints;
 
     private boolean hart = false;
+    private SettingsViewModel sharedViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +73,15 @@ public class PraysDetail extends AppCompatActivity implements View.OnClickListen
         txt_zen = findViewById(R.id.textView22);
 
         txt_blessingMethod=findViewById(R.id.txt_blessingMethod);
+
+        txt_virtuePoints=findViewById(R.id.virtuePoints);
+        sharedViewModel = new ViewModelProvider(this).get(SettingsViewModel.class);
+        GddManager.init(this, sharedViewModel);
+
+        // 监听功德点 ViewModel 更新 txt_gdd
+        sharedViewModel.getGddCont().observe(this, gddCount -> {
+            txt_virtuePoints.setText(String.valueOf(gddCount));
+        });
 
         img_back.setOnClickListener(this);
         img_selet.setOnClickListener(this);

@@ -21,16 +21,19 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.yunsong.bujen.adapter.TutorialSquareAdapter;
 import com.yunsong.bujen.databean.MyTutorialBean;
+import com.yunsong.bujen.fragment.SettingsViewModel;
 import com.yunsong.bujen.utils.ApiHelper;
 import com.yunsong.bujen.utils.DataStorageUtils;
 import com.yunsong.bujen.utils.ExchangeHelper;
 import com.yunsong.bujen.utils.FavoriteHelper;
+import com.yunsong.bujen.utils.GddManager;
 import com.yunsong.bujen.utils.UserInfoUtils;
 
 import java.util.ArrayList;
@@ -42,14 +45,17 @@ public class TutorialDetail extends AppCompatActivity implements View.OnClickLis
 LinearLayout lin_sk;
 GridView gridView;
 
-TextView txt_mname,txt_content,txt_gdd,txt_description,txt_star;
+TextView txt_mname,txt_content,txt_gdd,txt_description,txt_star,txt_virtuePoints;
 ImageView img_selet,img_back,img_cover;
     Button btn_dh;
     private ConfirmDialog dialog;
     Boolean hart=false;
 
     private final static String TAG="TutorialDetail";
-private boolean isFullScreen = false;
+
+    private SettingsViewModel sharedViewModel;
+
+    private boolean isFullScreen = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -81,6 +87,15 @@ private boolean isFullScreen = false;
         img_back=findViewById(R.id.img_back);
         img_cover=findViewById(R.id.img_cover);
         gridView=findViewById(R.id.grid_tj);
+        txt_virtuePoints=findViewById(R.id.virtuePoints);
+
+        sharedViewModel = new ViewModelProvider(this).get(SettingsViewModel.class);
+        GddManager.init(this, sharedViewModel);
+
+        // 监听功德点 ViewModel 更新 txt_gdd
+        sharedViewModel.getGddCont().observe(this, gddCount -> {
+            txt_virtuePoints.setText(String.valueOf(gddCount));
+        });
 
         Intent intent=getIntent();
 
