@@ -1,17 +1,23 @@
 package com.yunsong.bujen.adapter;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.yunsong.bujen.MyTutorial;
 import com.yunsong.bujen.R;
 import com.yunsong.bujen.databean.MyTutorialBean;
+import com.yunsong.bujen.utils.TutorialHistory;
+import com.yunsong.bujen.utils.UserInfoUtils;
 
 import java.util.List;
 
@@ -48,6 +54,7 @@ public class MyTutorialAdapter extends BaseAdapter {
             holder.txt_mname = view.findViewById(R.id.txt_mname);
             holder.second_line=view.findViewById(R.id.second_line);
             holder.love=view.findViewById(R.id.love);
+            holder.itemData=view.findViewById(R.id.itemData);
             view.setTag(holder);
         }else {
             holder = (MyTutorialAdapter.viewHolder) view.getTag();
@@ -66,27 +73,35 @@ public class MyTutorialAdapter extends BaseAdapter {
             item.sc = !item.sc;
             notifyDataSetChanged();
         });
-        // 设置背景颜色
-//        if (i == Mi) {
-//            holder.img_selet.setVisibility(View.VISIBLE);
-//        } else {
-//            holder.img_selet.setVisibility(View.INVISIBLE);
-//        }
-        // 设置点击事件
-        view.setOnClickListener(v -> {
-            notifyDataSetChanged(); // 刷新适配器
-//            Mi=i;
-//            MusicService.MusicControl control = MusicController.getInstance().getMusicControl();
-//            if (control != null) {
-//                control.play(Mi);
-//            }
 
-        });
+//        // 设置点击事件
+//        view.setOnClickListener(v -> {
+//            notifyDataSetChanged(); // 刷新适配器
+//        });
+
+//        Integer userId= UserInfoUtils.getUserId(context);
+//        holder.itemData.setOnClickListener(v -> {
+//            if (context instanceof Activity) {
+//                if (userId != null) {
+//                    TutorialHistory.recordMeditationHistory(context,userId,item.tutorialId);
+//                } else {
+//                    Log.e("Meditation", "用户ID为null，无法记录冥想历史");
+//                }
+//
+//                Intent result = new Intent();
+//                result.putExtra("tutorialName", item.tutorialName);
+//                result.putExtra("videoUrl", item.videoUrl);
+//                result.putExtra("backgroundMusicUrl", item.backgroundMusicUrl);
+//                ((Activity) context).setResult(Activity.RESULT_OK, result);
+//                ((Activity) context).finish(); // 回传数据并关闭 MedLocad
+//            }
+//        });
         return view;
     }
     private final class viewHolder {
         ImageView img_tu,love;
         TextView txt_mname,second_line;
+        LinearLayout itemData;
     }
 
 }

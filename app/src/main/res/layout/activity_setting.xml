@@ -119,32 +119,32 @@
                     android:paddingVertical="8dp">
 
                     <!-- 电池电量提醒 -->
-                    <LinearLayout
-                        android:id="@+id/lin_battery"
-                        style="@style/ItemRowStyle">
-                        <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:src="@drawable/icon_battery" />
-                        <TextView
-                            style="@style/ItemTextStyle"
-                            android:text="电池电量提醒" />
+<!--                    <LinearLayout-->
+<!--                        android:id="@+id/lin_battery"-->
+<!--                        style="@style/ItemRowStyle">-->
 <!--                        <ImageView-->
-<!--                            style="@style/ItemArrowStyle" />-->
+<!--                            android:layout_width="24dp"-->
+<!--                            android:layout_height="24dp"-->
+<!--                            android:src="@drawable/icon_battery" />-->
+<!--                        <TextView-->
+<!--                            style="@style/ItemTextStyle"-->
+<!--                            android:text="电池电量提醒" />-->
+<!--&lt;!&ndash;                        <ImageView&ndash;&gt;-->
+<!--&lt;!&ndash;                            style="@style/ItemArrowStyle" />&ndash;&gt;-->
 
-                        <Switch
-                            android:id="@+id/sw_battery"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_vertical" />
+<!--                        <Switch-->
+<!--                            android:id="@+id/sw_battery"-->
+<!--                            android:layout_width="wrap_content"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:layout_gravity="center_vertical" />-->
 
-                    </LinearLayout>
+<!--                    </LinearLayout>-->
 
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:background="#CCCCCC"
-                        android:layout_marginHorizontal="16dp"/>
+<!--                    <View-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="1dp"-->
+<!--                        android:background="#CCCCCC"-->
+<!--                        android:layout_marginHorizontal="16dp"/>-->
 
                     <!-- 通知提醒 -->
                     <LinearLayout

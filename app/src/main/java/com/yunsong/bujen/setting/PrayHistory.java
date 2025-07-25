@@ -5,10 +5,12 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.GridLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -62,17 +64,32 @@ public class PrayHistory extends AppCompatActivity implements View.OnClickListen
         for (BlessingRecordBean bean : list) {
             int coverResId = getCoverResId(bean);
 
-            ImageView imageView = new ImageView(this);
-            imageView.setImageResource(coverResId);
-
+            LinearLayout itemLayout = new LinearLayout(this);
+            itemLayout.setOrientation(LinearLayout.VERTICAL);
             GridLayout.LayoutParams params = new GridLayout.LayoutParams();
             params.width = dpToPx(100);
-            params.height = dpToPx(100);
+            params.height = dpToPx(130); // 额外高度容纳文字
             params.setMargins(dpToPx(5), dpToPx(5), dpToPx(5), dpToPx(5));
-            imageView.setLayoutParams(params);
+            itemLayout.setLayoutParams(params);
+            itemLayout.setGravity(Gravity.CENTER_HORIZONTAL);
+
+            ImageView imageView = new ImageView(this);
+            imageView.setImageResource(coverResId);
+            imageView.setLayoutParams(new LinearLayout.LayoutParams(dpToPx(100), dpToPx(100)));
             imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
 
-            imageView.setOnClickListener(v -> {
+            TextView textView = new TextView(this);
+            textView.setText(bean.blessingTitle);
+            textView.setTextSize(14);
+            textView.setGravity(Gravity.CENTER);
+            textView.setMaxLines(1);
+            textView.setEllipsize(TextUtils.TruncateAt.END);
+            textView.setLayoutParams(new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+            ));
+
+            itemLayout.setOnClickListener(v -> {
                 long now = System.currentTimeMillis();
                 long achieveMillis = parseTime(bean.achieveTime);
                 boolean isUnlocked = now >= achieveMillis;
@@ -89,7 +106,9 @@ public class PrayHistory extends AppCompatActivity implements View.OnClickListen
                 }
             });
 
-            gridLayout.addView(imageView);
+            itemLayout.addView(imageView);
+            itemLayout.addView(textView);
+            gridLayout.addView(itemLayout);
         }
     }
 

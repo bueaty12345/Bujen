@@ -59,7 +59,7 @@ public class Setting extends AppCompatActivity implements View.OnClickListener{
         lin_about=findViewById(R.id.lin_about);
         lin_history=findViewById(R.id.lin_history);
         lin_clear_cache=findViewById(R.id.lin_clear_cache);
-        sw_battery=findViewById(R.id.sw_battery);
+//        sw_battery=findViewById(R.id.sw_battery);
         sw_notice=findViewById(R.id.sw_notice);
         cacheSizeText=findViewById(R.id.tv_cache_size);
 
@@ -72,17 +72,16 @@ public class Setting extends AppCompatActivity implements View.OnClickListener{
         lin_clear_cache.setOnClickListener(this);
 
         SharedPreferences prefs = getSharedPreferences("settings", MODE_PRIVATE);
-        sw_battery.setChecked(prefs.getBoolean("battery_reminder", false));
+//        sw_battery.setChecked(prefs.getBoolean("battery_reminder", false));
         sw_notice.setChecked(prefs.getBoolean("notification_reminder", false));
 
-        sw_battery.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            prefs.edit().putBoolean("battery_reminder", isChecked).apply();
-            Toast.makeText(this, isChecked ? "已开启电池提醒" : "已关闭电池提醒", Toast.LENGTH_SHORT).show();
-        });
+//        sw_battery.setOnCheckedChangeListener((buttonView, isChecked) -> {
+//            prefs.edit().putBoolean("battery_reminder", isChecked).apply();
+//            Toast.makeText(this, isChecked ? "已开启电池提醒" : "已关闭电池提醒", Toast.LENGTH_SHORT).show();
+//        });
 
         sw_notice.setOnCheckedChangeListener((buttonView, isChecked) -> {
             prefs.edit().putBoolean("notification_reminder", isChecked).apply();
-            Toast.makeText(this, isChecked ? "通知提醒已开启" : "通知提醒已关闭", Toast.LENGTH_SHORT).show();
         });
 
         if (cacheSizeText != null) {

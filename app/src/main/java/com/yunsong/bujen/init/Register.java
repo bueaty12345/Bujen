@@ -61,6 +61,7 @@ public class Register extends AppCompatActivity implements View.OnClickListener{
             return insets;
         });
         ThingHomeSdk.init(this.getApplication());
+        userAuthManager = new UserAuthManager(this);
         init();
 
 
@@ -138,8 +139,8 @@ public class Register extends AppCompatActivity implements View.OnClickListener{
             @Override
             public void onSuccess() {
                 Toast.makeText(Register.this, "注册并登录成功", Toast.LENGTH_SHORT).show();
-                creHome();
                 startActivity(new Intent(Register.this, AgeActivity.class));
+//                creHome();
                 finish();
             }
 
@@ -151,21 +152,21 @@ public class Register extends AppCompatActivity implements View.OnClickListener{
     }
 
 
-    private void creHome() {
-        List<String> rooms=new ArrayList<>();
-        ThingHomeSdk.getHomeManagerInstance().createHome("myhome", 0, 0, "", rooms, new IThingHomeResultCallback() {
-            @Override
-            public void onSuccess(HomeBean bean) {
-                // do something
-                Toast.makeText(Register.this, "家庭id"+bean.getHomeId(), Toast.LENGTH_SHORT).show();
-                startActivity(new Intent(Register.this, Connect.class));
-            }
-            @Override
-            public void onError(String errorCode, String errorMsg) {
-                Toast.makeText(Register.this, "创建家庭失败: " + errorMsg, Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
+//    private void creHome() {
+//        List<String> rooms=new ArrayList<>();
+//        ThingHomeSdk.getHomeManagerInstance().createHome("myhome", 0, 0, "", rooms, new IThingHomeResultCallback() {
+//            @Override
+//            public void onSuccess(HomeBean bean) {
+//                // do something
+//                Toast.makeText(Register.this, "家庭id"+bean.getHomeId(), Toast.LENGTH_SHORT).show();
+//                startActivity(new Intent(Register.this, Connect.class));
+//            }
+//            @Override
+//            public void onError(String errorCode, String errorMsg) {
+//                Toast.makeText(Register.this, "创建家庭失败: " + errorMsg, Toast.LENGTH_SHORT).show();
+//            }
+//        });
+//    }
 
 
 }

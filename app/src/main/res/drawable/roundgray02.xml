@@ -8,11 +8,12 @@
         android:radius="8dp"/>
 
     <!-- 填充颜色 -->
-    <solid android:color="#FFFCF3"/>
+    <solid android:color="#DDC09E"/>
     <!-- 边框的宽度,每段虚线的长度，和两段虚线之间的间隔和颜色 -->
     <!--    <stroke-->
     <!--        android:width="2dp"-->
     <!--        android:color="#666666"/>-->
+
 
 
 

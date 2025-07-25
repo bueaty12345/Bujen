@@ -2,10 +2,12 @@ package com.yunsong.bujen.fragment;
 
 import static android.content.Context.MODE_PRIVATE;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -14,10 +16,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.yunsong.bujen.Detail;
+import com.yunsong.bujen.Detail2;
 import com.yunsong.bujen.Lighting;
 import com.yunsong.bujen.Prays;
 import com.yunsong.bujen.R;
@@ -164,10 +169,6 @@ public class CenterFragment extends Fragment implements View.OnClickListener, On
                         setLamplight();//灯光
                         position=1;
                         break;
-                    case 2:
-                        setTutorial();//教程
-                        position=1;
-                        break;
                 }
             }
 
@@ -182,24 +183,66 @@ public class CenterFragment extends Fragment implements View.OnClickListener, On
             }
         });
 
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                if (position == 0) {
+                    Intent intent;
+                    MusicBean musicBean = (MusicBean) adapterView.getAdapter().getItem(i);
+                    intent = new Intent(requireContext(), Detail.class);
+
+                    // 使用 putExtra() 传递数据
+                    intent.putExtra("name", musicBean.getMusicName());
+                    intent.putExtra("gdd", musicBean.getRequiredMeritPoints());
+                    intent.putExtra("singer", musicBean.getSinger());
+                    intent.putExtra("music", musicBean.getMusicUrl());
+                    intent.putExtra("createdAt",musicBean.getCreatedAt());
+                    intent.putExtra("rating", String.valueOf(musicBean.getRating()));
+                    intent.putExtra("description",musicBean.getDescription());
+                    intent.putExtra("sc",musicBean.getSC());
+                    intent.putExtra("dh",musicBean.getDH());
+                    intent.putExtra("duration",musicBean.getDuration());
+                    intent.putExtra("resourceType",musicBean.getResourceType());
+                    intent.putExtra("musicId",musicBean.getMusicId());
+                    intent.putExtra("musicCover",musicBean.getMusicCover());
+
+                    startActivityForResult(intent, 1001);
+                } else if (position==1) {
+                    Intent intent;
+                    MyLightBean lightBean = (MyLightBean) adapterView.getAdapter().getItem(i);
+                    intent = new Intent(requireContext(), Detail2.class);
+
+                    // 使用 putExtra() 传递数据
+                    intent.putExtra("backgroundName", lightBean.getBackgroundName());
+                    intent.putExtra("requiredMeritPoints", lightBean.getRequiredMeritPoints());
+                    intent.putExtra("author", lightBean.getAuthor());
+                    intent.putExtra("createdAt",lightBean.getCreatedAt());
+                    intent.putExtra("rating", String.valueOf(lightBean.getRating()));
+                    intent.putExtra("description",lightBean.getDescription());
+                    intent.putExtra("sc",lightBean.isSc());
+                    intent.putExtra("dh",lightBean.isDh());
+                    intent.putExtra("backgroundImageUrl",lightBean.getBackgroundImageUrl());
+                    intent.putExtra("description",lightBean.getDescription());
+                    intent.putExtra("resourceType",lightBean.getResourceType());
+                    intent.putExtra("backgroundId",lightBean.getBackgroundId());
+
+                    startActivityForResult(intent, 1001);
+                }
+            }
+        });
+
         return view;
     }
 
-    private void setTutorial() {
-        SharedPreferences sharedPreferences = getContext().getSharedPreferences("AppPrefs", MODE_PRIVATE);
-        String token = sharedPreferences.getString("user_token", null);
-        ApiHelper.fetchTutorialList(getContext(), token, new ApiHelper.Callback<MyTutorialBean>() {
-            @Override
-            public void onSuccess(List<MyTutorialBean> list) {
-                TutorialAdapter adapter = new TutorialAdapter(getContext(), list,R.layout.item_lighting);
-                listView.setAdapter(adapter);
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (requestCode == 1001 && resultCode == Activity.RESULT_OK) {
+            if (position == 0) {
+                setSound();
+            } else {
+                setLamplight();
             }
-
-            @Override
-            public void onError(String message) {
-                Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
-            }
-        });
+        }
     }
 
     private void setLamplight() {

@@ -609,6 +609,17 @@ public class ParyWrite extends AppCompatActivity implements View.OnClickListener
             postBlessing(title, content, blessingMethod, imageUrl, recordedFilePath);
         }
 
+        String selectedAchieveTime = achieveTime.getText().toString();
+        String today = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+
+        if (today.equals(selectedAchieveTime)) {
+            // 清除本地保存的 achieveTime
+            getSharedPreferences("settings", MODE_PRIVATE)
+                    .edit()
+                    .remove("last_achieve_time")
+                    .apply();
+        }
+
     }
 
     private void postBlessing(String title, String content, String blessingMethod,String imageUrl,String audioUrl) {

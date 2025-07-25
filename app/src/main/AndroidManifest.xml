@@ -144,6 +144,8 @@
             android:exported="false" />
         <activity android:name=".setting.PhoneNumber"
             android:exported="false" />
+        <activity android:name=".setting.PhoneNumberBind"
+            android:exported="false" />
         <activity android:name=".setting.EditMail"
             android:exported="false" />
         <activity android:name=".setting.Tripartite"

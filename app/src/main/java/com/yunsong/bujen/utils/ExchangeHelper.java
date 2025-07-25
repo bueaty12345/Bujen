@@ -177,7 +177,7 @@ public class ExchangeHelper {
 
     public static int getExchangeCount(Context context, String resourceType, int resourceId) {
         SharedPreferences sp = context.getSharedPreferences("ExchangedPrefs", Context.MODE_PRIVATE);
-        String key = "count_" + resourceType + "_" + resourceId; // 👈 新 key
+        String key = "count_" + resourceType + "_" + resourceId;
         return sp.getInt(key, 0);
     }
 

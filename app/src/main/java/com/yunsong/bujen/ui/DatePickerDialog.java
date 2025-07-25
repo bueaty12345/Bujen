@@ -76,6 +76,7 @@ public class DatePickerDialog {
                 listener.onDateSelected(npYear.getValue(), npMonth.getValue(), npDay.getValue());
             }
             dialog.dismiss();
+
         });
 
         dialog.show();

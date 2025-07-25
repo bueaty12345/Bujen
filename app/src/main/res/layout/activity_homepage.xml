@@ -139,17 +139,17 @@
 
     </FrameLayout>
 
-    <ImageView
-        android:id="@+id/iv_miniapp_float"
-        android:layout_width="56dp"
-        android:layout_height="56dp"
-        android:layout_alignParentRight="true"
-        android:layout_marginRight="10dp"
-        android:layout_marginTop="200dp"
-        android:background="@drawable/bg_float_circle"
-        android:src="@drawable/icon_ai"
-        android:padding="12dp"
-        android:elevation="10dp"
-        android:visibility="visible"
-        />
+<!--    <ImageView-->
+<!--        android:id="@+id/iv_miniapp_float"-->
+<!--        android:layout_width="56dp"-->
+<!--        android:layout_height="56dp"-->
+<!--        android:layout_alignParentRight="true"-->
+<!--        android:layout_marginRight="10dp"-->
+<!--        android:layout_marginTop="200dp"-->
+<!--        android:background="@drawable/bg_float_circle"-->
+<!--        android:src="@drawable/icon_ai"-->
+<!--        android:padding="12dp"-->
+<!--        android:elevation="10dp"-->
+<!--        android:visibility="visible"-->
+<!--        />-->
 </RelativeLayout>

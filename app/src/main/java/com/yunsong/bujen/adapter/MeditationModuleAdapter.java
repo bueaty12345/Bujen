@@ -3,6 +3,7 @@ package com.yunsong.bujen.adapter;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,17 +15,35 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.yunsong.bujen.BuildConfig;
 import com.yunsong.bujen.MeditationActivity;
 import com.yunsong.bujen.MyTutorial;
 import com.yunsong.bujen.R;
 import com.yunsong.bujen.databean.ModuleItem;
 import com.yunsong.bujen.databean.MyTutorialBean;
+import com.yunsong.bujen.utils.UserInfoUtils;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class MeditationModuleAdapter extends RecyclerView.Adapter<MeditationModuleAdapter.ViewHolder> {
     private List<ModuleItem> data;
     private Context context;
+    private final String RECORD_HISTORY= BuildConfig.API_SERVER+"/system/recordh";
 
     public MeditationModuleAdapter(Context context, List<ModuleItem> data) {
         this.context = context;
@@ -73,6 +92,10 @@ public class MeditationModuleAdapter extends RecyclerView.Adapter<MeditationModu
             holder.title1.setText(t1.tutorialName);
             holder.author1.setText(t1.author);
             Glide.with(context).load(t1.backgroundMusicUrl).into(holder.img1);
+        }else {
+            holder.title1.setText("");
+            holder.author1.setText("");
+            holder.img1.setImageDrawable(null);
         }
 
         if (item.tutorials.size() > 1) {
@@ -86,8 +109,16 @@ public class MeditationModuleAdapter extends RecyclerView.Adapter<MeditationModu
             holder.img2.setImageDrawable(null);
         }
 
+        Integer userId=UserInfoUtils.getUserId(context);
+
         holder.item1.setOnClickListener(v -> {
-            if (context instanceof Activity) {
+            if (item.tutorials.size() > 0 && context instanceof Activity) {
+                if (userId != null) {
+                    recordMeditationHistory(userId,item.tutorials.get(0).tutorialId);
+                } else {
+                    Log.e("Meditation", "用户ID为null，无法记录冥想历史");
+                }
+
                 Intent result = new Intent();
                 result.putExtra("tutorialName", item.tutorials.get(0).tutorialName);
                 result.putExtra("videoUrl", item.tutorials.get(0).videoUrl);
@@ -99,6 +130,13 @@ public class MeditationModuleAdapter extends RecyclerView.Adapter<MeditationModu
 
         holder.item2.setOnClickListener(v -> {
             if (item.tutorials.size() > 1 && context instanceof Activity) {
+                MyTutorialBean t2 = item.tutorials.get(1);
+                if (userId != null) {
+                    recordMeditationHistory(userId, t2.tutorialId);
+                } else {
+                    Log.e("Meditation", "用户ID为null，无法记录冥想历史");
+                }
+
                 Intent result = new Intent();
                 result.putExtra("tutorialName", item.tutorials.get(1).tutorialName);
                 result.putExtra("videoUrl", item.tutorials.get(1).videoUrl);
@@ -112,6 +150,51 @@ public class MeditationModuleAdapter extends RecyclerView.Adapter<MeditationModu
             Context context = v.getContext();
             Intent intent = new Intent(context, MyTutorial.class);
             context.startActivity(intent);
+        });
+    }
+
+    private void recordMeditationHistory(int userId, int tutorialId) {
+        OkHttpClient client = new OkHttpClient();
+        String token= UserInfoUtils.getToken(context);
+
+        // 当前时间
+        String currentTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(new Date());
+
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("userId", userId);
+            jsonObject.put("tutorialId", tutorialId);
+            jsonObject.put("watchTime", currentTime);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return;
+        }
+
+        RequestBody body = RequestBody.create(
+                jsonObject.toString(),
+                MediaType.parse("application/json; charset=utf-8")
+        );
+
+        Request request = new Request.Builder()
+                .url(RECORD_HISTORY)
+                .post(body)
+                .addHeader("Authorization", "Bearer " + token)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.e("Meditation", "记录冥想失败: " + e.getMessage());
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    Log.d("Meditation", "记录冥想成功"+response);
+                } else {
+                    Log.w("Meditation", "记录冥想失败: " + response.code());
+                }
+            }
         });
     }
 

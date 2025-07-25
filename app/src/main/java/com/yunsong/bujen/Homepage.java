@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -29,6 +30,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.thing.smart.miniappclient.ThingMiniAppClient;
+import com.yunsong.bujen.databean.BlessingRecordBean;
 import com.yunsong.bujen.fragment.CenterFragment;
 import com.yunsong.bujen.fragment.HFragment;
 import com.yunsong.bujen.fragment.SettingsFragment;
@@ -39,18 +41,34 @@ import com.thingclips.smart.home.sdk.callback.IThingHomeResultCallback;
 import com.thingclips.smart.sdk.api.IDevListener;
 import com.thingclips.smart.sdk.api.IThingDevice;
 import com.yunsong.bujen.fragment.SettingsViewModel;
+import com.yunsong.bujen.pary.ParyWrite;
+import com.yunsong.bujen.setting.BlessingRecord;
+import com.yunsong.bujen.setting.PrayHistory;
 import com.yunsong.bujen.utils.DataStorageUtils;
 import com.yunsong.bujen.utils.GddManager;
 import com.yunsong.bujen.utils.UserInfoUtils;
 
+import org.jetbrains.annotations.NotNull;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class Homepage extends AppCompatActivity implements View.OnClickListener {
     private final String USER_INFO_URL = BuildConfig.API_SERVER+"/getAppInfo"; //获取信息接口URL
@@ -74,6 +92,8 @@ public class Homepage extends AppCompatActivity implements View.OnClickListener 
 
     private SettingsViewModel sharedViewModel;
     private HFragment homeFragment;
+    private static ConfirmDialog dialog;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,8 +121,133 @@ public class Homepage extends AppCompatActivity implements View.OnClickListener 
         });
 
         loadBgFromPrefs();
+
+        SharedPreferences prefs = getSharedPreferences("settings", MODE_PRIVATE);
+        boolean notifyEnabled = prefs.getBoolean("notification_reminder", false);
+        if (notifyEnabled) {
+            String savedAchieveTime = prefs.getString("last_achieve_time", "");
+            String today = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+
+            if (!today.equals(savedAchieveTime)) {
+                fetchReceiveData(today);
+            }
+        }
     }
 
+    private void fetchReceiveData(String today) {
+        String token = UserInfoUtils.getToken(this);
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder()
+                .url(BuildConfig.API_SERVER + "/system/recordb/app/receive")
+                .get()
+                .addHeader("Authorization", "Bearer " + token)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    String body = response.body().string();
+                    try {
+                        JSONObject json = new JSONObject(body);
+                        if (json.getInt("code") == 200) {
+                            int total = json.optInt("total", 0);
+                            JSONArray rowsArray = json.optJSONArray("rows");
+
+                            List<BlessingRecordBean> list = new ArrayList<>();
+                            if (rowsArray != null) {
+                                for (int i = 0; i < rowsArray.length(); i++) {
+                                    JSONObject obj = rowsArray.getJSONObject(i);
+                                    BlessingRecordBean bean = new BlessingRecordBean();
+                                    bean.recordId = obj.optInt("recordId");
+                                    bean.userId = obj.optInt("userId");
+                                    bean.blessingTime = obj.optString("blessingTime");
+                                    bean.achieveTime = obj.optString("achieveTime");
+                                    bean.blessingTitle = obj.optString("blessingTitle");
+                                    list.add(bean);
+                                }
+
+                                // 保存第一个的 achieveTime
+                                if (!list.isEmpty()) {
+                                    String lastAchieveTime = list.get(0).achieveTime;
+                                    getSharedPreferences("settings", MODE_PRIVATE)
+                                            .edit()
+                                            .putString("last_achieve_time", lastAchieveTime)
+                                            .apply();
+                                }
+
+                                int finalTotal = total;
+                                runOnUiThread(() -> showUnlockDialog(list, finalTotal));
+                            }
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+    }
+
+    private void showUnlockDialog(List<BlessingRecordBean> dataList, int total) {
+        if (dataList == null || dataList.isEmpty()) return;
+
+        ConfirmDialog.Builder builder = new ConfirmDialog.Builder(this);
+        dialog = builder
+                .cancelTouchout(false)
+                .view(R.layout.dialog_prayrecordconfirm)
+                .style(R.style.Dialog)
+                .build();
+
+        dialog.show();
+
+        TextView tvMessage = dialog.findViewById(R.id.tv_message);
+        LinearLayout llSingleData = dialog.findViewById(R.id.ll_single_data);
+        LinearLayout llSingleData1 = dialog.findViewById(R.id.ll_single_data1);
+
+        TextView tvRow1Right = dialog.findViewById(R.id.tv_row1_right);
+        TextView tvRow2Right = dialog.findViewById(R.id.tv_row2_right);
+        TextView txtCancel = dialog.findViewById(R.id.txt_cancel);
+        TextView txtConfirm = dialog.findViewById(R.id.txt_confirm);
+
+        if (total > 1) {
+            llSingleData.setVisibility(View.GONE);
+            llSingleData1.setVisibility(View.GONE);
+            tvMessage.setVisibility(View.VISIBLE);
+            tvMessage.setText("您今日有 " + total + " 条接福数据");
+        } else {
+            llSingleData.setVisibility(View.VISIBLE);
+            llSingleData1.setVisibility(View.VISIBLE);
+            tvMessage.setVisibility(View.GONE);
+
+            BlessingRecordBean bean = dataList.get(0);
+            tvRow1Right.setText(formatDate(bean.blessingTime));
+            tvRow2Right.setText(formatDate(bean.achieveTime));
+        }
+
+        txtCancel.setOnClickListener(v -> dialog.dismiss());
+        txtConfirm.setOnClickListener(v -> {
+            dialog.dismiss();
+            Toast.makeText(Homepage.this, "可前往设置-历史记录查看详情", Toast.LENGTH_SHORT).show();
+        });
+    }
+
+    private String formatDate(String rawDate) {
+        if (TextUtils.isEmpty(rawDate)) return "/";
+        try {
+            SimpleDateFormat fromFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+            SimpleDateFormat toFormat = new SimpleDateFormat("yyyy 年 MM 月 dd 日", Locale.getDefault());
+            Date date = fromFormat.parse(rawDate);
+            return date != null ? toFormat.format(date) : "/";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "/";
+        }
+    }
 
     private void getDeviceMessage() {
         ThingHomeSdk.newHomeInstance(homeId).getHomeDetail(new IThingHomeResultCallback() {
@@ -212,7 +357,7 @@ public class Homepage extends AppCompatActivity implements View.OnClickListener 
         ly_center=findViewById(R.id.ly_center);
         ly_tab=findViewById(R.id.ly_tab_bar);
         rl_bg=findViewById(R.id.rl_bg);
-        ivMiniApp=findViewById(R.id.iv_miniapp_float);
+//        ivMiniApp=findViewById(R.id.iv_miniapp_float);
         fManager = getSupportFragmentManager();//获取 FragmentManager 实例，方便后续进行 Fragment 切换或替换。
         //设置默认Fragment
         txt_home.setSelected(true);

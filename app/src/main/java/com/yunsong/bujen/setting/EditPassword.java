@@ -166,7 +166,7 @@ public class EditPassword extends AppCompatActivity implements View.OnClickListe
         Log.d("password","data"+phone);
         Log.d("password","data"+newPassword);
         Log.d("password","data"+code);
-        ThingHomeSdk.getUserInstance().resetPhonePassword("86", phone, newPassword, code, new IResetPasswordCallback() {
+        ThingHomeSdk.getUserInstance().resetPhonePassword("86", phone, code, newPassword,new IResetPasswordCallback() {
             @Override
             public void onSuccess() {
                 Toast.makeText(EditPassword.this, "密码重置成功，请重新登录", Toast.LENGTH_SHORT).show();
@@ -177,6 +177,7 @@ public class EditPassword extends AppCompatActivity implements View.OnClickListe
 
             @Override
             public void onError(String code, String error) {
+                Log.d("重置失败","error"+error);
                 Toast.makeText(EditPassword.this, "重置失败：" + error, Toast.LENGTH_SHORT).show();
             }
         });

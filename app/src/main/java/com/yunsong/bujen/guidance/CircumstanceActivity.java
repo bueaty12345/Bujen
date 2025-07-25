@@ -11,9 +11,13 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.thingclips.smart.home.sdk.ThingHomeSdk;
+import com.thingclips.smart.home.sdk.bean.HomeBean;
+import com.thingclips.smart.home.sdk.callback.IThingHomeResultCallback;
 import com.yunsong.bujen.BuildConfig;
 import com.yunsong.bujen.R;
 import com.yunsong.bujen.init.Connect;
+import com.yunsong.bujen.init.Register;
 import com.yunsong.bujen.utils.UserInfoUtils;
 
 import org.json.JSONObject;
@@ -184,7 +188,9 @@ public class CircumstanceActivity extends AppCompatActivity {
                     runOnUiThread(() -> {
                         if (code == 200) {
                             Toast.makeText(CircumstanceActivity.this, "状态提交成功", Toast.LENGTH_SHORT).show();
-                            startActivity(new Intent(CircumstanceActivity.this, Connect.class));
+//                            startActivity(new Intent(CircumstanceActivity.this, Connect.class));
+                            creHome();
+
                         } else {
                             Toast.makeText(CircumstanceActivity.this, "提交失败: " + message, Toast.LENGTH_LONG).show();
                         }
@@ -200,4 +206,19 @@ public class CircumstanceActivity extends AppCompatActivity {
         }).start();
     }
 
+    private void creHome() {
+        List<String> rooms=new ArrayList<>();
+        ThingHomeSdk.getHomeManagerInstance().createHome("myhome", 0, 0, "", rooms, new IThingHomeResultCallback() {
+            @Override
+            public void onSuccess(HomeBean bean) {
+                // do something
+                Toast.makeText(CircumstanceActivity.this, "家庭id"+bean.getHomeId(), Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(CircumstanceActivity.this, Connect.class));
+            }
+            @Override
+            public void onError(String errorCode, String errorMsg) {
+                Toast.makeText(CircumstanceActivity.this, "创建家庭失败: " + errorMsg, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
 }

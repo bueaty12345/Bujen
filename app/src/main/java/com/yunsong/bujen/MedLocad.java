@@ -227,6 +227,7 @@ public class MedLocad extends AppCompatActivity implements View.OnClickListener{
                             tut.description=t.optString("description");
                             tut.tutorialContent=t.optString("tutorialContent");
                             tut.backgroundMusicUrl=t.optString("backgroundMusicUrl");
+                            tut.tutorialId=t.optInt("tutorialId");
                             tutorials.add(tut);
                         }
 

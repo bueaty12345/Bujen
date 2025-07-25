@@ -14,7 +14,20 @@
         android:paddingTop="16dp"
         android:paddingBottom="16dp">
 
+        <TextView
+            android:id="@+id/tv_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="您今日有 n 条接福数据"
+            android:textColor="#49392D"
+            android:gravity="center"
+            android:visibility="gone"
+            android:layout_marginTop="32dp"
+            android:textSize="16sp"/>
+
+
         <LinearLayout
+            android:id="@+id/ll_single_data"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
@@ -40,6 +53,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/ll_single_data1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
