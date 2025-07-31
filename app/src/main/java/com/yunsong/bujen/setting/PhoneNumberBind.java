@@ -19,15 +19,29 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.thingclips.smart.home.sdk.ThingHomeSdk;
 import com.thingclips.smart.sdk.api.IResultCallback;
+import com.yunsong.bujen.BuildConfig;
 import com.yunsong.bujen.R;
 import com.yunsong.bujen.utils.UserInfoUtils;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class PhoneNumberBind extends AppCompatActivity implements View.OnClickListener{
     private EditText etPhoneOld, etPhoneNew, etCode;
     private TextView txtGetCode;
     private Context mContext;
     private LinearLayout txtBind;
-
+    private final String USER_INFO_URL= BuildConfig.API_SERVER+"/system/users";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,6 +123,8 @@ public class PhoneNumberBind extends AppCompatActivity implements View.OnClickLi
                         SharedPreferences sharedPreferences = getSharedPreferences("AppPrefs", MODE_PRIVATE);
                         sharedPreferences.edit().putString("user_phone", newPhone).apply();
 
+                        updateUserPhoneToServer(newPhone);
+
                         // 返回并刷新
                         setResult(RESULT_OK);  // 标记换绑成功
                         finish();
@@ -117,13 +133,55 @@ public class PhoneNumberBind extends AppCompatActivity implements View.OnClickLi
         );
     }
 
+    private void updateUserPhoneToServer(String newPhone) {
+        int userId=UserInfoUtils.getUserId(this);
+        String token=UserInfoUtils.getToken(this);
+        try {
+            JSONObject json = new JSONObject();
+            json.put("id", userId);
+            json.put("phone", newPhone);
+
+            OkHttpClient client = new OkHttpClient();
+            RequestBody body = RequestBody.create(
+                    json.toString(),
+                    MediaType.parse("application/json; charset=utf-8")
+            );
+
+            Request request = new Request.Builder()
+                    .url(USER_INFO_URL)
+                    .put(body)
+                    .addHeader("Authorization", "Bearer " + token)
+                    .build();
+
+            client.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    runOnUiThread(() ->
+                            Toast.makeText(mContext, "手机号上传失败", Toast.LENGTH_SHORT).show()
+                    );
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    if (response.isSuccessful()) {
+                        runOnUiThread(() ->
+                                Toast.makeText(mContext, "手机号已同步后台", Toast.LENGTH_SHORT).show()
+                        );
+                    } else {
+                        runOnUiThread(() ->
+                                Toast.makeText(mContext, "后台更新失败：" + response.message(), Toast.LENGTH_SHORT).show()
+                        );
+                    }
+                }
+            });
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
     @Override
     public void onClick(View v) {
-//        switch (v.getId()){
-//            case R.id.img_back:
-//                finish();
-//                break;
 
-//        }
     }
 }

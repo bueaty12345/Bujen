@@ -5,6 +5,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -42,6 +43,7 @@ public class Owned extends AppCompatActivity {
     Button btn_write,btn_write2,btn_write3;
     ListView listView;
     TextView new_date;
+    private ImageView img_back;
 
     private final String PRAY_INFO_URL = BuildConfig.API_SERVER + "/system/blessing/app/myList";
     private List<BlessingBean> prayList = new ArrayList<>();
@@ -60,6 +62,7 @@ public class Owned extends AppCompatActivity {
     }
 
     private void intiView() {
+        img_back=findViewById(R.id.img_back);
         listView=findViewById(R.id.list_local);
         new_date=findViewById(R.id.new_date);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy 年 MM 月 dd 日", Locale.CHINA);
@@ -67,6 +70,9 @@ public class Owned extends AppCompatActivity {
         new_date.setText(currentDate);
 
         fetchAllPrays();
+        img_back.setOnClickListener(v->{
+            finish();
+        });
 
         listView.setOnItemClickListener((parent, view, position, id) -> {
             BlessingBean selected = prayList.get(position);

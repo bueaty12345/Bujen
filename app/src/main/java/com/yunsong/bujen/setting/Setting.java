@@ -153,6 +153,23 @@ public class Setting extends AppCompatActivity implements View.OnClickListener{
             public void onSuccess() {
                 // 退出登录成功
                 BizBundleInitializer.onLogout(Setting.this);
+
+                String[] prefsNames = {
+                        "AppPrefs",
+                        "ExchangedPrefs",
+                        "settings",
+                        "music_prefs",
+                        "user",
+                        "homepage_config",
+                        "blessing",
+//                        "pray_history"
+                };
+
+                for (String name : prefsNames) {
+                    SharedPreferences prefs = getSharedPreferences(name, MODE_PRIVATE);
+                    prefs.edit().clear().apply();
+                }
+
                 Intent intent = new Intent(Setting.this, Login.class);
                 startActivity(intent);
                 finish();

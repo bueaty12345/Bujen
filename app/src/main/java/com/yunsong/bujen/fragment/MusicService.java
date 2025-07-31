@@ -2,6 +2,7 @@ package com.yunsong.bujen.fragment;
 
 import android.app.Service;
 import android.content.Intent;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Binder;
@@ -69,6 +70,7 @@ public class MusicService extends Service {
                 player.reset();
                 player.setDataSource(url);
                 player.prepareAsync();
+                player.setAudioStreamType(AudioManager.STREAM_MUSIC);
                 player.setOnPreparedListener(mp -> {
                     mp.start();
                     isPrepared = true;
@@ -87,6 +89,12 @@ public class MusicService extends Service {
                 updatePlaybackStatus();
             } catch (Exception e) {
                 e.printStackTrace();
+            }
+        }
+
+        public void setLooping(boolean looping) {
+            if (player != null) {
+                player.setLooping(looping);
             }
         }
 

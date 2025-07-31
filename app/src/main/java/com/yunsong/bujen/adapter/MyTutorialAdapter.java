@@ -13,6 +13,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.yunsong.bujen.MedLocad;
+import com.yunsong.bujen.MeditationActivity;
 import com.yunsong.bujen.MyTutorial;
 import com.yunsong.bujen.R;
 import com.yunsong.bujen.databean.MyTutorialBean;
@@ -79,23 +81,21 @@ public class MyTutorialAdapter extends BaseAdapter {
 //            notifyDataSetChanged(); // 刷新适配器
 //        });
 
-//        Integer userId= UserInfoUtils.getUserId(context);
-//        holder.itemData.setOnClickListener(v -> {
-//            if (context instanceof Activity) {
-//                if (userId != null) {
-//                    TutorialHistory.recordMeditationHistory(context,userId,item.tutorialId);
-//                } else {
-//                    Log.e("Meditation", "用户ID为null，无法记录冥想历史");
-//                }
-//
-//                Intent result = new Intent();
-//                result.putExtra("tutorialName", item.tutorialName);
-//                result.putExtra("videoUrl", item.videoUrl);
-//                result.putExtra("backgroundMusicUrl", item.backgroundMusicUrl);
-//                ((Activity) context).setResult(Activity.RESULT_OK, result);
-//                ((Activity) context).finish(); // 回传数据并关闭 MedLocad
-//            }
-//        });
+        holder.itemData.setOnClickListener(v -> {
+            Integer userId = UserInfoUtils.getUserId(context);
+            if (userId != null) {
+                TutorialHistory.recordMeditationHistory(context, userId, item.tutorialId);
+            }
+            Log.d("本地教程","tutorialName"+item.tutorialName);
+            Log.d("本地教程","videoUrl"+item.videoUrl);
+            Log.d("本地教程","backgroundMusicUrl"+item.backgroundMusicUrl);
+
+            Intent intent = new Intent(context, MeditationActivity.class);
+            intent.putExtra("tutorialName", item.tutorialName);
+            intent.putExtra("videoUrl", item.videoUrl);
+            intent.putExtra("backgroundMusicUrl", item.backgroundMusicUrl);
+            context.startActivity(intent);
+        });
         return view;
     }
     private final class viewHolder {

@@ -22,11 +22,17 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class TutorialHistory {
-    private static String RECORD_HISTORY= BuildConfig.API_SERVER+"/system/recordh";
+    private static final String TAG = "TutorialHistory";
+    private static final String RECORD_HISTORY = BuildConfig.API_SERVER + "/system/recordh";
+    private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+    private static final OkHttpClient client = new OkHttpClient();
 
     public static void recordMeditationHistory(Context context, int userId, int tutorialId) {
-        OkHttpClient client = new OkHttpClient();
         String token= UserInfoUtils.getToken(context);
+        if (token == null || token.isEmpty()) {
+            Log.w(TAG, "token 为空，跳过历史上报");
+            return;
+        }
 
         // 当前时间
         String currentTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(new Date());
@@ -41,10 +47,7 @@ public class TutorialHistory {
             return;
         }
 
-        RequestBody body = RequestBody.create(
-                jsonObject.toString(),
-                MediaType.parse("application/json; charset=utf-8")
-        );
+        RequestBody body = RequestBody.create(jsonObject.toString(), JSON);
 
         Request request = new Request.Builder()
                 .url(RECORD_HISTORY)

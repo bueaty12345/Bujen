@@ -60,7 +60,7 @@ public class MeditationActivity extends AppCompatActivity implements View.OnClic
     private static final String EXTRA_IMAGE_URL = "backgroundMusicUrl";
     ConstraintLayout main;
     LinearLayout lin_kz;
-    ImageView img_circle,img_play,img_timing,img_next,img_previous,img_reset;
+    ImageView img_circle,img_play,img_timing,img_next,img_previous,loop_playBack;
     TextView txt_stateTime,txt_endTime,txt_name;
     SeekBar seekBar;
     private MediaPlayer mediaPlayer;
@@ -74,6 +74,8 @@ public class MeditationActivity extends AppCompatActivity implements View.OnClic
 
     private static MeditationActivity currentActivity;
     private final Handler handler = new Handler(Looper.getMainLooper());
+    private boolean isLooping = false;
+
 
     private final Runnable updateRunnable = new Runnable() {
         @Override
@@ -85,7 +87,7 @@ public class MeditationActivity extends AppCompatActivity implements View.OnClic
                 txt_endTime.setText(formatTime(duration));
                 seekBar.setMax(duration);
                 seekBar.setProgress(current);
-                img_play.setImageResource(musicControl.isPlay() ? R.drawable.home_start : R.drawable.med_stop);
+                img_play.setImageResource(musicControl.isPlay() ? R.drawable.icon_startplay : R.drawable.med_stop);
             }
             handler.postDelayed(this, 1000);
         }
@@ -131,6 +133,9 @@ public class MeditationActivity extends AppCompatActivity implements View.OnClic
         bindService(intent, connection, BIND_AUTO_CREATE);
 
         currentActivity = this;
+        loop_playBack.setImageResource(
+                isLooping ? R.drawable.icon_start : R.drawable.med_reset
+        );
     }
 
     private void intView() {
@@ -141,7 +146,7 @@ public class MeditationActivity extends AppCompatActivity implements View.OnClic
         img_timing = findViewById(R.id.img_timing);
         img_next = findViewById(R.id.img_next);
         img_previous = findViewById(R.id.img_previous);
-        img_reset = findViewById(R.id.img_reset);
+        loop_playBack = findViewById(R.id.loop_playBack);
         txt_stateTime = findViewById(R.id.txt_stateTime);
         txt_endTime = findViewById(R.id.txt_endTime);
         txt_name=findViewById(R.id.txt_name);
@@ -151,7 +156,7 @@ public class MeditationActivity extends AppCompatActivity implements View.OnClic
         img_timing.setOnClickListener(this);
         img_next.setOnClickListener(this);
         img_previous.setOnClickListener(this);
-        img_reset.setOnClickListener(this);
+        loop_playBack.setOnClickListener(this);
         img_circle.setOnClickListener(this);
         main.setOnClickListener(this);
 
@@ -256,13 +261,31 @@ public class MeditationActivity extends AppCompatActivity implements View.OnClic
             case R.id.img_play:
                 toggleMusic();
                 break;
-            case R.id.img_reset:
-                stopMusic();
+            case R.id.loop_playBack:
+                toggleLoopMode();
                 break;
             case R.id.img_timing:
+                if (!isLooping) {
+                    Toast.makeText(this, "请先开启循环播放", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 showTimerDialog();
                 break;
         }
+    }
+
+    private void toggleLoopMode() {
+        isLooping = !isLooping;
+
+        if (musicControl != null) {
+            musicControl.setLooping(isLooping);
+        }
+
+        loop_playBack.setImageResource(
+                isLooping ? R.drawable.icon_start : R.drawable.med_reset
+        );
+
+        Toast.makeText(this, isLooping ? "已开启循环播放" : "已关闭循环播放", Toast.LENGTH_SHORT).show();
     }
 
     private void showTimerDialog() {
@@ -302,9 +325,26 @@ public class MeditationActivity extends AppCompatActivity implements View.OnClic
             }
 
             public void onFinish() {
-                stopMusic();
+                if (isLooping) {
+                    // 1. 关闭循环状态
+                    isLooping = false;
+                    if (musicControl != null) {
+                        musicControl.setLooping(false);
+                        musicControl.pausePlay(); // 暂停音乐
+                    }
+
+                    // 2. 切换 UI 图标
+                    loop_playBack.setImageResource(R.drawable.med_reset);
+                    img_play.setImageResource(R.drawable.med_stop);
+
+                    // 3. 提示用户
+                    Toast.makeText(MeditationActivity.this, "倒计时结束，循环播放已关闭", Toast.LENGTH_SHORT).show();
+                } else {
+                    stopMusic();
+                    Toast.makeText(MeditationActivity.this, "播放已结束", Toast.LENGTH_SHORT).show();
+                }
+
                 txt_endTime.setText("00:00");
-                Toast.makeText(MeditationActivity.this, "播放已结束", Toast.LENGTH_SHORT).show();
             }
         }.start();
     }
@@ -315,10 +355,10 @@ public class MeditationActivity extends AppCompatActivity implements View.OnClic
         if (musicControl != null) {
             if (musicControl.isPlay()) {
                 musicControl.pausePlay();
-                img_play.setImageResource(R.drawable.med_stop); // 主动更新暂停图标
+                img_play.setImageResource(R.drawable.med_stop);
             } else {
                 musicControl.continuePlay();
-                img_play.setImageResource(R.drawable.home_start); // 主动更新播放图标
+                img_play.setImageResource(R.drawable.icon_startplay);
             }
         }
     }
@@ -371,7 +411,7 @@ public class MeditationActivity extends AppCompatActivity implements View.OnClic
                     handler.post(updateRunnable);
 
                     // 主动更新播放图标
-                    img_play.setImageResource(R.drawable.home_start);
+                    img_play.setImageResource(R.drawable.icon_startplay);
                 }
 
                 setBackgroundWithBlur(backgroundImage);
@@ -417,7 +457,7 @@ public class MeditationActivity extends AppCompatActivity implements View.OnClic
             musicControl.playFromUrl(videoUrl);
             handler.removeCallbacks(updateRunnable);
             handler.post(updateRunnable);
-            img_play.setImageResource(R.drawable.home_start); // 播放图标
+            img_play.setImageResource(R.drawable.icon_startplay); // 播放图标
         }
     }
 }

@@ -6,7 +6,7 @@
     android:gravity="center_vertical">
 
     <TextView
-        android:id="@+id/text_time_option"
+        android:id="@+id/txt_time_option"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:gravity="center_vertical"
@@ -15,7 +15,7 @@
         android:layout_centerVertical="true" />
 
     <ImageView
-        android:id="@+id/image_check"
+        android:id="@+id/img_selected"
         android:layout_width="20dp"
         android:layout_height="20dp"
         android:layout_alignParentEnd="true"

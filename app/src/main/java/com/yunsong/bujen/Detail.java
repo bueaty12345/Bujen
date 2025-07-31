@@ -1,8 +1,13 @@
 package com.yunsong.bujen;
 
 import android.content.Intent;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -30,16 +35,20 @@ import java.io.IOException;
 
 
 public class Detail extends AppCompatActivity implements View.OnClickListener{
-    TextView txt_name,txt_gdd,txt_author,txt_time,txt_star,txt_date,txt_description,txt_rating,txt_virtuePoints;
-    ImageView img_selet,img_back,img_tu;
-    Button btn_dh,btn_again;
-    LinearLayout lin_st;
-    ListView listView;
-    Boolean hart=false;
+    private TextView txt_name,txt_gdd,txt_author,txt_time,txt_star,txt_date,txt_description,txt_rating,txt_virtuePoints;
+    private ImageView img_selet,img_back,img_tu,auditionIcon;
+    private Button btn_dh,btn_again;
+    private LinearLayout lin_audition;
+    private ListView listView;
+    private Boolean hart=false;
     private ConfirmDialog dialog;
     private MediaPlayer mediaPlayer;
     String music;
     private SettingsViewModel sharedViewModel;
+
+    private Handler playbackHandler = new Handler(Looper.getMainLooper());
+    private Runnable stopRunnable;
+    private boolean isPreviewPlaying = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,7 +65,7 @@ public class Detail extends AppCompatActivity implements View.OnClickListener{
         img_back.setOnClickListener(this);
         btn_dh.setOnClickListener(this);
         btn_again.setOnClickListener(this);
-        lin_st.setOnClickListener(this);
+        lin_audition.setOnClickListener(this);
     }
     private void init(){
         txt_name=findViewById(R.id.txt_mname);
@@ -67,7 +76,7 @@ public class Detail extends AppCompatActivity implements View.OnClickListener{
         img_back=findViewById(R.id.img_back);
         listView=findViewById(R.id.list_dgyx);
         btn_again=findViewById(R.id.btn_again);
-        lin_st=findViewById(R.id.lin_st);
+        lin_audition=findViewById(R.id.audition);
         img_tu=findViewById(R.id.img_tu);
         txt_time=findViewById(R.id.txt_time);
         txt_star=findViewById(R.id.txt_star);
@@ -75,6 +84,7 @@ public class Detail extends AppCompatActivity implements View.OnClickListener{
         txt_description=findViewById(R.id.txt_description);
         txt_rating=findViewById(R.id.txt_rating);
         txt_virtuePoints=findViewById(R.id.virtuePoints);
+        auditionIcon = findViewById(R.id.imageView10);
         // 初始化 MediaPlayer，指向你要播放的音频文件
 //        mediaPlayer = MediaPlayer.create(this, R.raw.m1); // music_sample.mp3 放在 res/raw 目录下
 
@@ -139,14 +149,14 @@ public class Detail extends AppCompatActivity implements View.OnClickListener{
     @Override
     public void onClick(View view) {
         switch (view.getId()){
-            case R.id.lin_st:
+            case R.id.audition:
             case R.id.btn_again:
                 // 开始播放音频
                 if (mediaPlayer != null) {
                     if (mediaPlayer.isPlaying()) {
-                        mediaPlayer.pause();
+                        stopPreviewPlayback();
                     } else {
-                        mediaPlayer.start();
+                        startPreviewPlayback();
                     }
                 }
                 break;
@@ -200,19 +210,42 @@ public class Detail extends AppCompatActivity implements View.OnClickListener{
     }
 
     private void setSound() {
-//        // 准备数据
-//        List<Map<String, String>> data = new ArrayList<>();
-//        for (int i = 1; i <= 3; i++) {
-//            Map<String, String> item = new HashMap<>();
-//            item.put("name", "音乐曲目 " + i);
-//            item.put("auther","作者："+i);
-//            item.put("gdd", "需功德点：" + i*1000);
-//            item.put("sc","0");
-//            data.add(item);
-//        }
-//
-//        LightAdapter adapter = new LightAdapter(this, data);
-//        listView.setAdapter(adapter);
+
+    }
+
+    private void startPreviewPlayback() {
+        if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+            stopPreviewPlayback();
+            return;
+        }
+
+        if (TextUtils.isEmpty(music)) {
+            Toast.makeText(this, "音频链接为空", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        playMusic(music);
+
+        // 播放 10 秒后自动停止
+        stopRunnable = () -> {
+            if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+                mediaPlayer.pause();
+                mediaPlayer.seekTo(0);
+                isPreviewPlaying = false;
+                auditionIcon.setImageResource(R.drawable.icon_play);
+            }
+        };
+        playbackHandler.postDelayed(stopRunnable, 10000);
+    }
+
+    private void stopPreviewPlayback() {
+        if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+            mediaPlayer.pause();
+            mediaPlayer.seekTo(0);
+            isPreviewPlaying = false;
+            auditionIcon.setImageResource(R.drawable.icon_play); // 切换回播放图标
+            playbackHandler.removeCallbacks(stopRunnable); // 移除定时器
+        }
     }
 
     @Override
@@ -228,28 +261,37 @@ public class Detail extends AppCompatActivity implements View.OnClickListener{
 
 
     private void playMusic(String url) {
-        Toast.makeText(this, ""+url, Toast.LENGTH_SHORT).show();
-        if (mediaPlayer == null) {
-            mediaPlayer = new MediaPlayer();
-            mediaPlayer.setOnErrorListener((mp, what, extra) -> {
-                Toast.makeText(Detail.this, "Error playing audio", Toast.LENGTH_SHORT).show();
-                return false;
-            });
-
-            mediaPlayer.setOnCompletionListener(mp -> {
-                Toast.makeText(Detail.this, "Playback completed", Toast.LENGTH_SHORT).show();
-                mediaPlayer.release();
-                mediaPlayer = null;
-            });
+        if (TextUtils.isEmpty(url) || !url.startsWith("http")) {
+            Toast.makeText(this, "音频链接无效", Toast.LENGTH_SHORT).show();
+            return;
         }
-
         try {
-            mediaPlayer.setDataSource(url);  // 设置音频源为网络URL
-            mediaPlayer.prepareAsync();  // 异步准备音频
-//            mediaPlayer.setOnPreparedListener(mp -> mediaPlayer.start());  // 准备好后开始播放
+            if (mediaPlayer != null) {
+                mediaPlayer.release(); // 释放旧的播放器
+                mediaPlayer = null;
+            }
+
+            mediaPlayer = new MediaPlayer();
+            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC); // 设置音频流类型
+            mediaPlayer.setDataSource(url); // 设置网络地址
+            mediaPlayer.setOnPreparedListener(mp -> {
+                mp.start(); // 准备完成后播放
+                isPreviewPlaying = true;
+                auditionIcon.setImageResource(R.drawable.icon_start);
+            });
+            mediaPlayer.setOnCompletionListener(mp -> {
+                isPreviewPlaying = false;
+                auditionIcon.setImageResource(R.drawable.icon_play);
+            });
+            mediaPlayer.setOnErrorListener((mp, what, extra) -> {
+                Toast.makeText(this, "音频播放失败", Toast.LENGTH_SHORT).show();
+                return true;
+            });
+
+            mediaPlayer.prepareAsync(); // 异步准备
         } catch (IOException e) {
             e.printStackTrace();
-            Toast.makeText(this, "Error loading audio", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "加载音频失败", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -280,6 +322,9 @@ public class Detail extends AppCompatActivity implements View.OnClickListener{
         if (mediaPlayer != null) {
             mediaPlayer.release();
             mediaPlayer = null;
+        }
+        if (playbackHandler != null && stopRunnable != null) {
+            playbackHandler.removeCallbacks(stopRunnable);
         }
     }
 }

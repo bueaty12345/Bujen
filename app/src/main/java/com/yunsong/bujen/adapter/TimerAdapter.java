@@ -14,50 +14,54 @@ import com.yunsong.bujen.R;
 import java.util.List;
 
 public class TimerAdapter extends RecyclerView.Adapter<TimerAdapter.ViewHolder> {
-    private List<Integer> times;
-    private OnItemClickListener listener;
-    private int selectedPosition = -1;
+    private final List<Integer> timeList;
+    private int selectedTime = -1;
+    private final OnTimeSelectedListener listener;
 
-    public interface OnItemClickListener {
-        void onItemClick(int time);
+    public interface OnTimeSelectedListener {
+        void onTimeSelected(int time);
     }
 
-    public TimerAdapter(List<Integer> times, OnItemClickListener listener) {
-        this.times = times;
+    public TimerAdapter(List<Integer> timeList, OnTimeSelectedListener listener) {
+        this.timeList = timeList;
         this.listener = listener;
     }
 
-    @NonNull
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+        TextView timeText;
+        ImageView selectedIcon;
+
+        public ViewHolder(View view) {
+            super(view);
+            timeText = view.findViewById(R.id.txt_time_option);
+            selectedIcon = view.findViewById(R.id.img_selected);
+        }
+    }
+
     @Override
-    public TimerAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_timer_option, parent, false);
+    public TimerAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.item_timer_option, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull TimerAdapter.ViewHolder holder, int position) {
-        int time = times.get(position);
-        holder.textView.setText(time + "分钟");
-        holder.imageCheck.setVisibility(position == selectedPosition ? View.VISIBLE : View.GONE);
+    public void onBindViewHolder(ViewHolder holder, int position) {
+        int time = timeList.get(position);
+        holder.timeText.setText(time + " 分钟");
+
+        // 根据是否是当前选中项来显示勾选图标
+        holder.selectedIcon.setVisibility(time == selectedTime ? View.VISIBLE : View.INVISIBLE);
+
         holder.itemView.setOnClickListener(v -> {
-            selectedPosition = position;
-            notifyDataSetChanged();
-            listener.onItemClick(time);
+            selectedTime = time;
+            notifyDataSetChanged(); // 更新所有item状态
+            listener.onTimeSelected(time);
         });
     }
 
     @Override
     public int getItemCount() {
-        return times.size();
-    }
-
-    static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView textView;
-        ImageView imageCheck;
-        ViewHolder(View itemView) {
-            super(itemView);
-            textView = itemView.findViewById(R.id.text_time_option);
-            imageCheck = itemView.findViewById(R.id.image_check);
-        }
+        return timeList.size();
     }
 }
